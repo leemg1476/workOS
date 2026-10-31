@@ -39,6 +39,7 @@ services:
       WORKOS_SOURCE_DATABASE_URL: postgresql+psycopg://workos_demo_reader:workos_demo_reader@postgres:5432/workos
     depends_on:
       postgres: {condition: service_healthy}
+      search-seed: {condition: service_completed_successfully}
   scheduler:
     build: ./backend
     command: ["python", "-m", "app.scheduler"]

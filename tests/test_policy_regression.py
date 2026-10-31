@@ -25,7 +25,7 @@ def test_regression_gates_retries_and_method_change_fences_running_work(kernel,m
         monkeypatch.setenv(key,value)
     seed(engine)
     try:
-        assert seed_index(engine,base,index)==3
+        assert seed_index(engine,base,index)==6
         with TestClient(app) as client:
             old,new=client.get('/api/policies/POLICY-VOC').json()['versions']
             body={'event_id':'regression-test','document_id':'POLICY-VOC','old_version':old['version'],

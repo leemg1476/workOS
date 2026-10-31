@@ -22,7 +22,7 @@ def test_history_snapshot_tamper_and_retry(kernel):
     assert process_claim(kernel,first)['passed']
     with TestClient(app) as client:
         initial=client.get(f"/api/runs/{first['run_id']}/artifacts").json()[0]
-        assert initial['schema_version']=='2'
+        assert initial['schema_version']=='3'
         assert initial['content']['previous_artifact_id'] is None
         assert {r['comparison'] for r in initial['content']['recommendations']}=={'NO_PREVIOUS_REPORT'}
         work,run=start(kernel,'history-second')
@@ -54,7 +54,7 @@ def test_history_snapshot_tamper_and_retry(kernel):
         context=client.get(f"/api/runs/{retried['run_id']}").json()['context']['manifest']
         assert context['previous_report']['sha256']==initial['sha256']
         assert context['previous_report']['evidence_id']==initial['evidence'][0]['evidence_id']
-        assert context['previous_report']['evaluation_id'] and context['previous_report']['verifier_version']=='voc-validator-v2'
+        assert context['previous_report']['evaluation_id'] and context['previous_report']['verifier_version']=='voc-validator-v3'
         assert artifact['content']['history_as_of']==context['history_as_of']
 
 
@@ -93,20 +93,20 @@ def test_new_category_is_distinguished_from_a_repeated_category(kernel):
         assert next(row for row in rows if row['category']=='support')['previous_recommendation_id'] is None
 
 
-def test_preexisting_v2_work_executes_and_v3_reuses_its_history(kernel):
+def test_preexisting_v2_work_executes_and_v4_reuses_its_history(kernel):
     seed(engine)
     with engine.begin() as c:
-        schema=c.execute(text("SELECT output_schema FROM task_definitions WHERE task_id='TASK-003' AND version=3 AND active")).scalar_one()
+        schema=c.execute(text("SELECT output_schema FROM task_definitions WHERE task_id='TASK-003' AND version=4 AND active")).scalar_one()
         assert schema['additionalProperties'] is False and 'previous_artifact_id' in schema['properties']
         c.execute(text("UPDATE job_definitions SET task_version=2 WHERE job_id='TASK-003-JOB'"))
     old_work,old=start(kernel,'old-contract')
     assert old['task_version']==2
     with engine.begin() as c:
-        c.execute(text("UPDATE job_definitions SET task_version=3 WHERE job_id='TASK-003-JOB'"))
+        c.execute(text("UPDATE job_definitions SET task_version=4 WHERE job_id='TASK-003-JOB'"))
     old_result=process_claim(kernel,old)
     assert old_result['passed']
     _,new=start(kernel,'new-contract')
-    assert new['task_version']==3
+    assert new['task_version']==4
     new_result=process_claim(kernel,new)
     assert new_result['passed']
     with TestClient(app) as client:

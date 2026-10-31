@@ -1,13 +1,19 @@
 """Deterministic synthetic VOC workload and a fixed, labeled demo evaluation suite."""
+import hashlib
 import re
 from pydantic import ValidationError
-from app.domain.contracts import VocReport, VocReportWithHistory
+from app.domain.contracts import VocReport, VocReportWithHistory, VocReportWithSources
 from app.work.market import digest
 
 CATEGORIES = ('billing','delivery','support')
 ACTIONS = {'billing':'결제·환불 안내의 누락 구간을 점검한다.',
            'delivery':'배송 상태와 도착 안내를 점검한다.',
            'support':'고객 문의와 상담 응대 경로를 점검한다.'}
+DOCUMENTS = {'billing':'DOC-VOC-BILLING@1','delivery':'DOC-VOC-DELIVERY@1','support':'DOC-VOC-SUPPORT@1'}
+DOCUMENT_QUERY = ('SELECT document_id,version,title,body,sha256 FROM source_documents '
+                  'WHERE document_id IN (:billing,:delivery,:support) AND version=:version ORDER BY document_id,version')
+DOCUMENT_PARAMETERS = {'billing':'DOC-VOC-BILLING','delivery':'DOC-VOC-DELIVERY','support':'DOC-VOC-SUPPORT','version':1}
+RECORD_QUERY = "SELECT record_id,source_version,body FROM voc_records WHERE source_version=:version ORDER BY record_id"
 METHODS = {
     'champion-v1': {'billing':['결제','청구'],'delivery':['배송','택배'],'support':['상담','응대']},
     'challenger-v2': {'billing':['결제','청구','환불'],'delivery':['배송','택배','도착'],'support':['상담','응대','문의']},
@@ -72,13 +78,18 @@ def make_report(manifest):
                                   'SAME_CATEGORY' if item['previous_recommendation_id'] else 'NEW_CATEGORY')
         report.update(previous_artifact_id=previous['artifact_id'] if previous else None,
                       history_as_of=manifest['history_as_of'],comparison_basis='CATEGORY_ONLY_NOT_SEMANTIC')
+    if manifest['task_version'] >= 4:
+        for item in report['recommendations']:
+            item['document_citations'] = [DOCUMENTS[item['category']]]
+        report['retrieval_mode'] = manifest['retrieval']['mode']
     return report
 
 
 def verify_voc(manifest, report):
     checks = {}
     try:
-        parsed = (VocReportWithHistory if manifest['task_version'] >= 3 else VocReport).model_validate(report)
+        contract = VocReportWithSources if manifest['task_version'] >= 4 else VocReportWithHistory if manifest['task_version'] >= 3 else VocReport
+        parsed = contract.model_validate(report)
         checks['schema'] = True
     except ValidationError:
         parsed = None
@@ -115,5 +126,13 @@ def verify_voc(manifest, report):
             item.previous_recommendation_id==previous_by_category.get(item.category)
             and item.comparison==('NO_PREVIOUS_REPORT' if previous is None else
                 'SAME_CATEGORY' if item.category in previous_by_category else 'NEW_CATEGORY')
+            for item in parsed.recommendations)
+    if manifest['task_version'] >= 4:
+        documents = manifest['documents']
+        present = {d['id'] for d in documents if hashlib.sha256(d['body'].encode('utf-8')).hexdigest()==d['sha256']}
+        checks['retrieval_snapshot_hash'] = digest(documents)==manifest['retrieval_result_sha256']
+        checks['document_versions_and_hashes'] = present==set(DOCUMENTS.values()) and documents==manifest['authoritative_documents']
+        checks['document_citations'] = bool(parsed) and parsed.retrieval_mode==manifest['retrieval']['mode'] and all(
+            item.document_citations==[DOCUMENTS[item.category]] and set(item.document_citations).issubset(present)
             for item in parsed.recommendations)
     return {'passed':all(checks.values()),'checks':checks,'semantic_usefulness':'NOT_HUMAN_EVALUATED'}

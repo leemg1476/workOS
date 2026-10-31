@@ -48,7 +48,7 @@ def test_index_is_verified_retried_and_revalidated(kernel,monkeypatch):
     doc_url=f'{index_url}/_doc/{quote("POLICY-VOC@2",safe="")}'
     seed(engine)
     try:
-        assert seed_index(engine,base,index) == 3
+        assert seed_index(engine,base,index) == 6
         with TestClient(app) as client:
             versions=client.get('/api/policies/POLICY-VOC').json()['versions']
             old,new=versions

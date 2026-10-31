@@ -258,6 +258,15 @@ class VocReportWithHistory(VocReport):
     comparison_basis: Literal['CATEGORY_ONLY_NOT_SEMANTIC']
 
 
+class VocRecommendationWithSources(VocRecommendationWithHistory):
+    document_citations: list[str]
+
+
+class VocReportWithSources(VocReportWithHistory):
+    recommendations: list[VocRecommendationWithSources]
+    retrieval_mode: Literal['FIXTURE_DB','OPENSEARCH']
+
+
 class FeedbackRequest(BaseModel):
     idempotency_key: str = Field(min_length=1,max_length=150)
     artifact_id: str

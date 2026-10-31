@@ -1,7 +1,7 @@
 import hashlib
 import json
 from sqlalchemy import text
-from app.domain.contracts import MarketBriefing, PolicyImpact, VocReport, VocReportWithHistory
+from app.domain.contracts import MarketBriefing, PolicyImpact, VocReport, VocReportWithHistory, VocReportWithSources
 from app.work.market import digest
 from app.work.voc import METHODS, fixture_records, fixture_cases, fixture_regression_cases
 
@@ -54,6 +54,14 @@ def seed(engine):
             'input':json.dumps({'source_version':'voc-demo-v1','history':'previous_verified_report'},ensure_ascii=False),
             'output':json.dumps(VocReportWithHistory.model_json_schema(),ensure_ascii=False)})
         c.execute(text("UPDATE job_definitions SET task_version=3 WHERE job_id='TASK-003-JOB' AND task_version=2"))
+        c.execute(text("UPDATE task_definitions SET active=false WHERE task_id='TASK-003' AND version=3 AND active"))
+        c.execute(text('''INSERT INTO task_definitions(task_id,version,name,objective,input_schema,output_schema,acceptance_policy,active)
+            VALUES ('TASK-003',4,'고객 VOC 개선과제 추천','가상 VOC와 상품·서비스 문서 근거를 연결한 개선 추천',
+                    CAST(:input AS jsonb),CAST(:output AS jsonb),'{"kind":"voc_report_v3"}',true)
+            ON CONFLICT(task_id,version) DO NOTHING'''), {
+            'input':json.dumps({'source_version':'voc-demo-v1','history':'previous_verified_report','documents':'demo-service-v1'},ensure_ascii=False),
+            'output':json.dumps(VocReportWithSources.model_json_schema(),ensure_ascii=False)})
+        c.execute(text("UPDATE job_definitions SET task_version=4 WHERE job_id='TASK-003-JOB' AND task_version=3"))
         for method_id,rules in METHODS.items():
             c.execute(text('''INSERT INTO voc_method_versions(method_id,changed_component,rules,sha256)
                 VALUES (:id,'classification_rules',CAST(:rules AS jsonb),:sha) ON CONFLICT DO NOTHING'''),
@@ -89,7 +97,10 @@ def seed(engine):
                 VALUES (:v,:symbol,:unit,:previous,:current,'2026-10-30T07:00:00+09:00') ON CONFLICT DO NOTHING'''),
                 {'v':version,'symbol':symbol,'unit':unit,'previous':previous,'current':current})
         documents = [('DOC-FX',1,'가상 환율 동향','데모 문서: 달러 환율 변동에 대한 가상의 시장 관찰이다.'),
-                     ('DOC-RISK',1,'가상 시장 리스크','데모 문서: 주가와 환율의 동시 변화를 검토한다.')]
+                     ('DOC-RISK',1,'가상 시장 리스크','데모 문서: 주가와 환율의 동시 변화를 검토한다.'),
+                     ('DOC-VOC-BILLING',1,'가상 결제·환불 안내','데모 서비스 문서: 결제 내역과 환불 요청의 안내 경로를 제공한다.'),
+                     ('DOC-VOC-DELIVERY',1,'가상 배송 안내','데모 서비스 문서: 주문 배송 상태와 도착 안내 경로를 제공한다.'),
+                     ('DOC-VOC-SUPPORT',1,'가상 고객 지원 안내','데모 서비스 문서: 상담 접수와 문의 응대 경로를 제공한다.')]
         for doc,version,title,body in documents:
             body_hash = hashlib.sha256(body.encode('utf-8')).hexdigest()
             c.execute(text('''INSERT INTO source_documents(document_id,version,title,body,sha256)

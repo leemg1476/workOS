@@ -8,8 +8,8 @@ from pydantic import ValidationError
 from app.integrations.artifact_store import store_json
 from app.work.market import build_manifest, digest, verify_briefing, PROMPT_VERSION
 from app.work.policy import STEPS, build_policy_manifest, verify_policy
-from app.work.voc import verify_voc
-from app.integrations.search import retrieve_documents, demo_index_target
+from app.work.voc import verify_voc, DOCUMENTS as VOC_DOCUMENTS, DOCUMENT_QUERY as VOC_DOCUMENT_QUERY, DOCUMENT_PARAMETERS as VOC_DOCUMENT_PARAMETERS, RECORD_QUERY as VOC_RECORD_QUERY
+from app.integrations.search import retrieve_documents, demo_index_target, configuration as search_configuration
 from app.integrations.sql_source import source_engine, source_mode
 from app.evaluation.policy_regression import load_inputs as load_regression_inputs, make_report as make_regression_report
 
@@ -767,13 +767,13 @@ class Kernel:
             self._lock(c)
             run = one(c, """SELECT r.*,w.task_version FROM runs r JOIN work_items w ON w.work_id=r.work_id
                 JOIN work_queue q ON q.run_id=r.run_id WHERE r.run_id=:id AND r.status='RUNNING'
-                AND q.status='CLAIMED' AND q.lease_until>now() AND w.task_id='TASK-003' AND w.task_version IN (2,3)""", {'id':run_id})
+                AND q.status='CLAIMED' AND q.lease_until>now() AND w.task_id='TASK-003' AND w.task_version IN (2,3,4)""", {'id':run_id})
             if not run:
                 raise Conflict('run is not an eligible VOC task')
             method = one(c, '''SELECT m.* FROM voc_method_state s JOIN voc_method_versions m ON m.method_id=s.active_method_id
                 WHERE s.task_id='TASK-003' ''')
             with source_engine(self.engine).connect() as source_conn:
-                records = [dict(row) for row in source_conn.execute(text("SELECT record_id,source_version,body FROM voc_records WHERE source_version='voc-demo-v1' ORDER BY record_id")).mappings()]
+                records = [dict(row) for row in source_conn.execute(text(VOC_RECORD_QUERY),{'version':'voc-demo-v1'}).mappings()]
             source = one(c, "SELECT * FROM task_source_dependencies WHERE task_id='TASK-003' AND document_id='POLICY-VOC'")
             if not method or not records:
                 raise Conflict('VOC inputs or method not configured')
@@ -787,6 +787,22 @@ class Kernel:
                     raise Conflict('previous VOC artifact hash mismatch')
                 manifest.update(previous_report=previous,history_as_of=c.execute(text('SELECT clock_timestamp()')).scalar_one().isoformat(),
                                 graph_version='voc-history-v2')
+            if run['task_version']>=4:
+                with source_engine(self.engine).connect() as source_conn:
+                    docs = source_conn.execute(text(VOC_DOCUMENT_QUERY),VOC_DOCUMENT_PARAMETERS).mappings().all()
+                authoritative = [{'id':f"{d['document_id']}@{d['version']}",'title':d['title'],'body':d['body'],'sha256':d['sha256']}
+                                 for d in docs if f"{d['document_id']}@{d['version']}" in VOC_DOCUMENTS.values()]
+                mode,_,_ = search_configuration()
+                if mode=='OPENSEARCH':
+                    documents,retrieval = retrieve_documents(list(VOC_DOCUMENTS.values()))
+                else:
+                    documents = list(authoritative)
+                    retrieval = {'mode':'FIXTURE_DB','query':'PostgreSQL source_documents by document/version',
+                                 'document_ids':list(VOC_DOCUMENTS.values())}
+                manifest.update(documents=documents,authoritative_documents=authoritative,retrieval=retrieval,
+                                retrieval_result_sha256=digest(documents),graph_version='voc-sources-v3',
+                                record_query=VOC_RECORD_QUERY,record_parameters={'version':'voc-demo-v1'},
+                                document_query=VOC_DOCUMENT_QUERY,document_parameters=VOC_DOCUMENT_PARAMETERS)
             c.execute(text('INSERT INTO run_contexts(run_id,manifest,sha256) VALUES (:id,CAST(:manifest AS jsonb),:sha)'),
                       {'id':run_id,'manifest':canonical(manifest),'sha':digest(manifest)})
             c.execute(text("UPDATE runs SET agent_version=:method,model_id='MOCK',prompt_version='none' WHERE run_id=:id"),
@@ -853,14 +869,14 @@ class Kernel:
                 kind = 'policy_index_v1'
             elif work['parent_work_id'] and work['task_id'] == 'TASK-002' and work['input_snapshot'].get('step_no') == 3:
                 kind = 'policy_regression_v1'
-            if kind not in ('mock_receipt','market_briefing_v1','policy_impact_v1','voc_report_v1','voc_report_v2','policy_followup_verification_v1','policy_index_v1','policy_regression_v1'):
+            if kind not in ('mock_receipt','market_briefing_v1','policy_impact_v1','voc_report_v1','voc_report_v2','voc_report_v3','policy_followup_verification_v1','policy_index_v1','policy_regression_v1'):
                 raise Conflict('configured task validator is not implemented')
             artifact_id = uid()
-            artifact_kind = {'market_briefing_v1':'market_briefing','policy_impact_v1':'policy_impact','voc_report_v1':'voc_report','voc_report_v2':'voc_report',
+            artifact_kind = {'market_briefing_v1':'market_briefing','policy_impact_v1':'policy_impact','voc_report_v1':'voc_report','voc_report_v2':'voc_report','voc_report_v3':'voc_report',
                              'policy_followup_verification_v1':'policy_followup_verification','policy_index_v1':'policy_index_receipt',
                              'policy_regression_v1':'policy_regression_report'}.get(kind,'mock_receipt')
             artifact_hash = store_json(c, artifact_id, run_id, content, artifact_kind,
-                                       schema_version='2' if kind=='voc_report_v2' else '1')
+                                       schema_version='3' if kind=='voc_report_v3' else '2' if kind=='voc_report_v2' else '1')
             self._transition(c, work['work_id'], 'SUBMITTED', run_id)
             self._transition(c, work['work_id'], 'VERIFYING', run_id)
             if kind == 'market_briefing_v1':
@@ -1026,7 +1042,7 @@ class Kernel:
                 c.execute(text('''INSERT INTO evaluations(evaluation_id,run_id,artifact_id,eval_suite_version,metric_results,verdict)
                     VALUES (:id,:run,:artifact,'policy-voc-regression-v1',CAST(:result AS jsonb),:verdict)'''),
                     {'id':uid(),'run':run_id,'artifact':artifact_id,'result':canonical(result),'verdict':'PASS' if result['passed'] else 'FAIL'})
-            elif kind in ('voc_report_v1','voc_report_v2'):
+            elif kind in ('voc_report_v1','voc_report_v2','voc_report_v3'):
                 context = one(c, 'SELECT manifest,sha256 FROM run_contexts WHERE run_id=:id', {'id':run_id})
                 if not context:
                     raise Conflict('VOC context missing')
@@ -1036,22 +1052,39 @@ class Kernel:
                 result['checks']['manifest_hash'] = digest(manifest) == context['sha256']
                 result['checks']['source_dependency_unchanged'] = (dict(source) if source else None) == manifest['source_dependency']
                 result['checks']['execution_provenance'] = run['agent_version'] == manifest['method']['method_id'] and run['model_id'] == 'MOCK'
-                if kind=='voc_report_v2':
+                if kind in ('voc_report_v2','voc_report_v3'):
                     previous = manifest['previous_report']
                     result['checks']['previous_artifact_verified'] = (previous is None or
                         self._previous_voc_report(c,previous['artifact_id'])==previous)
+                if kind=='voc_report_v3':
+                    with source_engine(self.engine).connect() as source_conn:
+                        current_records = [dict(row) for row in source_conn.execute(text(VOC_RECORD_QUERY),{'version':'voc-demo-v1'}).mappings()]
+                        current = source_conn.execute(text(VOC_DOCUMENT_QUERY),VOC_DOCUMENT_PARAMETERS).mappings().all()
+                    current = [{'id':f"{d['document_id']}@{d['version']}",'title':d['title'],'body':d['body'],'sha256':d['sha256']}
+                               for d in current if f"{d['document_id']}@{d['version']}" in VOC_DOCUMENTS.values()]
+                    result['checks']['documents_source_current'] = current==manifest['authoritative_documents']
+                    result['checks']['records_source_current'] = current_records==manifest['records']
+                    result['checks']['source_query_contract'] = (manifest['record_query']==VOC_RECORD_QUERY
+                        and manifest['record_parameters']=={'version':'voc-demo-v1'} and manifest['document_query']==VOC_DOCUMENT_QUERY
+                        and manifest['document_parameters']==VOC_DOCUMENT_PARAMETERS)
+                    if manifest['retrieval']['mode']=='OPENSEARCH':
+                        indexed,_ = retrieve_documents(list(VOC_DOCUMENTS.values()))
+                        result['checks']['documents_search_current'] = indexed==manifest['documents']
                 result['passed'] = all(result['checks'].values())
                 refs = {'task_id':'TASK-003','task_version':work['task_version'],'artifact_sha256':artifact_hash,
                         'context_sha256':context['sha256'],'source_version':manifest['source_version'],
                         'records_sha256':manifest['records_sha256'],'method_version':manifest['method']['method_id']}
-                if kind=='voc_report_v2':
+                if kind in ('voc_report_v2','voc_report_v3'):
                     refs['previous_artifact_id'] = manifest['previous_report']['artifact_id'] if manifest['previous_report'] else None
                     refs['history_as_of'] = manifest['history_as_of']
                     refs['comparison_basis'] = 'CATEGORY_ONLY_NOT_SEMANTIC'
-                verifier,verification = ('voc-validator-v2' if kind=='voc_report_v2' else 'voc-validator-v1'),'voc_deterministic'
+                if kind=='voc_report_v3':
+                    refs.update(document_ids=[d['id'] for d in manifest['documents']],retrieval=manifest['retrieval'],
+                                document_query=manifest['document_query'],document_parameters=manifest['document_parameters'])
+                verifier,verification = ('voc-validator-v3' if kind=='voc_report_v3' else 'voc-validator-v2' if kind=='voc_report_v2' else 'voc-validator-v1'),'voc_deterministic'
                 c.execute(text('''INSERT INTO evaluations(evaluation_id,run_id,artifact_id,eval_suite_version,metric_results,verdict)
                     VALUES (:id,:run,:artifact,:suite,CAST(:result AS jsonb),:verdict)'''),
-                    {'id':uid(),'run':run_id,'artifact':artifact_id,'suite':'voc-run-suite-v2' if kind=='voc_report_v2' else 'voc-run-suite-v1',
+                    {'id':uid(),'run':run_id,'artifact':artifact_id,'suite':'voc-run-suite-v3' if kind=='voc_report_v3' else 'voc-run-suite-v2' if kind=='voc_report_v2' else 'voc-run-suite-v1',
                      'result':canonical(result),'verdict':'PASS' if result['passed'] else 'FAIL'})
             else:
                 required = task['acceptance_policy'].get('required_fields', [])

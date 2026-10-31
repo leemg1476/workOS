@@ -157,6 +157,12 @@ def main():
     assert artifact['content']['method_version']=='champion-v1' and len(artifact['content']['unclassified_ids'])==6
     assert artifact['content']['previous_artifact_id'] is None
     assert {r['comparison'] for r in artifact['content']['recommendations']}=={'NO_PREVIOUS_REPORT'}
+    assert artifact['content']['retrieval_mode']=='OPENSEARCH'
+    assert all(len(r['document_citations'])==1 for r in artifact['content']['recommendations'])
+    assert artifact['evidence'][0]['result']['checks']['documents_search_current']
+    voc_context=get('/runs/'+run['run_id'])['context']['manifest']
+    assert voc_context['retrieval']['mode']=='OPENSEARCH' and voc_context['sql_source_mode']=='POSTGRES_READ_ONLY_ROLE'
+    assert voc_context['document_parameters']['version']==1 and len(voc_context['documents'])==3
     proposal_id=create_feedback(artifact['artifact_id'],'challenger-v2')
     action(proposal_id,'evaluate')
     evaluation=proposal(proposal_id)

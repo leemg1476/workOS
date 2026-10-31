@@ -7,7 +7,8 @@ import httpx
 from sqlalchemy import text
 
 DEFAULT_INDEX = 'workos-demo-documents-v1'
-DEMO_DOCUMENT_IDS = ('DOC-FX@1', 'DOC-RISK@1', 'POLICY-VOC@1')
+DEMO_DOCUMENT_IDS = ('DOC-FX@1', 'DOC-RISK@1', 'POLICY-VOC@1',
+                     'DOC-VOC-BILLING@1','DOC-VOC-DELIVERY@1','DOC-VOC-SUPPORT@1')
 
 
 class SearchUnavailable(RuntimeError):

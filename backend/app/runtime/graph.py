@@ -10,7 +10,7 @@ from langgraph.checkpoint.postgres import PostgresSaver
 from langgraph.graph import END, START, StateGraph
 from sqlalchemy import text
 
-from app.domain.contracts import MarketBriefing, PolicyImpact, VocReport, VocReportWithHistory
+from app.domain.contracts import MarketBriefing, PolicyImpact, VocReport, VocReportWithHistory, VocReportWithSources
 from app.work.market import digest, make_briefing
 from app.work.policy import make_policy_report
 from app.work.voc import make_report
@@ -80,7 +80,7 @@ class GraphRunner:
             self.fault_hook()
         contract = {'TASK-001':MarketBriefing, 'TASK-002':PolicyImpact, 'TASK-003':VocReport}[state['task_id']]
         if state['task_id']=='TASK-003' and state['manifest']['task_version']>=3:
-            contract = VocReportWithHistory
+            contract = VocReportWithSources if state['manifest']['task_version']>=4 else VocReportWithHistory
         report = contract.model_validate(state['report']).model_dump()
         if report['task_id'] != state['task_id'] or report['data_mode'] != 'DEMO DATA':
             raise ValueError('report labels do not match the run')

@@ -42,7 +42,7 @@ def test_real_opensearch_missing_citation_and_recovery(kernel,monkeypatch):
     monkeypatch.setenv('OPENSEARCH_INDEX',index)
     index_url=f'{base.rstrip("/")}/{index}'
     try:
-        assert seed_index(engine,base,index) == 3
+        assert seed_index(engine,base,index) == 6
         work,_ = kernel.trigger('TASK-001-JOB','search-good',{'dataset_version':'v1','model_mode':'MOCK'})
         first=kernel.claim()
         assert process_claim(kernel,first)['passed']
@@ -54,7 +54,7 @@ def test_real_opensearch_missing_citation_and_recovery(kernel,monkeypatch):
         failed=kernel.claim()
         result=process_claim(kernel,failed)
         assert not result['passed'] and not result['result']['checks']['citations_exist']
-        assert seed_index(engine,base,index) == 3
+        assert seed_index(engine,base,index) == 6
         kernel.retry(bad,'search-repair')
         retried=kernel.claim()
         assert retried['work_id']==bad and retried['run_id']!=failed['run_id']
@@ -104,7 +104,7 @@ def test_policy_search_requires_indexed_previous_version(kernel,monkeypatch):
     monkeypatch.setenv('OPENSEARCH_INDEX',index)
     index_url=f'{base.rstrip("/")}/{index}'
     try:
-        assert seed_index(engine,base,index)==3
+        assert seed_index(engine,base,index)==6
         assert httpx.get(f'{index_url}/_doc/{quote("POLICY-VOC@2",safe="")}',timeout=5).status_code == 404
         with TestClient(app) as client:
             versions=client.get('/api/policies/POLICY-VOC').json()['versions']

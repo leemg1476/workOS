@@ -32,7 +32,7 @@ def process_claim(kernel, claim):
                       'parent_context_sha256':manifest['parent_context_sha256'],
                       'verification':'DETERMINISTIC_RECHECK','semantic_review':'NOT_PERFORMED'}
             return kernel.submit(claim['run_id'],report)
-        if claim['task_id'] == 'TASK-003' and claim['task_version'] in (2,3):
+        if claim['task_id'] == 'TASK-003' and claim['task_version'] in (2,3,4):
             manifest = kernel.prepare_voc(claim['run_id'])
             report, _ = GraphRunner(kernel.engine).execute(claim['run_id'], claim['task_id'], manifest)
             return kernel.submit(claim['run_id'], report)
