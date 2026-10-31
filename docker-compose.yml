@@ -1,0 +1,83 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: workos
+      POSTGRES_PASSWORD: workos
+      POSTGRES_DB: workos
+    ports: ["127.0.0.1:${WORKOS_POSTGRES_PORT:-5432}:5432"]
+    volumes: ["workos_pg:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U workos"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  api:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://workos:workos@postgres:5432/workos
+      WORKOS_MODE: ${WORKOS_MODE:-MOCK}
+      WORKOS_SEARCH_MODE: OPENSEARCH
+      OPENSEARCH_URL: http://opensearch:9200
+      WORKOS_UI_ORIGIN: http://localhost:${WORKOS_UI_PORT:-5173}
+    ports: ["127.0.0.1:${WORKOS_API_PORT:-8000}:8000"]
+    depends_on:
+      postgres: {condition: service_healthy}
+  worker:
+    build: ./backend
+    command: ["python", "-m", "app.worker"]
+    env_file:
+      - path: .env.apikey
+        required: false
+    environment:
+      DATABASE_URL: postgresql+psycopg://workos:workos@postgres:5432/workos
+      REDIS_URL: redis://redis:6379/0
+      WORKOS_MODE: ${WORKOS_MODE:-MOCK}
+      WORKOS_LLM_MODE: ${WORKOS_LLM_MODE:-MOCK}
+      WORKOS_SEARCH_MODE: OPENSEARCH
+      OPENSEARCH_URL: http://opensearch:9200
+      WORKOS_SOURCE_DATABASE_URL: postgresql+psycopg://workos_demo_reader:workos_demo_reader@postgres:5432/workos
+    depends_on:
+      postgres: {condition: service_healthy}
+  scheduler:
+    build: ./backend
+    command: ["python", "-m", "app.scheduler"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://workos:workos@postgres:5432/workos
+      REDIS_URL: redis://redis:6379/0
+      WORKOS_MODE: ${WORKOS_MODE:-MOCK}
+    depends_on:
+      postgres: {condition: service_healthy}
+  ui:
+    build: ./frontend
+    environment:
+      VITE_API_BASE: http://localhost:${WORKOS_API_PORT:-8000}/api
+    ports: ["127.0.0.1:${WORKOS_UI_PORT:-5173}:5173"]
+    depends_on: [api]
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports: ["127.0.0.1:${WORKOS_REDIS_PORT:-6379}:6379"]
+    volumes: ["workos_redis:/data"]
+  opensearch:
+    image: opensearchproject/opensearch:2.19.3
+    environment:
+      discovery.type: single-node
+      DISABLE_SECURITY_PLUGIN: "true"
+      OPENSEARCH_JAVA_OPTS: -Xms512m -Xmx512m
+    ports: ["127.0.0.1:${WORKOS_OPENSEARCH_PORT:-9200}:9200"]
+  search-seed:
+    build: ./backend
+    command: ["python", "-m", "app.integrations.search"]
+    restart: on-failure
+    environment:
+      DATABASE_URL: postgresql+psycopg://workos:workos@postgres:5432/workos
+      WORKOS_MODE: ${WORKOS_MODE:-MOCK}
+      WORKOS_SEARCH_MODE: OPENSEARCH
+      OPENSEARCH_URL: http://opensearch:9200
+    depends_on:
+      postgres: {condition: service_healthy}
+      opensearch: {condition: service_started}
+volumes:
+  workos_pg:
+  workos_redis:
