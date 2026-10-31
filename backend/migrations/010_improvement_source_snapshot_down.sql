@@ -1,0 +1,1 @@
+ALTER TABLE improvement_proposals DROP COLUMN source_dependency_snapshot;

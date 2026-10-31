@@ -1,0 +1,1 @@
+ALTER TABLE improvement_proposals ADD COLUMN source_dependency_snapshot jsonb;
