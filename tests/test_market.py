@@ -38,6 +38,12 @@ def test_market_comparison_and_citation_failure_recovery(kernel):
         detail = client.get(f'/api/work/{work}').json()
         assert detail['work']['status'] == 'REWORK_REQUIRED' and detail['work']['accepted_artifact_id'] is None
         assert detail['runs'][0]['status'] == 'VERIFICATION_FAILED'
+        dashboard = next(t for t in client.get('/api/tasks').json() if t['task_id'] == 'TASK-001')
+        failed = next(x for x in dashboard['recent_verifications'] if x['run_id'] == str(failed_run))
+        assert failed['verdict'] == 'FAIL' and not failed['is_current']
+        assert 0 <= failed['checks_passed'] < failed['checks_total']
+        assert failed['suite_version'] == 'market-suite-v3'
+        assert any(x['run_id'] == str(second) and x['is_current'] for x in dashboard['recent_verifications'])
         assert kernel.retry(work, 'repair-source')
         retried = kernel.claim()
         assert retried['work_id'] == work and retried['run_id'] != failed_run
@@ -45,6 +51,10 @@ def test_market_comparison_and_citation_failure_recovery(kernel):
         detail = client.get(f'/api/work/{work}').json()
         assert detail['work']['status'] == 'COMMITTED'
         assert [r['status'] for r in detail['runs']] == ['VERIFICATION_FAILED','SUCCEEDED']
+        dashboard = next(t for t in client.get('/api/tasks').json() if t['task_id'] == 'TASK-001')
+        repaired = next(x for x in dashboard['recent_verifications'] if x['run_id'] == str(retried['run_id']))
+        assert repaired['verdict'] == 'PASS' and repaired['is_current']
+        assert repaired['checks_passed'] == repaired['checks_total'] > 0
 
 
 def test_numeric_tampering_never_commits(kernel):

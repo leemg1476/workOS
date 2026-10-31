@@ -18,4 +18,9 @@ def test_seed_dashboard_and_observable_failure(kernel):
         assert detail['work']['status'] == 'REWORK_REQUIRED'
         assert detail['runs'][0]['status'] == 'FAILED'
         assert 'not implemented' in detail['runs'][0]['error']
+        task = next(t for t in client.get('/api/tasks').json() if t['task_id'] == 'TASK-001')
+        assert task['recent_verifications'][0]['run_status'] == 'FAILED'
+        assert task['recent_verifications'][0]['verdict'] is None
+        assert task['recent_verifications'][0]['checks_total'] == 0
+        assert task['recent_verifications'][0]['is_current'] is False
         assert client.get('/api/health').json()['mode'] == 'MOCK'

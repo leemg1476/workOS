@@ -54,12 +54,33 @@ def health():
 @app.get('/api/tasks')
 def tasks():
     with engine.connect() as c:
-        return [dict(r) for r in c.execute(text('''SELECT t.task_id,t.version,t.name,t.objective,j.job_id,j.trigger_type,j.schedule,j.event_filter,
+        tasks = [dict(r) for r in c.execute(text('''SELECT t.task_id,t.version,t.name,t.objective,j.job_id,j.trigger_type,j.schedule,j.event_filter,
           w.work_id,w.status,r.run_id,r.status AS run_status,r.error
           FROM task_definitions t JOIN job_definitions j ON j.task_id=t.task_id AND j.task_version=t.version
           LEFT JOIN LATERAL (SELECT * FROM work_items WHERE task_id=t.task_id AND parent_work_id IS NULL ORDER BY created_at DESC LIMIT 1) w ON true
           LEFT JOIN LATERAL (SELECT * FROM runs WHERE work_id=w.work_id ORDER BY attempt_no DESC LIMIT 1) r ON true
           WHERE t.active ORDER BY t.task_id''')).mappings()]
+        for task in tasks:
+            history = c.execute(text('''SELECT r.run_id,r.status,r.started_at,w.task_version,w.status AS work_status,
+                  e.verdict,e.eval_suite_version,e.metric_results,a.artifact_version,
+                  (w.status='COMMITTED' AND w.accepted_artifact_id=a.artifact_id) AS is_current
+                FROM runs r JOIN work_items w ON w.work_id=r.work_id
+                LEFT JOIN LATERAL (SELECT * FROM evaluations WHERE run_id=r.run_id ORDER BY created_at DESC LIMIT 1) e ON true
+                LEFT JOIN artifacts a ON a.artifact_id=e.artifact_id
+                WHERE w.task_id=:task_id AND w.parent_work_id IS NULL
+                ORDER BY r.started_at DESC,r.run_id DESC LIMIT 5'''), {'task_id':task['task_id']}).mappings()
+            task['recent_verifications'] = []
+            for row in history:
+                checks = (row['metric_results'] or {}).get('checks', {})
+                checks = [value for value in checks.values() if isinstance(value, bool)]
+                task['recent_verifications'].append({
+                    'run_id':row['run_id'], 'run_status':row['status'], 'started_at':row['started_at'],
+                    'task_version':row['task_version'], 'work_status':row['work_status'],
+                    'verdict':row['verdict'], 'suite_version':row['eval_suite_version'],
+                    'checks_passed':sum(checks), 'checks_total':len(checks),
+                    'artifact_version':row['artifact_version'], 'is_current':bool(row['is_current']),
+                })
+        return tasks
 
 
 @app.get('/api/jobs')
