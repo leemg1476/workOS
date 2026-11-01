@@ -6,6 +6,7 @@ const stage=ref('baseline'), records=ref([]), answers=ref({}), reviewed=ref([]),
 const baselineId=ref(''), measurements=ref([]), availableRuns=ref([]), selectedRun=ref(''), runView=ref(null)
 const proposals=ref([]), activeMethod=ref(''), candidate=ref('challenger-v2'), busy=ref(false), error=ref(''), message=ref('')
 const schedules=ref([])
+const stageNotice=ref('')
 const labels={billing:'결제·환불',delivery:'배송·도착',support:'상담·문의',unclassified:'분류 불가'}
 const period=computed(()=>stage.value==='week2'?'week2':'week1')
 const baselines=computed(()=>measurements.value.filter(x=>x.kind==='BASELINE'))
@@ -26,12 +27,21 @@ const relevantProposals=computed(()=>{
   return proposals.value.filter(x=>ids.has(x.artifact_id))
 })
 const allAnswered=computed(()=>records.value.length>0 && records.value.every(x=>labels[answers.value[x.record_id]]))
+const answeredCount=computed(()=>records.value.filter(x=>labels[answers.value[x.record_id]]).length)
 const changed=computed(()=>runView.value ? records.value.filter(x=>answers.value[x.record_id]!==runView.value.predictions[x.record_id]).map(x=>x.record_id) : [])
 const changedReviewed=computed(()=>changed.value.every(x=>reviewed.value.includes(x)))
 const nextWeekObserved=computed(()=>!!week2.value && !!currentBaseline.value && Date.parse(week2.value.snapshot.run.started_at)-Date.parse(currentBaseline.value.created_at)>=7*86400000 && Date.parse(week2.value.created_at)-Date.parse(currentBaseline.value.created_at)>=7*86400000)
 const schedule=computed(()=>schedules.value.find(x=>x.baseline_id===baselineId.value))
 const week1Delta=computed(()=>week1.value && currentBaseline.value ? {seconds:currentBaseline.value.human_seconds-week1.value.human_seconds,correct:week1.value.snapshot.result.correct-currentBaseline.value.snapshot.result.correct} : null)
 const timeValid=computed(()=>Number.isInteger(Number(seconds.value)) && Number(seconds.value)>=1 && Number(seconds.value)<=86400)
+const saveRequirements=computed(()=>{
+  const pending=[]
+  if(clockRunning.value)pending.push('시간 측정을 일시 정지하세요')
+  else if(!timeValid.value)pending.push('소요 시간을 1초 이상 기록하세요')
+  if(!allAnswered.value)pending.push(`문의 ${records.value.length}건 중 ${answeredCount.value}건 분류 완료`)
+  if(stage.value!=='baseline' && !changedReviewed.value)pending.push('수정한 항목의 확인함을 체크하세요')
+  return pending
+})
 const formatSeconds=value=>`${Math.floor(value/60)}분 ${String(value%60).padStart(2,'0')}초`
 const percent=result=>result?.total ? `${(result.correct/result.total*100).toFixed(1)}%` : '—'
 const when=value=>value ? new Date(value).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}) : '—'
@@ -39,6 +49,10 @@ let startedAt=0, baseSeconds=0, tick, refreshTimer
 function syncClock(){if(clockRunning.value) seconds.value=baseSeconds+Math.floor((Date.now()-startedAt)/1000)}
 function toggleClock(){if(clockRunning.value){syncClock();clockRunning.value=false;clearInterval(tick)}else{baseSeconds=Number(seconds.value)||0;startedAt=Date.now();clockRunning.value=true;tick=setInterval(syncClock,250)}}
 function resetForm(){if(clockRunning.value)toggleClock();seconds.value=0;answers.value={};reviewed.value=[];runView.value=null;selectedRun.value='';error.value='';message.value=''}
+function selectStage(next){
+  if(next!=='baseline' && !baselines.value.length){stageNotice.value='02·03 단계를 사용하려면 먼저 아래 24건을 직접 분류하고 소요 시간을 기록한 뒤 사람 기준선을 저장하세요.';return}
+  stageNotice.value='';stage.value=next
+}
 async function readJson(r,fallback){const d=await r.json();if(!r.ok)throw Error(typeof d.detail==='string'?d.detail:fallback);return d}
 async function load(){
   const [m,p,s,scheduled]=await Promise.all([fetch(`${props.base}/poc-voc/measurements`),fetch(`${props.base}/improvements`),fetch(`${props.base}/voc/state`),fetch(`${props.base}/poc-voc/schedules`)])
@@ -58,7 +72,7 @@ async function save(){
     let path='baseline'
     if(stage.value!=='baseline'){path='assisted';Object.assign(payload,{baseline_id:baselineId.value,run_id:runView.value.run_id,period:period.value,reviewed_ids:reviewed.value})}
     const d=await readJson(await fetch(`${props.base}/poc-voc/${path}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}),'측정 기록을 저장하지 못했습니다.')
-    await load();if(path==='baseline')baselineId.value=d.measurement_id;resetForm()
+    await load();if(path==='baseline')baselineId.value=d.measurement_id;resetForm();stageNotice.value=''
     message.value=path==='baseline'?'사람 기준선을 저장했습니다. 기록은 합성 사례와 자기 기록 시간에 대한 것입니다.':'검토 결과와 자기 기록 시간을 저장했습니다. 실제 업무 성과로 자동 판정하지 않습니다.'
     emit('refresh')
   }catch(e){error.value=e.message}finally{busy.value=false}
@@ -102,7 +116,9 @@ onUnmounted(()=>{clearInterval(tick);clearInterval(refreshTimer)})
   <section class="effort-poc" aria-labelledby="poc-heading">
     <div class="poc-heading"><div><small>HUMAN BASELINE / WORK OS POC</small><h2 id="poc-heading">사람의 시간과 결과를 비교합니다.</h2><p>등록된 TASK-003을 이용해 가상 고객 문의 24건을 직접 분류하고, Work OS 결과를 검토한 뒤 다음 주의 새 사례와 비교합니다.</p></div><span>합성 데이터 · 실제 성과 미입증</span></div>
     <div class="poc-notice"><b>측정 전 확인</b><p>‘1시간’은 확인된 측정값이 아닙니다. 실제로 사용한 준비·검토·수정 시간을 기록하세요. 시간과 검토 여부는 사용자 자기 기록이며 신원이나 활동을 자동 검증하지 않습니다. 정답은 사람이 사전 정의한 합성 라벨이며 실제 고객 업무의 정확도는 아닙니다.</p><p>이 PoC의 TASK-003 분류는 <b>MOCK · 사전 정의된 결정론적 규칙</b>입니다. 실제 고객 데이터나 LLM 분류가 아닙니다. 서로 다른 주의 입력은 다릅니다. 단순 점수 차이는 원인이나 성능 개선의 증명이 아닙니다. 같은 입력의 방법 비교와 별도의 고정 평가 결과도 함께 확인하세요.</p></div>
-    <div class="poc-stages" role="group" aria-label="측정 단계"><button :class="{chosen:stage==='baseline'}" @click="stage='baseline'">01 사람 기준선</button><button :class="{chosen:stage==='week1'}" @click="stage='week1'" :disabled="!baselines.length">02 같은 입력 + Work OS</button><button :class="{chosen:stage==='week2'}" @click="stage='week2'" :disabled="!baselines.length">03 다음 주 새 입력</button></div>
+    <div class="poc-stages" role="group" aria-label="측정 단계"><button :class="{chosen:stage==='baseline'}" @click="selectStage('baseline')">01 사람 기준선</button><button :class="{chosen:stage==='week1'}" @click="selectStage('week1')">02 같은 입력 + Work OS</button><button :class="{chosen:stage==='week2'}" @click="selectStage('week2')">03 다음 주 새 입력</button></div>
+    <p v-if="!baselines.length" class="poc-next-step" role="status"><b>지금 할 일:</b> 시간 측정 시작 → 문의 24건 분류 → 측정 일시 정지 → 맨 아래 ‘사람 기준선 저장’. 저장하면 02·03 단계를 사용할 수 있습니다.</p>
+    <p v-if="stageNotice" class="poc-next-step" role="status">{{ stageNotice }}</p>
     <p class="poc-caution">단계를 바꾸거나 페이지를 닫으면 저장하지 않은 분류와 타이머가 초기화됩니다. 경과 시간은 탭을 벗어난 시간도 포함하며 제출 전 직접 보정할 수 있습니다.</p>
     <div v-if="baselines.length" class="poc-baseline-picker"><label>비교할 사람 기준선 <select v-model="baselineId"><option v-for="m in baselines" :key="m.measurement_id" :value="m.measurement_id">{{ when(m.created_at) }} · {{ formatSeconds(m.human_seconds) }} · {{ m.snapshot.result.correct }}/{{ m.snapshot.result.total }}</option></select></label></div>
     <div v-if="currentBaseline" class="poc-schedule"><div><b>다음 주 자동 실행 · 선택 사항</b><p>기준선 기록 후 최소 7일이 지난 시점부터 매주 같은 가상 2주차 자료를 실행합니다. 실제 새 문의를 수집하지 않으며, 정기 실행은 사람 검토를 대신하지 않습니다.</p><p v-if="schedule">{{ schedule.enabled?'예약 중':'중지됨' }} · 다음 예정 {{ schedule.next_due_at ? when(schedule.next_due_at) : '중지됨' }} · 서울 시간 · {{ schedule.schedule }}<template v-if="schedule.latest_work_id"> · 최근 작업 {{ schedule.latest_work_status }} / {{ schedule.latest_run_status || '대기' }}</template></p></div><div><button v-if="!schedule" @click="createSchedule" :disabled="busy">주간 예약 켜기</button><button v-else class="secondary" @click="toggleSchedule" :disabled="busy">{{ schedule.enabled?'주간 예약 중지':'주간 예약 재개' }}</button><button v-if="schedule?.latest_run_status==='SUCCEEDED' && schedule?.latest_work_status==='COMMITTED'" class="secondary" @click="openScheduledRun" :disabled="busy">예약 결과 검토하기 →</button><button v-if="schedule?.latest_work_id" class="secondary" @click="emit('open-work',schedule.latest_work_id,schedule.latest_run_id || '')">예약 실행 이력 ↗</button></div></div>
@@ -111,10 +127,11 @@ onUnmounted(()=>{clearInterval(tick);clearInterval(refreshTimer)})
       <p v-if="stage==='baseline'">모델 결과를 보기 전에 각 문의를 분류하세요. 기준선 저장은 처음 작업한 시간과 답안을 불변 기록합니다.</p>
       <p v-else>시간 측정을 시작한 뒤 실행하고 각 결과를 확인하세요. 수정한 항목은 ‘확인함’으로 표시해야 합니다. 기존 검증 완료 실행도 불러올 수 있지만 기준선 저장 이후 시작된 실행만 기록할 수 있습니다.</p>
       <div class="poc-timer"><div><small>사람이 사용한 시간 · 자기 기록</small><strong>{{ formatSeconds(Number(seconds)||0) }}</strong></div><button class="secondary" @click="toggleClock">{{ clockRunning?'측정 일시 정지':'시간 측정 시작 / 재개' }}</button><label>초 단위 확인·보정<input type="number" min="1" max="86400" step="1" v-model.number="seconds" :disabled="clockRunning"></label></div>
+      <p v-if="stage==='baseline' || runView" class="poc-progress" aria-live="polite">분류 {{ answeredCount }} / {{ records.length }}건 · {{ saveRequirements.length ? '저장 전: '+saveRequirements.join(' · ') : '저장할 수 있습니다.' }}</p>
       <div v-if="stage!=='baseline'" class="poc-run-controls"><button @click="startRun" :disabled="busy || !baselineId">{{ busy ? '처리 중…' : '이 입력으로 Work OS 실행 →' }}</button><label v-if="availableRuns.length">기존 검증 Run<select v-model="selectedRun"><option value="">선택</option><option v-for="r in availableRuns" :key="r.run_id" :value="r.run_id">{{ when(r.started_at) }} · {{ r.run_id.slice(0,8) }} · {{ r.model_id }}</option></select></label><button v-if="availableRuns.length" class="secondary" @click="loadSelectedRun" :disabled="busy || !selectedRun">기존 실행 불러오기</button><p v-if="runView">MOCK · Work {{ runView.work_id.slice(0,8) }} · 방법 {{ runView.method_version }} · {{ runView.verifier_version }} · 시스템 실행 {{ runView.run_elapsed_ms }}ms <button class="entry-link" @click="emit('open-work',runView.work_id,runView.run_id)">근거 보기 ↗</button></p></div>
       <div v-if="stage==='baseline' || runView" class="poc-cases"><div v-for="(item,index) in records" :key="item.record_id" class="poc-case"><span class="poc-case-no">{{ String(index+1).padStart(2,'0') }}</span><div><p>{{ item.body }}</p><div class="poc-case-actions"><label>분류 <select v-model="answers[item.record_id]"><option :value="undefined">선택</option><option v-for="(label,key) in labels" :key="key" :value="key">{{ label }}</option></select></label><label v-if="runView" class="poc-reviewed"><input type="checkbox" v-model="reviewed" :value="item.record_id"> 확인함</label><small v-if="runView">초안: {{ labels[runView.predictions[item.record_id]] }}</small></div></div></div></div>
       <p v-if="runView && !changedReviewed" class="failure">수정한 항목을 모두 ‘확인함’으로 표시해 주세요.</p>
-      <button v-if="stage==='baseline' || runView" @click="save" :disabled="busy || clockRunning || !timeValid || !allAnswered || (stage!=='baseline' && (!runView || !changedReviewed))">{{ stage==='baseline'?'사람 기준선 저장':'검토와 시간 기록 저장' }}</button>
+      <button v-if="stage==='baseline' || runView" @click="save" :disabled="busy || clockRunning || !timeValid || !allAnswered || (stage!=='baseline' && (!runView || !changedReviewed))" aria-describedby="poc-save-help">{{ stage==='baseline'?'사람 기준선 저장':'검토와 시간 기록 저장' }}</button><p v-if="stage==='baseline' || runView" id="poc-save-help" class="poc-progress" aria-live="polite">{{ busy ? '저장 또는 실행을 처리하고 있습니다.' : saveRequirements.length ? '저장 전: '+saveRequirements.join(' · ') : '저장할 수 있습니다.' }}</p>
       <p v-if="error" role="alert" class="failure">{{ error }}</p><p v-if="message" role="status" class="detail-note">{{ message }}</p>
     </div><div class="poc-results"><small>OBSERVED EVIDENCE</small><h3>기록된 비교</h3>
       <p v-if="!currentBaseline">아직 사람이 수행한 기준선이 없습니다. 1시간을 임의로 채우지 않습니다.</p>
