@@ -20,6 +20,7 @@ from app.integrations.search import readiness, SearchUnavailable
 from app.work.designs import CreateDesign, EditDesign, DesignFeedback, generate, create as create_design, revise as revise_design, apply_feedback
 from app.work.register_design import RegisterDesign, ScheduleState, register as register_design, set_schedule
 from app.workloads.text_sources import UpdateTextSource, get_source, update_source
+from app.workloads.text_links import CreateLink, SetLink, create as create_text_link, set_enabled as set_text_link
 
 
 @asynccontextmanager
@@ -136,7 +137,7 @@ def health():
 @app.get('/api/tasks')
 def tasks():
     with engine.connect() as c:
-        tasks = [dict(r) for r in c.execute(text('''SELECT t.task_id,t.version,t.name,t.objective,t.acceptance_policy->>'kind' AS execution_kind,j.job_id,j.trigger_type,j.schedule,j.event_filter,j.enabled AS job_enabled,
+        tasks = [dict(r) for r in c.execute(text('''SELECT t.task_id,t.version,t.name,t.objective,t.acceptance_policy->>'kind' AS execution_kind,t.output_schema->>'model_mode' AS model_mode,j.job_id,j.trigger_type,j.schedule,j.event_filter,j.enabled AS job_enabled,
           w.work_id,w.status,r.run_id,r.status AS run_status,r.error
           FROM task_definitions t JOIN job_definitions j ON j.task_id=t.task_id AND j.task_version=t.version
           LEFT JOIN LATERAL (SELECT * FROM work_items wi WHERE wi.task_id=t.task_id AND wi.parent_work_id IS NULL
@@ -260,6 +261,26 @@ def apply_contract_change(task_id: str, body: ContractChangeRequest):
 def rollback_contract_change(change_id: UUID, body: ContractRollbackRequest):
     rollback_id,created=rollback_text_contract(engine,str(change_id),body)
     return {'change_id':rollback_id,'created':created}
+
+
+@app.get('/api/text-work-links')
+def text_work_links():
+    with engine.connect() as c:
+        return [dict(row) for row in c.execute(text('''SELECT l.*,
+            (SELECT count(*) FROM text_work_link_deliveries d WHERE d.link_id=l.link_id) AS delivery_count,
+            (SELECT d.target_work_id FROM text_work_link_deliveries d WHERE d.link_id=l.link_id ORDER BY d.created_at DESC LIMIT 1) AS latest_work_id
+            FROM text_work_links l ORDER BY l.created_at DESC''')).mappings()]
+
+
+@app.post('/api/text-work-links')
+def add_text_work_link(body: CreateLink):
+    link_id,created=create_text_link(engine,body)
+    return {'link_id':link_id,'created':created}
+
+
+@app.post('/api/text-work-links/{link_id}/state')
+def text_work_link_state(link_id: UUID, body: SetLink):
+    return {'changed':set_text_link(engine,str(link_id),body)}
 
 
 @app.post('/api/tasks/{task_id}/text-experiments')

@@ -29,7 +29,7 @@ TRANSITIONS = {
     WorkStatus.STALE: {WorkStatus.READY, WorkStatus.WAITING_APPROVAL, WorkStatus.CANCELLED},
     WorkStatus.REWORK_REQUIRED: {WorkStatus.READY, WorkStatus.CANCELLED},
     WorkStatus.BLOCKED: {WorkStatus.READY, WorkStatus.CANCELLED},
-    WorkStatus.WAITING_APPROVAL: {WorkStatus.READY, WorkStatus.CANCELLED, WorkStatus.ACCEPTED, WorkStatus.REWORK_REQUIRED},
+    WorkStatus.WAITING_APPROVAL: {WorkStatus.READY, WorkStatus.CANCELLED, WorkStatus.ACCEPTED, WorkStatus.REWORK_REQUIRED, WorkStatus.STALE},
 }
 
 

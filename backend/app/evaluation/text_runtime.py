@@ -2,7 +2,7 @@
 from copy import deepcopy
 from sqlalchemy import text
 from app.work.market import digest
-from app.work.service import Conflict
+from app.work.service import Conflict, canonical
 from app.evaluation.text_regression import verify_suite
 
 
@@ -25,6 +25,17 @@ def effective_contract(c, work_id, task_id, task_version, base, *, allow_evaluat
             raise Conflict('pinned source changed')
         contract=deepcopy(base)
         contract['source_text']=pinned['source_text']
+        from app.workloads.text_links import linked_source
+        linked=linked_source(c,work_id)
+        work=c.execute(text('SELECT input_snapshot FROM work_items WHERE work_id=:id'),{'id':work_id}).scalar_one()
+        if work.get('source')=='accepted_work_link' and linked is None:
+            raise Conflict('linked work source record is missing')
+        if linked and work.get('source')!='accepted_work_link':
+            raise Conflict('linked work source marker changed')
+        if linked:
+            # Preserve the complete accepted artifact and its identity as untrusted source data.
+            contract['linked_source']=linked
+            contract['source_text']=pinned['source_text']+'\n\n[사람이 채택한 선행 업무 결과 · 출처와 내용]\n'+canonical(linked)
         return contract, None
     if (row['status'] not in (('RUNNING','EVALUATED') if allow_evaluated else ('RUNNING',)) or row['task_id']!=task_id or row['champion_version']!=task_version
         or digest(base)!=row['champion_contract_sha256'] or digest(row['candidate_plan'])!=row['candidate_plan_sha256']

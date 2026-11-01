@@ -4,7 +4,7 @@ import os
 import time
 from sqlalchemy import text
 from app.work.market import digest
-from app.workloads.registry import Verifier, register_verifier, register_kind_executor, register_retry_guard, register_review_guard
+from app.workloads.registry import Verifier, register_verifier, register_kind_executor, register_retry_guard, register_review_guard, register_acceptance_hook, register_verifier_kind_resolver
 
 KIND='provided_text_workflow_v1'
 
@@ -88,7 +88,7 @@ def execute(kernel, claim, contract):
             with kernel.engine.begin() as c:
                 c.execute(text("INSERT INTO run_steps(run_id,graph_version,node_name,status,error_type) VALUES (:run,:graph,:node,'FAILED',:error)"),{'run':run_id,'graph':KIND,'node':step_id,'error':type(exc).__name__})
             raise
-    result = {'task_id':claim['task_id'],'data_mode':'USER_PROVIDED_TEXT','model_mode':mode,
+    result = {'task_id':claim['task_id'],'data_mode':'USER_AND_ACCEPTED_WORK' if contract.get('linked_source') else 'USER_PROVIDED_TEXT','model_mode':mode,
             'contract_sha256':digest(contract),'source_sha256':digest(contract['source_text']),
             'semantic_review':'NOT_PERFORMED','steps':[outputs[x] for x in order_steps(contract['plan'])]}
     if evaluation:
@@ -104,7 +104,7 @@ def verify(c,run,work,task,content,artifact_hash):
     pinned=c.execute(text('SELECT source_version FROM text_source_work WHERE work_id=:id'),{'id':work['work_id']}).scalar_one_or_none()
     steps=content.get('steps',[]) if isinstance(content,dict) else []
     step_log=c.execute(text("SELECT node_name FROM run_steps WHERE run_id=:run AND graph_version=:kind AND status='SUCCEEDED' ORDER BY step_id"),{'run':run['run_id'],'kind':KIND}).scalars().all()
-    checks={'task_and_labels':isinstance(content,dict) and content.get('task_id')==work['task_id'] and content.get('data_mode')=='USER_PROVIDED_TEXT' and content.get('model_mode')==contract['model_mode'] and content.get('semantic_review')=='NOT_PERFORMED',
+    checks={'task_and_labels':isinstance(content,dict) and content.get('task_id')==work['task_id'] and content.get('data_mode')==('USER_AND_ACCEPTED_WORK' if contract.get('linked_source') else 'USER_PROVIDED_TEXT') and content.get('model_mode')==contract['model_mode'] and content.get('semantic_review')=='NOT_PERFORMED',
             'context_hash':bool(context) and digest(context['manifest'])==context['sha256'] and context['manifest']['contract']==contract,
             'input_hashes':isinstance(content,dict) and content.get('contract_sha256')==digest(contract) and content.get('source_sha256')==digest(contract['source_text']),
             'steps_complete':isinstance(steps,list) and all(isinstance(x,dict) for x in steps) and [x.get('step_id') for x in steps]==expected and step_log==expected,
@@ -116,6 +116,9 @@ def verify(c,run,work,task,content,artifact_hash):
 
 
 register_verifier(KIND,Verifier('provided_text_report','1','provided-text-structure-v3','provided_text_structure','provided-text-suite-v3',verify))
+LINKED_KIND='provided_text_linked_workflow_v1'
+register_verifier(LINKED_KIND,Verifier('provided_text_report','1','provided-text-linked-structure-v1','provided_text_structure','provided-text-linked-suite-v1',verify))
+register_verifier_kind_resolver(KIND,lambda work: LINKED_KIND if work['input_snapshot'].get('source')=='accepted_work_link' else KIND)
 register_kind_executor(KIND,execute)
 
 
@@ -125,6 +128,10 @@ def guard_retry(c,work):
         WHERE m.work_id=:id''',{'id':work['work_id']})
     if experiment and experiment['status']!='RUNNING':
         raise Conflict('completed experiment work cannot be retried')
+    linked=one(c,'''SELECT l.source_artifact_id,w.accepted_artifact_id,w.status FROM text_work_link_deliveries l
+        JOIN work_items w ON w.work_id=l.source_work_id WHERE l.target_work_id=:id''',{'id':work['work_id']})
+    if linked and (linked['status']!='COMMITTED' or linked['source_artifact_id']!=linked['accepted_artifact_id']):
+        raise Conflict('linked work is pinned to an older source; use the newly created follow-up work')
 
 
 register_retry_guard(KIND,guard_retry)
@@ -134,6 +141,13 @@ def guard_review(c,work):
     from app.work.service import Conflict, one
     if one(c,'SELECT 1 FROM text_experiment_work WHERE work_id=:id',{'id':work['work_id']}):
         raise Conflict('evaluation-only work cannot be accepted as a production result')
+    from app.workloads.text_links import linked_source
+    linked=linked_source(c,work['work_id'])
+    if work['input_snapshot'].get('source')=='accepted_work_link' and linked is None:
+        raise Conflict('linked work source record is missing')
 
 
 register_review_guard(KIND,guard_review)
+
+from app.workloads.text_links import after_review
+register_acceptance_hook(KIND,after_review)

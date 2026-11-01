@@ -166,21 +166,25 @@ class Kernel:
     def add_dependency(self, predecessor, successor, kind='artifact'):
         with self.engine.begin() as c:
             self._lock(c)
-            before, after = self._work(c, predecessor), self._work(c, successor)
-            if after['status'] not in ('CREATED', 'READY', 'BLOCKED'):
-                raise Conflict('dependencies can only be added before execution')
-            if before['work_id'] == after['work_id']:
-                raise Conflict('dependency cycle')
-            cycle = one(c, '''WITH RECURSIVE descendants(id) AS (
-                SELECT successor_id FROM work_dependencies WHERE predecessor_id=:successor
-                UNION SELECT d.successor_id FROM work_dependencies d JOIN descendants x ON d.predecessor_id=x.id)
-                SELECT 1 FROM descendants WHERE id=:predecessor''', {'successor': successor, 'predecessor': predecessor})
-            if cycle:
-                raise Conflict('dependency cycle')
-            if one(c, 'SELECT 1 FROM work_dependencies WHERE predecessor_id=:p AND successor_id=:s', {'p': predecessor, 's': successor}):
-                raise Conflict('dependency already exists')
-            c.execute(text('INSERT INTO work_dependencies VALUES (:p,:s,:kind,:pin)'), {'p': predecessor, 's': successor, 'kind': kind, 'pin': before['accepted_artifact_id']})
-            self._event(c, 'dependency.created', successor, {'predecessor_id': predecessor, 'kind': kind, 'pinned_artifact_id': str(before['accepted_artifact_id']) if before['accepted_artifact_id'] else None})
+            self._add_dependency(c,predecessor,successor,kind)
+
+    def _add_dependency(self, c, predecessor, successor, kind='artifact'):
+        """Add a dependency in the caller's locked transaction."""
+        before, after = self._work(c, predecessor), self._work(c, successor)
+        if after['status'] not in ('CREATED', 'READY', 'BLOCKED'):
+            raise Conflict('dependencies can only be added before execution')
+        if before['work_id'] == after['work_id']:
+            raise Conflict('dependency cycle')
+        cycle = one(c, '''WITH RECURSIVE descendants(id) AS (
+            SELECT successor_id FROM work_dependencies WHERE predecessor_id=:successor
+            UNION SELECT d.successor_id FROM work_dependencies d JOIN descendants x ON d.predecessor_id=x.id)
+            SELECT 1 FROM descendants WHERE id=:predecessor''', {'successor': successor, 'predecessor': predecessor})
+        if cycle:
+            raise Conflict('dependency cycle')
+        if one(c, 'SELECT 1 FROM work_dependencies WHERE predecessor_id=:p AND successor_id=:s', {'p': predecessor, 's': successor}):
+            raise Conflict('dependency already exists')
+        c.execute(text('INSERT INTO work_dependencies VALUES (:p,:s,:kind,:pin)'), {'p': predecessor, 's': successor, 'kind': kind, 'pin': before['accepted_artifact_id']})
+        self._event(c, 'dependency.created', successor, {'predecessor_id': str(predecessor), 'kind': kind, 'pinned_artifact_id': str(before['accepted_artifact_id']) if before['accepted_artifact_id'] else None})
 
     def stale_descendants(self, c, work_id, cause):
         rows = c.execute(text('''WITH RECURSIVE descendants(id) AS (
@@ -199,6 +203,9 @@ class Kernel:
                     c.execute(text("UPDATE work_queue SET status='DONE',lease_until=NULL WHERE work_id=:id"), {'id': row['work_id']})
                     self._event(c, 'run.failed', active['run_id'], {'reason': 'dependency became stale'}, cause=cause)
                 self._transition(c, row['work_id'], 'REWORK_REQUIRED', cause)
+            elif row['status'] == 'WAITING_APPROVAL':
+                # A human cannot accept a candidate based on superseded dependencies.
+                self._transition(c, row['work_id'], 'STALE', cause)
 
     def invalidate(self, work_id, cause):
         with self.engine.begin() as c:
@@ -347,6 +354,11 @@ class Kernel:
             if decision == 'ACCEPT' and not one(c,'SELECT 1 FROM task_definitions WHERE task_id=:task AND version=:version AND active',
                                                {'task':work['task_id'],'version':work['task_version']}):
                 raise Conflict('work was executed under an inactive task version')
+            if decision == 'ACCEPT' and one(c,'''SELECT 1 FROM work_dependencies d JOIN work_items p ON p.work_id=d.predecessor_id
+                WHERE d.successor_id=:id AND (p.status <> 'COMMITTED' OR p.accepted_artifact_id IS NULL
+                    OR d.pinned_artifact_version IS NULL OR d.pinned_artifact_version <> p.accepted_artifact_id) LIMIT 1''',
+                {'id':work_id}):
+                raise Conflict('review target has stale or unpinned dependencies')
             candidate = one(c,'''SELECT a.*,r.status AS run_status,e.result AS verification FROM artifacts a
                 JOIN runs r ON r.run_id=a.run_id JOIN evidence e ON e.artifact_id=a.artifact_id
                 WHERE a.artifact_id=:artifact AND r.work_id=:work AND e.result->>'requires_human_review'='true'
@@ -365,6 +377,10 @@ class Kernel:
                 self._transition(c,work_id,'COMMITTED',str(artifact_id))
                 if old and str(old)!=str(artifact_id):
                     self.stale_descendants(c,work_id,str(artifact_id))
+                from app.workloads.registry import acceptance_hooks
+                hook=acceptance_hooks.get(task['acceptance_policy'].get('kind'))
+                if hook:
+                    hook(self,c,dict(work),str(candidate['run_id']))
             else:
                 self._transition(c,work_id,'REWORK_REQUIRED',str(artifact_id))
             self._event(c,'work.reviewed',work_id,payload,actor='user',cause=str(artifact_id),key=key)
