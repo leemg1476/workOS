@@ -1,5 +1,20 @@
 # Work OS 작업 상태
 
+## 2026-11-01 추가 진행 — 데모 서비스 분리와 100개 업무 조회
+
+상태: **부분 구현**. 정책 변경 이벤트·검토와 금융·정책·VOC의 Run 컨텍스트를 각각 `backend/app/workloads/policy_service.py`, `market_service.py`, `voc_service.py`로 옮겼다. 공통 `Kernel`은 이들 업무의 Task ID나 정책별 분기를 포함하지 않으며, 기존 상태 전이·이벤트 함수와 트랜잭션을 사용한다. 공통 해시는 `backend/app/domain/hashing.py`로 분리했고 기존 저장 해시와 일치한다.
+
+- `backend/app/workloads/registry.py`, `policy_lifecycle.py`, `text_workflow.py`: 재시도·재검증·사람 검토의 업무별 조건을 등록형 guard로 분리했다. 정책 이벤트·검토 API와 worker는 해당 업무 서비스를 직접 호출한다. 검증되지 않은 결과의 채택 방지와 이벤트 원자성은 유지한다.
+- `backend/app/api/main.py`, `backend/migrations/019_dashboard_indexes.sql`: 업무별 최근 검증 기록을 개별 쿼리 대신 한 번에 가져오고 조회 인덱스를 추가했다. 100개 가상 텍스트 업무 계약을 서로 다른 이름·목표·단계 구성으로 등록·실행했으며, 대시보드에 모두 표시되고 SQL 조회가 총 2회인 것을 테스트했다. 가짜 모델이므로 업무 내용의 의미적 품질은 검증하지 않았다.
+- `frontend/src/App.vue`, `RunHistory.vue`, `WorkDesignStudio.vue`: 업무 카드, 실행 이력 선택과 저장 초안에 각각 검색을 추가했다. 초안은 기본 8개만 보이고 더 볼 수 있다. 등록·입력 갱신·개선 적용에 대한 오래된 화면 설명을 고쳤으며, 저장하지 않은 수정이 있을 때 자연어 변경 요청을 막는다.
+- 격리 PostgreSQL·Redis에서 세 데모·정책 DAG·평가·커널 관련 **56 passed, warning 1건**. 가상 계약 100개를 생성·실행하는 테스트 **1 passed**, 100개 대시보드·API·공통 해시·확장 관련 **9 passed, warning 1건**. 최종 `python -m pytest -x -q tests` **89 passed, warning 1건**. 앞선 전체 회귀에서 금융 문서 검증의 hashlib import 누락으로 실패한 부분을 복구한 후 재실행했다.
+- 격리 DB의 104개 업무 화면에서 업무 카드와 이력 각각을 `배송 문의 90`으로 검색해 1/104개가 표시되고 초안 검색도 동작함을 확인했다. 별도 API와 워커에서 화면 실행 요청이 `MOCK · SUCCEEDED`, `WAITING_APPROVAL`, 구조 검사 8/8 및 사람 검토 필요 표시로 이어짐을 확인했다. `npm --prefix frontend run build` 성공. 격리 DB에서 019 인덱스 down/up 성공.
+- `docker compose -p workos-p0 up -d --build --no-deps api worker scheduler ui` 성공. 네 프로세스 실행, API DB·OpenSearch 연결, UI HTTP 200 및 019의 세 인덱스 적용을 확인했다.
+
+한계: 100개 테스트는 서로 다른 텍스트 계약을 같은 MOCK 실행기로 수행한 구조 검사이며 100개 실제 업무의 의미적 품질을 입증하지 않는다. 플러그인은 신뢰된 코드이고 범용 데이터 커넥터·이벤트 라우팅·WorkItem DAG의 자동 구성은 아직 없다. 기존 평가 기준의 수정·삭제와 업무 목표 변경도 별도 계약 변경 경로가 필요하다.
+
+다음 세 단계: ① 다양한 입력·도구·후속 Work DAG를 업무 정의에서 연결하는 범용 실행 경로를 보강한다. ② 목표 및 기존 평가 기준의 변경·폐기 요청을 증거를 보존하고 사람이 승인하는 계약 변경으로 다룬다. ③ 세 데모·사용자 업무의 전체 E2E와 예약·장애 복구를 다시 검증한다.
+
 ## 2026-11-01 추가 진행 — 단계·기대 결과·평가 기준 변경의 고정 사례 비교
 
 상태: **부분 구현**. 사용자 텍스트 업무에서 후보의 단계 ID를 바꾸거나 단계를 추가·삭제한 경우, 각 고정 사례에 대응하는 후보 단계를 사람이 선택해 비교할 수 있다. 적용된 단계 대응은 다음 평가의 기존 방법에도 이어진다. 기존·후보 단계의 의미가 같다는 사실은 자동 검증하지 않는다.

@@ -3,6 +3,11 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 const props = defineProps({ tasks: { type: Array, default: () => [] }, base: { type: String, required: true }, proposals: { type: Array, default: () => [] } })
 const emit = defineEmits(['open-work', 'open-improvements'])
 const showAll = ref(false)
+const historyQuery=ref('')
+const matchingTasks=computed(()=>{
+  const query=historyQuery.value.trim().toLocaleLowerCase()
+  return query ? props.tasks.filter(t=>[t.name,t.objective,t.task_id].some(v=>String(v || '').toLocaleLowerCase().includes(query))) : props.tasks
+})
 const taskId = ref('TASK-001'), runs = ref([]), beforeId = ref(''), afterId = ref(''), message = ref(''), busy = ref(false)
 let request = 0, timer
 const verified = computed(() => runs.value.filter(r => r.status === 'SUCCEEDED' && r.verdict === 'PASS' && r.content && (r.kind !== 'provided_text_report' || r.human_accepted)))
@@ -56,7 +61,9 @@ onUnmounted(() => clearInterval(timer))
 <template>
   <section class="history-board" aria-labelledby="history-heading">
     <div class="history-intro"><div><span class="history-kicker">WORK HISTORY / 실행과 변화</span><h2 id="history-heading">무엇이 달라졌나요?</h2><p>업무를 고르면 실행 결과와 이전 기록을 함께 볼 수 있습니다.</p></div><span class="history-demo">{{ selectedTask?.execution_kind === 'provided_text_workflow_v1' ? 'USER PROVIDED TEXT' : (['TASK-001','TASK-002','TASK-003'].includes(taskId) ? 'DEMO DATA' : '출처 확인 필요') }}</span></div>
-    <div class="history-tabs" role="group" aria-label="비교할 업무 선택"><button v-for="t in tasks" :key="t.task_id" :class="{active:taskId===t.task_id}" :aria-pressed="taskId===t.task_id" @click="taskId=t.task_id"><small>{{ t.task_id }}</small>{{ t.name }}</button></div>
+    <div class="task-filter"><label for="history-task-search">비교 업무 찾기</label><input id="history-task-search" v-model="historyQuery" type="search" placeholder="업무 이름, 목표 또는 ID"><span aria-live="polite">{{ matchingTasks.length }} / {{ tasks.length }}개</span></div>
+    <div class="history-tabs" role="group" aria-label="비교할 업무 선택"><button v-for="t in matchingTasks" :key="t.task_id" :class="{active:taskId===t.task_id}" :aria-pressed="taskId===t.task_id" @click="taskId=t.task_id"><small>{{ t.task_id }}</small>{{ t.name }}</button></div>
+    <p v-if="!matchingTasks.length && historyQuery.trim()" class="detail-note">검색한 업무가 없습니다.</p>
     <div v-if="taskId==='TASK-003' && latestEvaluation" class="history-evaluation"><div><small>최근 생성 개선안의 고정 평가 · {{ latestEvaluation.suite_version }} · {{ latestEvaluation.status }}</small><b>{{ latestEvaluation.champion_version }} {{ latestEvaluation.results.champion_correct }}/{{ latestEvaluation.results.case_count }} → {{ latestEvaluation.challenger_version }} {{ latestEvaluation.results.challenger_correct }}/{{ latestEvaluation.results.case_count }}</b><span>개선 {{ latestEvaluation.results.gains.length }}건 · 퇴행 {{ latestEvaluation.results.regressions.length + (latestEvaluation.results.regression_suite?.regressions.length || 0) }}건 · {{ latestEvaluation.verdict }} · 합성 평가 사례</span></div><button @click="emit('open-improvements')">평가 근거 보기 →</button></div>
     <p v-if="message" class="history-alert" role="alert">{{ message }}</p>
     <div v-if="busy" class="history-empty">실행 기록을 불러오는 중입니다.</div>
