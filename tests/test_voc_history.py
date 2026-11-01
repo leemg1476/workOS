@@ -1,3 +1,4 @@
+from app.workloads import voc_service
 from fastapi.testclient import TestClient
 from sqlalchemy import text
 import json
@@ -26,7 +27,7 @@ def test_history_snapshot_tamper_and_retry(kernel):
         assert initial['content']['previous_artifact_id'] is None
         assert {r['comparison'] for r in initial['content']['recommendations']}=={'NO_PREVIOUS_REPORT'}
         work,run=start(kernel,'history-second')
-        manifest=kernel.prepare_voc(run['run_id'])
+        manifest=voc_service.prepare_voc(kernel,run['run_id'])
         assert manifest['previous_report']['artifact_id']==initial['artifact_id']
         report=make_report(manifest)
         assert report['comparison_basis']=='CATEGORY_ONLY_NOT_SEMANTIC'
@@ -37,7 +38,7 @@ def test_history_snapshot_tamper_and_retry(kernel):
         assert not false_claim['passed'] and not false_claim['result']['checks']['schema']
         assert kernel.retry(work,'history-retry-after-claim')
         run=kernel.claim()
-        manifest=kernel.prepare_voc(run['run_id'])
+        manifest=voc_service.prepare_voc(kernel,run['run_id'])
         report=make_report(manifest)
         report['recommendations'][0]['comparison']='NEW_CATEGORY'
         failure=kernel.submit(run['run_id'],report)
@@ -63,7 +64,7 @@ def test_changed_prior_artifact_cannot_be_verified(kernel):
     _,first=start(kernel,'history-integrity-first')
     original=process_claim(kernel,first)['artifact_id']
     _,second=start(kernel,'history-integrity-second')
-    manifest=kernel.prepare_voc(second['run_id'])
+    manifest=voc_service.prepare_voc(kernel,second['run_id'])
     report=make_report(manifest)
     with engine.begin() as c:
         c.execute(text("UPDATE artifacts SET sha256=:hash WHERE artifact_id=:id"),{'hash':'0'*64,'id':original})

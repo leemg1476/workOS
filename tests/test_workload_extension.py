@@ -104,3 +104,20 @@ def test_trigger_hook_is_atomic_with_work_creation(kernel, monkeypatch):
     with engine.connect() as c:
         assert c.execute(text("SELECT count(*) FROM work_items WHERE job_id='test-job'")).scalar_one()==0
         assert c.execute(text("SELECT count(*) FROM work_events WHERE event_type='extension.snapshot'")).scalar_one()==0
+
+
+def test_registered_retry_guard_can_block_and_release_work(kernel,monkeypatch):
+    from app.workloads import registry
+    with engine.begin() as c:
+        c.execute(text("UPDATE task_definitions SET acceptance_policy=CAST('{\"kind\":\"extension_guard\"}' AS jsonb) WHERE task_id='TEST'"))
+    work,_=kernel.trigger('test-job','guarded-work',{})
+    run=kernel.claim();kernel.fail(run['run_id'],'synthetic failure')
+    def refuse(c,work):
+        raise Conflict('plugin prerequisite failed')
+    monkeypatch.setitem(registry.retry_guards,'extension_guard',refuse)
+    with pytest.raises(Conflict,match='plugin prerequisite failed'):
+        kernel.retry(work,'guarded-retry')
+    with engine.connect() as c:
+        assert c.execute(text('SELECT status FROM work_items WHERE work_id=:id'),{'id':work}).scalar_one()=='REWORK_REQUIRED'
+    monkeypatch.setitem(registry.retry_guards,'extension_guard',lambda c,work: None)
+    assert kernel.retry(work,'guarded-retry')

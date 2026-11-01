@@ -1,7 +1,8 @@
 """Policy-specific follow-up actions after a verified work item is accepted."""
 from sqlalchemy import text
-from app.work.service import one
-from app.workloads.registry import register_acceptance_hook
+from app.work.service import one, Conflict
+from app.workloads.policy_verifiers import policy_regression_chain_current
+from app.workloads.registry import register_acceptance_hook, register_retry_guard, register_revalidate_guard
 
 
 
@@ -51,7 +52,7 @@ def schedule_policy_regression(kernel, c, root_id, cause, *, allow_rework=False)
         JOIN evidence e ON e.artifact_id=p.accepted_artifact_id AND e.verification_type='policy_index_recheck'
         WHERE f.root_work_id=:root AND f.step_no=3 AND e.result->>'passed'='true' ''', {'root':root_id})
     allowed = ('BLOCKED','STALE','REWORK_REQUIRED') if allow_rework else ('BLOCKED','STALE')
-    if not child or child['status'] not in allowed or not kernel._policy_regression_chain_current(c,child['work_id'],True):
+    if not child or child['status'] not in allowed or not policy_regression_chain_current(c,child['work_id'],True):
         return False
     cleared = one(c, '''UPDATE work_dependencies SET pinned_artifact_version=NULL
         WHERE predecessor_id=:parent AND successor_id=:child AND pinned_artifact_version IS NOT NULL
@@ -70,7 +71,7 @@ def open_policy_review(kernel, c, root_id, cause):
         JOIN work_items p ON p.work_id=d.predecessor_id AND p.status='COMMITTED'
         JOIN evidence e ON e.artifact_id=p.accepted_artifact_id AND e.verification_type='policy_regression_check'
         WHERE f.root_work_id=:root AND f.step_no=4 AND e.result->>'passed'='true' ''',{'root':root_id})
-    if not row or row['status']!='STALE' or not kernel._policy_regression_chain_current(c,row['predecessor']):
+    if not row or row['status']!='STALE' or not policy_regression_chain_current(c,row['predecessor']):
         return False
     kernel._transition(c,row['work_id'],'WAITING_APPROVAL',cause)
     return True
@@ -91,7 +92,7 @@ def policy_method_changed(kernel, c, cause):
                 c.execute(text("UPDATE work_queue SET status='DONE',lease_until=NULL WHERE work_id=:id"),{'id':row['work_id']})
                 kernel._event(c,'run.failed',active['run_id'],{'reason':'VOC method changed'},cause=cause)
             kernel._transition(c,row['work_id'],'REWORK_REQUIRED',cause)
-        kernel._schedule_policy_regression(c,row['root_work_id'],cause,allow_rework=True)
+        schedule_policy_regression(kernel,c,row['root_work_id'],cause,allow_rework=True)
 
 
 def recover_policy_followups(kernel):
@@ -104,10 +105,10 @@ def recover_policy_followups(kernel):
             JOIN runs r ON r.run_id=a.run_id AND r.status='SUCCEEDED'
             JOIN evidence e ON e.artifact_id=a.artifact_id AND e.verification_type='policy_deterministic'
             WHERE e.result->>'passed'='true' ''')).mappings().all()
-        count = sum(kernel._schedule_policy_recheck(c,row['work_id'],str(row['run_id'])) for row in roots)
-        count += sum(kernel._schedule_policy_index(c,row['work_id'],str(row['run_id'])) for row in roots)
-        count += sum(kernel._schedule_policy_regression(c,row['work_id'],str(row['run_id'])) for row in roots)
-        count += sum(kernel._open_policy_review(c,row['work_id'],str(row['run_id'])) for row in roots)
+        count = sum(schedule_policy_recheck(kernel,c,row['work_id'],str(row['run_id'])) for row in roots)
+        count += sum(schedule_policy_index(kernel,c,row['work_id'],str(row['run_id'])) for row in roots)
+        count += sum(schedule_policy_regression(kernel,c,row['work_id'],str(row['run_id'])) for row in roots)
+        count += sum(open_policy_review(kernel,c,row['work_id'],str(row['run_id'])) for row in roots)
         return count
 
 
@@ -133,3 +134,17 @@ register_acceptance_hook('policy_impact_v1',impact_accepted)
 register_acceptance_hook('policy_followup_verification_v1',followup_accepted)
 register_acceptance_hook('policy_index_v1',index_accepted)
 register_acceptance_hook('policy_regression_v1',regression_accepted)
+
+
+def guard_retry(c,work):
+    if work['task_id']=='TASK-002' and work['parent_work_id'] is not None and work['input_snapshot'].get('step_no') not in (1,2,3):
+        raise Conflict('policy follow-up execution is not implemented')
+
+
+def guard_revalidate(c,work):
+    if work['task_id']=='TASK-002' and work['parent_work_id'] is not None and work['input_snapshot'].get('step_no')==4:
+        raise Conflict('human review must be reopened explicitly')
+
+
+register_retry_guard('policy_impact_v1',guard_retry)
+register_revalidate_guard('policy_impact_v1',guard_revalidate)

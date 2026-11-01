@@ -107,25 +107,42 @@ def test_tampered_candidate_cannot_be_approved(kernel):
         assert state['status']=='WAITING_APPROVAL' and state['accepted_artifact_id'] is None
 
 
-def test_ten_distinct_designs_use_same_executor_and_review_gate(kernel):
+def test_hundred_distinct_text_contracts_use_same_executor_and_review_gate(kernel):
     with TestClient(app) as client:
         ids=[]
-        for n in range(10):
-            draft=client.post('/api/work-designs',json={'description':f'업무 {n} 자료 요약','mode':'MOCK'}).json()
-            draft['plan']['name']=f'업무 {n}'
-            draft['plan']['expected_result']=f'업무 {n} 요약'
-            draft['plan']['evaluation_criteria']=['입력과 요약의 일치 여부']
+        domains=['배송 문의','재고 점검','계약 변경','교육 피드백','시장 분석','장애 보고','정책 요약','청구 검토','안전 점검','회의 후속']
+        for n in range(100):
+            subject=domains[n%len(domains)]
+            draft=client.post('/api/work-designs',json={'description':f'{subject} 업무 {n}','mode':'MOCK'}).json()
+            draft['plan']['name']=f'{subject} {n}'
+            draft['plan']['expected_result']=f'{subject} 결과 {n}'
+            draft['plan']['evaluation_criteria']=[f'{subject} 입력에 근거한 결과인지 확인']
             draft['plan']['steps']=draft['plan']['steps'][:1+(n%3)]
-            draft['plan']['steps'][0]['purpose']=f'가상 업무 {n}의 자료를 확인한다.'
+            draft['plan']['steps'][0]['purpose']=f'{subject}의 가상 자료 {n}을 확인한다.'
             assert client.put('/api/work-designs/'+draft['design_id'],json={'revision':1,'plan':draft['plan']}).status_code==200
             registered=client.post('/api/work-designs/'+draft['design_id']+'/register',json={
-                'revision':2,'source_text':f'가상 자료 {n}','model_mode':'MOCK'}).json()
+                'revision':2,'source_text':f'{subject} 가상 자료 {n}','model_mode':'MOCK'}).json()
             ids.append(registered['task_id'])
-            response=client.post('/api/tasks/'+registered['task_id']+'/run',json={'idempotency_key':f'ten-tasks-{n}','input_snapshot':{}})
+            response=client.post('/api/tasks/'+registered['task_id']+'/run',json={'idempotency_key':f'hundred-tasks-{n}','input_snapshot':{}})
             assert response.status_code==200
             claim=kernel.claim()
             assert claim['task_id']==registered['task_id']
             result=process_claim(kernel,claim)
             assert result['passed'] and result['result']['requires_human_review']
             assert client.get('/api/work/'+response.json()['work_id']).json()['work']['status']=='WAITING_APPROVAL'
-        assert len(set(ids))==10
+        assert len(set(ids))==100
+        from sqlalchemy import event
+        statements=[]
+        def count_queries(conn,cursor,statement,parameters,context,executemany):
+            if statement.lstrip().upper().startswith(('SELECT','WITH')):
+                statements.append(statement)
+        event.listen(engine,'before_cursor_execute',count_queries)
+        try:
+            response=client.get('/api/tasks')
+        finally:
+            event.remove(engine,'before_cursor_execute',count_queries)
+        assert response.status_code==200
+        dashboard={row['task_id']:row for row in response.json()}
+        assert set(ids)<=set(dashboard)
+        assert all(len(dashboard[task]['recent_verifications'])==1 for task in ids)
+        assert len(statements)==2

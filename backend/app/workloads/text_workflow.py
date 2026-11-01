@@ -4,7 +4,7 @@ import os
 import time
 from sqlalchemy import text
 from app.work.market import digest
-from app.workloads.registry import Verifier, register_verifier, register_kind_executor
+from app.workloads.registry import Verifier, register_verifier, register_kind_executor, register_retry_guard, register_review_guard
 
 KIND='provided_text_workflow_v1'
 
@@ -117,3 +117,23 @@ def verify(c,run,work,task,content,artifact_hash):
 
 register_verifier(KIND,Verifier('provided_text_report','1','provided-text-structure-v3','provided_text_structure','provided-text-suite-v3',verify))
 register_kind_executor(KIND,execute)
+
+
+def guard_retry(c,work):
+    from app.work.service import Conflict, one
+    experiment=one(c,'''SELECT x.status FROM text_experiment_work m JOIN text_experiments x ON x.experiment_id=m.experiment_id
+        WHERE m.work_id=:id''',{'id':work['work_id']})
+    if experiment and experiment['status']!='RUNNING':
+        raise Conflict('completed experiment work cannot be retried')
+
+
+register_retry_guard(KIND,guard_retry)
+
+
+def guard_review(c,work):
+    from app.work.service import Conflict, one
+    if one(c,'SELECT 1 FROM text_experiment_work WHERE work_id=:id',{'id':work['work_id']}):
+        raise Conflict('evaluation-only work cannot be accepted as a production result')
+
+
+register_review_guard(KIND,guard_review)

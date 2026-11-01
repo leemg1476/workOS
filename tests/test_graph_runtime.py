@@ -1,3 +1,4 @@
+from app.workloads import market_service
 import json
 import os
 import subprocess
@@ -14,7 +15,7 @@ def test_checkpoint_resume_keeps_completed_draft_and_kernel_accepts(kernel):
     seed(engine)
     work, _ = kernel.trigger('TASK-001-JOB', 'graph-resume', {'dataset_version':'v1','model_mode':'MOCK'})
     claim = kernel.claim(lease_seconds=120)
-    manifest = kernel.prepare_market(claim['run_id'])
+    manifest = market_service.prepare_market(kernel,claim['run_id'])
 
     def interrupt():
         raise RuntimeError('simulated interruption after draft')
@@ -31,7 +32,7 @@ def test_checkpoint_resume_keeps_completed_draft_and_kernel_accepts(kernel):
                             env=os.environ.copy(), capture_output=True, text=True, encoding='utf-8')
     resumed = json.loads(result.stdout)
     report, metadata = resumed['report'], resumed['metadata']
-    kernel.record_market_model(claim['run_id'], metadata)
+    market_service.record_market_model(kernel,claim['run_id'], metadata)
     assert kernel.submit(claim['run_id'], report)['passed']
     with engine.connect() as conn:
         steps = conn.execute(text('SELECT node_name,status FROM run_steps WHERE run_id=:id ORDER BY step_id'),
@@ -49,7 +50,7 @@ def test_graph_rejects_modified_context_before_drafting(kernel):
     seed(engine)
     _, _ = kernel.trigger('TASK-001-JOB', 'graph-tamper', {'dataset_version':'v1','model_mode':'MOCK'})
     claim = kernel.claim()
-    manifest = kernel.prepare_market(claim['run_id'])
+    manifest = market_service.prepare_market(kernel,claim['run_id'])
     manifest['dataset_version'] = 'v2'
     with pytest.raises(ValueError, match='hash mismatch'):
         GraphRunner(engine).execute(claim['run_id'], 'TASK-001', manifest)

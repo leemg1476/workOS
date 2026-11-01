@@ -1,3 +1,4 @@
+from app.workloads import policy_service
 from contextlib import asynccontextmanager
 from decimal import Decimal
 from uuid import UUID
@@ -140,27 +141,31 @@ def tasks():
             AND NOT EXISTS (SELECT 1 FROM text_experiment_work ew WHERE ew.work_id=wi.work_id) ORDER BY wi.created_at DESC LIMIT 1) w ON true
           LEFT JOIN LATERAL (SELECT * FROM runs WHERE work_id=w.work_id ORDER BY attempt_no DESC LIMIT 1) r ON true
           WHERE t.active ORDER BY t.task_id''')).mappings()]
-        for task in tasks:
-            history = c.execute(text('''SELECT r.run_id,r.status,r.started_at,w.task_version,w.status AS work_status,
+        histories={task['task_id']:[] for task in tasks}
+        if histories:
+            history=c.execute(text('''WITH ranked AS (
+                SELECT w.task_id,r.run_id,r.status,r.started_at,w.task_version,w.status AS work_status,
                   e.verdict,e.eval_suite_version,e.metric_results,a.artifact_version,
-                  (w.status='COMMITTED' AND w.accepted_artifact_id=a.artifact_id) AS is_current
+                  (w.status='COMMITTED' AND w.accepted_artifact_id=a.artifact_id) AS is_current,
+                  ROW_NUMBER() OVER (PARTITION BY w.task_id ORDER BY r.started_at DESC,r.run_id DESC) AS position
                 FROM runs r JOIN work_items w ON w.work_id=r.work_id
                 LEFT JOIN LATERAL (SELECT * FROM evaluations WHERE run_id=r.run_id ORDER BY created_at DESC LIMIT 1) e ON true
                 LEFT JOIN artifacts a ON a.artifact_id=e.artifact_id
-                WHERE w.task_id=:task_id AND w.parent_work_id IS NULL
-                  AND NOT EXISTS (SELECT 1 FROM text_experiment_work ew WHERE ew.work_id=w.work_id)
-                ORDER BY r.started_at DESC,r.run_id DESC LIMIT 5'''), {'task_id':task['task_id']}).mappings()
-            task['recent_verifications'] = []
+                WHERE w.task_id=ANY(:task_ids) AND w.parent_work_id IS NULL
+                  AND NOT EXISTS (SELECT 1 FROM text_experiment_work ew WHERE ew.work_id=w.work_id))
+                SELECT * FROM ranked WHERE position<=5 ORDER BY task_id,position'''),{'task_ids':list(histories)}).mappings()
             for row in history:
-                checks = (row['metric_results'] or {}).get('checks', {})
-                checks = [value for value in checks.values() if isinstance(value, bool)]
-                task['recent_verifications'].append({
-                    'run_id':row['run_id'], 'run_status':row['status'], 'started_at':row['started_at'],
-                    'task_version':row['task_version'], 'work_status':row['work_status'],
-                    'verdict':row['verdict'], 'suite_version':row['eval_suite_version'],
-                    'checks_passed':sum(checks), 'checks_total':len(checks),
-                    'artifact_version':row['artifact_version'], 'is_current':bool(row['is_current']),
+                checks=(row['metric_results'] or {}).get('checks',{})
+                checks=[value for value in checks.values() if isinstance(value,bool)]
+                histories[row['task_id']].append({
+                    'run_id':row['run_id'],'run_status':row['status'],'started_at':row['started_at'],
+                    'task_version':row['task_version'],'work_status':row['work_status'],
+                    'verdict':row['verdict'],'suite_version':row['eval_suite_version'],
+                    'checks_passed':sum(checks),'checks_total':len(checks),
+                    'artifact_version':row['artifact_version'],'is_current':bool(row['is_current']),
                 })
+        for task in tasks:
+            task['recent_verifications']=histories[task['task_id']]
         return tasks
 
 
@@ -300,7 +305,7 @@ def policy(document_id: str):
 
 @app.post('/api/events/document.updated')
 def document_updated(body: DocumentUpdatedRequest):
-    work_id,created = kernel.document_updated(body)
+    work_id,created = policy_service.document_updated(kernel,body)
     return {'work_id':work_id,'created':created,'data_mode':'DEMO DATA'}
 
 
@@ -340,13 +345,13 @@ def policy_work(work_id: str):
 
 @app.post('/api/policy-work/{work_id}/review-notes')
 def policy_review_note(work_id: str, body: PolicyReviewNoteRequest):
-    return {'recorded':kernel.review_policy_note(work_id,body),'decision':'NOTE_ONLY'}
+    return {'recorded':policy_service.review_policy_note(kernel,work_id,body),'decision':'NOTE_ONLY'}
 
 
 @app.get('/api/policy-work/{work_id}/review-context')
 def policy_review_context(work_id: str):
     try:
-        return {'ready':True,**kernel.policy_review_context(work_id)}
+        return {'ready':True,**policy_service.policy_review_context(kernel,work_id)}
     except Conflict as exc:
         return {'ready':False,'reason':str(exc)}
     except (SearchUnavailable,ValueError):
@@ -355,13 +360,13 @@ def policy_review_context(work_id: str):
 
 @app.post('/api/policy-work/{work_id}/review-decision')
 def policy_review_decision(work_id: str, body: PolicyReviewDecisionRequest):
-    artifact,created = kernel.decide_policy_review(work_id,body)
+    artifact,created = policy_service.decide_policy_review(kernel,work_id,body)
     return {'artifact_id':artifact,'recorded':created,'policy_applied':False}
 
 
 @app.post('/api/policy-work/{work_id}/review-reopen')
 def policy_review_reopen(work_id: str, body: ActionRequest):
-    return {'reopened':kernel.reopen_policy_review(work_id,body.idempotency_key)}
+    return {'reopened':policy_service.reopen_policy_review(kernel,work_id,body.idempotency_key)}
 
 
 @app.get('/api/voc/state')

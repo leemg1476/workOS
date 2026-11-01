@@ -1,3 +1,4 @@
+from app.workloads import voc_service
 import os
 from uuid import uuid4
 from urllib.parse import quote
@@ -23,7 +24,7 @@ def start(kernel,key):
 def test_voc_citation_is_bound_to_category_and_source(kernel):
     seed(engine)
     work,claim=start(kernel,'voc-source-forgery')
-    manifest=kernel.prepare_voc(claim['run_id'])
+    manifest=voc_service.prepare_voc(kernel,claim['run_id'])
     assert manifest['retrieval']['mode']=='FIXTURE_DB'
     report=make_report(manifest)
     assert {d['id'] for d in manifest['documents']}==set(DOCUMENTS.values())
@@ -37,7 +38,7 @@ def test_voc_citation_is_bound_to_category_and_source(kernel):
 def test_voc_new_source_record_after_snapshot_prevents_publication(kernel):
     seed(engine)
     work,claim=start(kernel,'voc-record-changed')
-    manifest=kernel.prepare_voc(claim['run_id'])
+    manifest=voc_service.prepare_voc(kernel,claim['run_id'])
     report=make_report(manifest)
     with engine.begin() as c:
         c.execute(text("INSERT INTO voc_records(record_id,source_version,body) VALUES ('VOC-NEW-01','voc-demo-v1','가상 추가 결제 문의')"))
@@ -74,14 +75,14 @@ def test_voc_opensearch_sources_missing_changed_and_recovered(kernel,monkeypatch
             assert artifact['evidence'][0]['result']['checks']['documents_search_current']
             assert client.get(f"/api/runs/{restored['run_id']}").json()['context']['manifest']['retrieval']['index']==index
         _,new=start(kernel,'voc-source-deleted-after-snapshot')
-        manifest=kernel.prepare_voc(new['run_id'])
+        manifest=voc_service.prepare_voc(kernel,new['run_id'])
         report=make_report(manifest)
         httpx.delete(doc_url,params={'refresh':'wait_for'},timeout=10).raise_for_status()
         late=kernel.submit(new['run_id'],report)
         assert not late['passed'] and not late['result']['checks']['documents_search_current']
         assert seed_index(engine,base,index)==6
         _,changed=start(kernel,'voc-source-db-changed')
-        manifest=kernel.prepare_voc(changed['run_id'])
+        manifest=voc_service.prepare_voc(kernel,changed['run_id'])
         report=make_report(manifest)
         with engine.begin() as c:
             c.execute(text("UPDATE source_documents SET title='가상 변경' WHERE document_id='DOC-VOC-BILLING' AND version=1"))

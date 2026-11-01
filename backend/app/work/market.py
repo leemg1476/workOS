@@ -8,19 +8,12 @@ from sqlalchemy import text
 from app.domain.contracts import MarketBriefing
 from app.integrations.search import configuration, retrieve_documents
 from app.integrations.sql_source import source_engine, source_mode
+from app.domain.hashing import canonical, digest
 
 QUERY = ('SELECT symbol, unit, previous_value, current_value, observed_at FROM market_observations '
          'WHERE dataset_version = :version ORDER BY symbol')
 DOC_IDS = ['DOC-FX@1', 'DOC-RISK@1']
 PROMPT_VERSION = 'market-interpretation-v1'
-
-
-def canonical(value):
-    return json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(',', ':'))
-
-
-def digest(value):
-    return hashlib.sha256(canonical(value).encode('utf-8')).hexdigest()
 
 
 def indicators(observations):

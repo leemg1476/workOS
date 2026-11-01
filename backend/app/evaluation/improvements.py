@@ -1,3 +1,4 @@
+from app.workloads import policy_lifecycle
 """Explicit, auditable VOC method evaluation and user-controlled promotion."""
 from sqlalchemy import text
 from app.work.service import Kernel, Conflict, NotFound, uid, canonical, one
@@ -184,7 +185,7 @@ class ImprovementService:
                     WHERE task_id='TASK-003' '''), {'method':proposal['champion_version']})
                 status = 'ROLLED_BACK'
             if action in ('apply','rollback'):
-                self.kernel.policy_method_changed(c,proposal_id)
+                policy_lifecycle.policy_method_changed(self.kernel,c,proposal_id)
             c.execute(text('UPDATE improvement_proposals SET status=:status WHERE proposal_id=:id'), {'status':status,'id':proposal_id})
             self.kernel._event(c,f'improvement.{action}',proposal_id,{'from':proposal['status'],'to':status,
                 'champion':proposal['champion_version'],'challenger':proposal['challenger_version']},actor='user',prior=state['version'],key=f'improvement.{action}:{key}')

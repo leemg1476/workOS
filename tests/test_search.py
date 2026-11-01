@@ -1,3 +1,4 @@
+from app.workloads import market_service
 import hashlib
 import os
 from uuid import uuid4
@@ -20,9 +21,9 @@ def test_authoritative_source_change_prevents_publication(kernel):
     seed(engine)
     work,_ = kernel.trigger('TASK-001-JOB','changed-document',{'dataset_version':'v1','model_mode':'MOCK'})
     run = kernel.claim()
-    manifest = kernel.prepare_market(run['run_id'])
+    manifest = market_service.prepare_market(kernel,run['run_id'])
     report, metadata = make_briefing(manifest,'MOCK')
-    kernel.record_market_model(run['run_id'],metadata)
+    market_service.record_market_model(kernel,run['run_id'],metadata)
     changed = '가상 문서가 준비 후 변경됨'
     with engine.begin() as c:
         c.execute(text("UPDATE source_documents SET body=:body,sha256=:sha WHERE document_id='DOC-FX' AND version=1"),
@@ -61,9 +62,9 @@ def test_real_opensearch_missing_citation_and_recovery(kernel,monkeypatch):
         assert process_claim(kernel,retried)['passed']
         changed,_=kernel.trigger('TASK-001-JOB','search-changed-after-context',{'dataset_version':'v1','model_mode':'MOCK'})
         active=kernel.claim()
-        manifest=kernel.prepare_market(active['run_id'])
+        manifest=market_service.prepare_market(kernel,active['run_id'])
         report,metadata=make_briefing(manifest,'MOCK')
-        kernel.record_market_model(active['run_id'],metadata)
+        market_service.record_market_model(kernel,active['run_id'],metadata)
         httpx.delete(f'{index_url}/_doc/{quote("DOC-FX@1",safe="")}?refresh=wait_for',timeout=5).raise_for_status()
         outcome=kernel.submit(active['run_id'],report)
         assert not outcome['passed'] and outcome['result']['checks']['citations_exist']

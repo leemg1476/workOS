@@ -1,3 +1,4 @@
+from app.workloads import policy_service
 import os
 from uuid import uuid4
 from urllib.parse import quote
@@ -58,7 +59,7 @@ def test_index_is_verified_retried_and_revalidated(kernel,monkeypatch):
             assert process_claim(kernel,kernel.claim())['passed']
             assert process_claim(kernel,kernel.claim())['passed']
             run=kernel.claim()
-            manifest=kernel.prepare_policy_index(run['run_id'])
+            manifest=policy_service.prepare_policy_index(kernel,run['run_id'])
             doc=manifest['document']
             assert index_demo_policy(doc,index)=='CREATED'
             assert index_demo_policy(doc,index)=='ALREADY_PRESENT'

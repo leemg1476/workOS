@@ -6,7 +6,7 @@ from app.work.service import Kernel, Conflict
 from app.work.notifications import client, ensure_group, STREAM, GROUP
 from redis.exceptions import RedisError
 from app.workloads.registry import executors, kind_executors
-from app.workloads import text_workflow, demo_execution  # Register built-in executors.
+from app.workloads import text_workflow, demo_execution, policy_lifecycle  # Register built-in executors.
 from sqlalchemy import text
 
 
@@ -40,7 +40,7 @@ def main():
     load_configured()
     migrate()
     kernel = Kernel(engine)
-    kernel.recover_policy_followups()
+    policy_lifecycle.recover_policy_followups(kernel)
     redis = client()
     consumer = f"{os.getpid()}-{uuid4()}"
     while True:

@@ -1,3 +1,4 @@
+from app.workloads import policy_lifecycle, policy_service, voc_service
 from concurrent.futures import ThreadPoolExecutor
 from fastapi.testclient import TestClient
 from sqlalchemy import text
@@ -33,7 +34,7 @@ def test_event_to_review_dag_is_idempotent_and_verified(kernel):
         assert client.post('/api/events/document.updated',json=wrong).status_code == 409
         req = DocumentUpdatedRequest(**body)
         with ThreadPoolExecutor(max_workers=6) as pool:
-            results = list(pool.map(lambda _: kernel.document_updated(req), range(6)))
+            results = list(pool.map(lambda _: policy_service.document_updated(kernel,req), range(6)))
         assert sum(created for _,created in results) == 1
         assert len({work for work,_ in results}) == 1
         root = results[0][0]
@@ -91,7 +92,7 @@ def test_tampered_policy_diff_cannot_be_committed(kernel):
         body = event_body(client)
         root = client.post('/api/events/document.updated',json=body).json()['work_id']
         run = kernel.claim()
-        context = kernel.prepare_policy(run['run_id'])
+        context = policy_service.prepare_policy(kernel,run['run_id'])
         report = make_policy_report(context)
         report['changes'][0]['after'] = '위조된 내용'
         result = kernel.submit(run['run_id'],report)
@@ -107,7 +108,7 @@ def test_followup_cannot_commit_fabricated_recheck(kernel):
         root = client.post('/api/events/document.updated',json=event_body(client)).json()['work_id']
         assert process_claim(kernel,kernel.claim())['passed']
         run = kernel.claim()
-        manifest = kernel.prepare_policy_verification(run['run_id'])
+        manifest = policy_service.prepare_policy_verification(kernel,run['run_id'])
         forged = {'task_id':'TASK-002','data_mode':'DEMO DATA','step_no':1,
                   'parent_artifact_id':manifest['parent_artifact_id'],'parent_artifact_sha256':'0'*64,
                   'parent_context_sha256':manifest['parent_context_sha256'],
@@ -132,8 +133,8 @@ def test_worker_recovers_preexisting_blocked_followup(kernel, monkeypatch):
         assert process_claim(kernel,kernel.claim())['passed']
         monkeypatch.setattr(policy_lifecycle,'schedule_policy_recheck',schedule)
         assert client.get(f'/api/policy-work/{root}').json()['followups'][0]['status'] == 'BLOCKED'
-        assert kernel.recover_policy_followups() == 1
-        assert kernel.recover_policy_followups() == 0
+        assert policy_lifecycle.recover_policy_followups(kernel) == 1
+        assert policy_lifecycle.recover_policy_followups(kernel) == 0
         assert process_claim(kernel,kernel.claim())['passed']
 
 
@@ -141,7 +142,7 @@ def test_source_change_stops_inflight_dependent_run(kernel):
     seed(engine)
     work,_ = kernel.trigger('TASK-003-JOB','in-flight-voc',{})
     claim = kernel.claim()
-    manifest = kernel.prepare_voc(claim['run_id'])
+    manifest = voc_service.prepare_voc(kernel,claim['run_id'])
     with TestClient(app) as client:
         body = event_body(client)
         assert client.post('/api/events/document.updated',json=body).status_code == 200

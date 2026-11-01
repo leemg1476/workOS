@@ -1,3 +1,4 @@
+from app.workloads import policy_service
 import os
 from concurrent.futures import ThreadPoolExecutor
 from uuid import uuid4
@@ -50,7 +51,7 @@ def test_regression_gates_retries_and_method_change_fences_running_work(kernel,m
                 c.execute(text("UPDATE voc_method_state SET active_method_id='champion-v1',version=version+1 WHERE task_id='TASK-003'"))
             assert kernel.retry(work,'regression-retry')
             stale_run=kernel.claim()
-            stale_manifest=kernel.prepare_policy_regression(stale_run['run_id'])
+            stale_manifest=policy_service.prepare_policy_regression(kernel,stale_run['run_id'])
             url=f'{base.rstrip("/")}/{index}/_doc/{quote("POLICY-VOC@2",safe="")}'
             indexed=httpx.get(url,timeout=10).json()['_source']
             httpx.delete(url,params={'refresh':'wait_for'},timeout=10).raise_for_status()
@@ -59,7 +60,7 @@ def test_regression_gates_retries_and_method_change_fences_running_work(kernel,m
             httpx.put(url,params={'refresh':'wait_for'},json=indexed,timeout=10).raise_for_status()
             assert kernel.retry(work,'regression-retry-after-missing-index')
             forged_run=kernel.claim()
-            manifest=kernel.prepare_policy_regression(forged_run['run_id'])
+            manifest=policy_service.prepare_policy_regression(kernel,forged_run['run_id'])
             forged=make_report(manifest)
             forged['suites'][0]['active_correct']+=1
             result=kernel.submit(forged_run['run_id'],forged)
@@ -108,7 +109,7 @@ def test_regression_gates_retries_and_method_change_fences_running_work(kernel,m
             changes={'idempotency_key':'review-changes','context_sha256':context2['context_sha256'],
                      'decision':'CHANGES_REQUESTED','note':'보완 필요'}
             with ThreadPoolExecutor(max_workers=4) as pool:
-                deliveries=list(pool.map(lambda _:kernel.decide_policy_review(root,PolicyReviewDecisionRequest(**changes)),range(4)))
+                deliveries=list(pool.map(lambda _:policy_service.decide_policy_review(kernel,root,PolicyReviewDecisionRequest(**changes)),range(4)))
             assert sum(created for _,created in deliveries)==1 and len({item[0] for item in deliveries})==1
             assert not client.post(f'/api/policy-work/{root}/review-decision',json=changes).json()['recorded']
             assert len(client.get(f'/api/policy-work/{root}').json()['reviews'])==2
@@ -123,7 +124,7 @@ def test_regression_gates_retries_and_method_change_fences_running_work(kernel,m
             assert client.post(f'/api/improvements/{proposal}/evaluate',json={'idempotency_key':'regression-eval'}).status_code==200
             assert kernel.revalidate(work,'regression-inflight')
             old_run=kernel.claim()
-            old_manifest=kernel.prepare_policy_regression(old_run['run_id'])
+            old_manifest=policy_service.prepare_policy_regression(kernel,old_run['run_id'])
             assert client.post(f'/api/improvements/{proposal}/apply',json={'idempotency_key':'regression-apply'}).status_code==200
             assert client.get(f'/api/policy-work/{root}').json()['followups'][3]['status']=='STALE'
             assert not client.get(f'/api/policy-work/{root}/review-context').json()['ready']

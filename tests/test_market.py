@@ -1,3 +1,4 @@
+from app.workloads import market_service
 from fastapi.testclient import TestClient
 from app.api.main import app
 from app.work.db import engine
@@ -66,9 +67,9 @@ def test_numeric_tampering_never_commits(kernel):
     seed(engine)
     work, _ = kernel.trigger('TASK-001-JOB', 'bad-number', {'dataset_version':'v1','model_mode':'MOCK'})
     claim = kernel.claim()
-    manifest = kernel.prepare_market(claim['run_id'])
+    manifest = market_service.prepare_market(kernel,claim['run_id'])
     report, meta = make_briefing(manifest, 'MOCK')
-    kernel.record_market_model(claim['run_id'], meta)
+    market_service.record_market_model(kernel,claim['run_id'], meta)
     report['indicators'][0]['current'] = '999999'
     result = kernel.submit(claim['run_id'], report)
     assert not result['passed'] and not result['result']['checks']['numeric_recalculation']
@@ -80,7 +81,7 @@ def test_live_model_never_falls_back_to_mock(kernel, monkeypatch):
     seed(engine)
     _, _ = kernel.trigger('TASK-001-JOB', 'missing-key', {'dataset_version':'v1','model_mode':'LIVE_LLM'})
     claim = kernel.claim()
-    manifest = kernel.prepare_market(claim['run_id'])
+    manifest = market_service.prepare_market(kernel,claim['run_id'])
     for name in ('OPENAI_API_KEY','openai_api_key','OPENAI_MODEL','openai_model'):
         monkeypatch.delenv(name, raising=False)
     with pytest.raises(ValueError, match='requires configured API key'):

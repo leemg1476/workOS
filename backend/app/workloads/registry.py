@@ -21,6 +21,9 @@ verifiers = {}
 verifier_kind_resolvers = {}
 acceptance_hooks = {}
 trigger_hooks = {}
+retry_guards = {}
+revalidate_guards = {}
+review_guards = {}
 RESERVED_VERIFIERS = {'mock_receipt','market_briefing_v1','policy_impact_v1','voc_report_v1',
                       'voc_report_v2','voc_report_v3','policy_followup_verification_v1',
                       'policy_index_v1','policy_regression_v1'}
@@ -61,6 +64,24 @@ def register_trigger_hook(kind, hook):
     if kind in trigger_hooks:
         raise ValueError('duplicate trigger hook')
     trigger_hooks[kind] = hook
+
+
+def register_retry_guard(kind, guard):
+    if kind in retry_guards:
+        raise ValueError('duplicate retry guard')
+    retry_guards[kind] = guard
+
+
+def register_revalidate_guard(kind, guard):
+    if kind in revalidate_guards:
+        raise ValueError('duplicate revalidation guard')
+    revalidate_guards[kind] = guard
+
+
+def register_review_guard(kind, guard):
+    if kind in review_guards:
+        raise ValueError('duplicate review guard')
+    review_guards[kind] = guard
 
 
 def register_kind_executor(kind, execute):
