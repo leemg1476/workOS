@@ -54,16 +54,20 @@ def _suite(c,task_id,suite_id):
 
 def active_targets(c,task_id,task_version):
     """Find case targets recorded when the active method version was last applied."""
-    row=one(c,'''SELECT r.result,r.result_sha256 FROM text_experiment_decisions d
+    row=one(c,'''SELECT value,sha,kind FROM (
+        SELECT targets AS value,targets_sha256 AS sha,generation,'contract' AS kind FROM text_contract_changes
+        WHERE task_id=:task AND decision='APPLY' AND to_version=:version
+        UNION ALL
+        SELECT r.result AS value,r.result_sha256 AS sha,d.generation,'experiment' AS kind FROM text_experiment_decisions d
         JOIN text_experiments x ON x.experiment_id=d.experiment_id
         JOIN text_experiment_results r ON r.experiment_id=x.experiment_id
-        WHERE x.task_id=:task AND d.decision='APPLY' AND d.to_version=:version
-        ORDER BY d.generation DESC LIMIT 1''',{'task':task_id,'version':task_version})
+        WHERE x.task_id=:task AND d.decision='APPLY' AND d.to_version=:version) history
+        ORDER BY generation DESC LIMIT 1''',{'task':task_id,'version':task_version})
     if not row:
         return {}
-    if digest(row['result'])!=row['result_sha256']:
-        raise Conflict('applied evaluation result changed')
-    targets=row['result'].get('candidate_targets',{})
+    if not isinstance(row['value'],dict) or digest(row['value'])!=row['sha']:
+        raise Conflict('applied evaluation or contract mapping changed')
+    targets=row['value'] if row['kind']=='contract' else row['value'].get('candidate_targets',{})
     if not isinstance(targets,dict):
         raise Conflict('applied evaluation target mapping is invalid')
     return targets

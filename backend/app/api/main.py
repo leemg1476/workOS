@@ -14,6 +14,8 @@ from app.evaluation.improvements import ImprovementService
 from app.evaluation.text_regression import TextCaseRequest, SuiteRequest, add_case, freeze_suite
 from app.evaluation.text_experiments import ExperimentRequest, FinalizeRequest, start as start_text_experiment, finish as finish_text_experiment, active_targets as active_text_targets
 from app.evaluation.text_decisions import DecisionRequest, decide as decide_text_experiment
+from app.evaluation.text_contract_changes import ContractChangeRequest, ContractRollbackRequest, apply as apply_text_contract, rollback as rollback_text_contract
+from app.domain.hashing import digest
 from app.integrations.search import readiness, SearchUnavailable
 from app.work.designs import CreateDesign, EditDesign, DesignFeedback, generate, create as create_design, revise as revise_design, apply_feedback
 from app.work.register_design import RegisterDesign, ScheduleState, register as register_design, set_schedule
@@ -236,8 +238,28 @@ def text_experiment_context(task_id: str):
             raise HTTPException(404,'active registered text task not found')
         latest=c.execute(text('''SELECT revision,plan FROM work_design_revisions WHERE design_id=:id ORDER BY revision DESC LIMIT 1'''),
                          {'id':task['design_id']}).mappings().one()
-        return {**dict(task),'latest_revision':latest['revision'],'latest_plan':latest['plan'],
+        return {**dict(task),'latest_revision':latest['revision'],'latest_plan':latest['plan'],'latest_plan_sha256':digest(latest['plan']),
                 'champion_targets':active_text_targets(c,task_id,task['version'])}
+
+
+@app.get('/api/tasks/{task_id}/text-contract-changes')
+def text_contract_changes(task_id: str):
+    with engine.connect() as c:
+        return [dict(row) for row in c.execute(text('''SELECT change_id,decision,note,from_version,to_version,generation,
+            from_plan_sha256,plan_sha256,reversed_change_id,created_at FROM text_contract_changes WHERE task_id=:task ORDER BY generation DESC'''),
+            {'task':task_id}).mappings()]
+
+
+@app.post('/api/tasks/{task_id}/text-contract-changes')
+def apply_contract_change(task_id: str, body: ContractChangeRequest):
+    change_id,created=apply_text_contract(engine,task_id,body)
+    return {'change_id':change_id,'created':created}
+
+
+@app.post('/api/text-contract-changes/{change_id}/rollback')
+def rollback_contract_change(change_id: UUID, body: ContractRollbackRequest):
+    rollback_id,created=rollback_text_contract(engine,str(change_id),body)
+    return {'change_id':rollback_id,'created':created}
 
 
 @app.post('/api/tasks/{task_id}/text-experiments')
