@@ -18,6 +18,9 @@ class Verifier:
 executors = {}
 kind_executors = {}
 verifiers = {}
+RESERVED_VERIFIERS = {'mock_receipt','market_briefing_v1','policy_impact_v1','voc_report_v1',
+                      'voc_report_v2','voc_report_v3','policy_followup_verification_v1',
+                      'policy_index_v1','policy_regression_v1'}
 
 
 def register_executor(task_id, version, execute):
@@ -28,11 +31,14 @@ def register_executor(task_id, version, execute):
 
 
 def register_verifier(kind, verifier):
-    reserved = {'mock_receipt','market_briefing_v1','policy_impact_v1','voc_report_v1',
-                'voc_report_v2','voc_report_v3','policy_followup_verification_v1',
-                'policy_index_v1','policy_regression_v1'}
-    if kind in verifiers or kind in reserved:
+    if kind in verifiers or kind in RESERVED_VERIFIERS:
         raise ValueError('duplicate workload verifier')
+    verifiers[kind] = verifier
+
+
+def register_builtin_verifier(kind, verifier):
+    if kind not in RESERVED_VERIFIERS or kind in verifiers:
+        raise ValueError('invalid or duplicate built-in verifier')
     verifiers[kind] = verifier
 
 

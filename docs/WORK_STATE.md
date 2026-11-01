@@ -1,5 +1,14 @@
 # Work OS 작업 상태
 
+## 2026-11-01 추가 진행 — 금융 검증기 분리
+
+- `backend/app/workloads/market_verifier.py`로 금융 브리핑의 계약·컨텍스트 해시·출처·검색 결과 검증을 옮기고 기존 등록형 검증 경계에서 호출한다. `market-validator-v3`와 `market-suite-v3`, Evidence 내용과 실패 시 미채택 동작을 유지한다. 기본 제공 검증 이름은 외부 업무 등록에서 덮어쓸 수 없다.
+- 전용 DB에서 `python -m pytest -q tests/test_market.py tests/test_api.py tests/test_workload_extension.py tests/test_policy.py`: **11 passed, warning 1건**. `docker compose -p workos-p0 up -d --build --no-deps api worker` 성공.
+
+한계: 정책·VOC 검증과 정책 후속 DAG·이벤트·복구는 아직 커널 내부에 남아 있다. 구조 전환 완료는 아니다.
+
+다음 세 단계: ① 정책·VOC 검증을 업무 모듈로 옮기고 동일한 증거와 실패 동작을 확인한다. ② 정책 후속 DAG와 이벤트·복구 처리를 분리한다. ③ 세 데모 및 사용자 업무의 전체 흐름과 장애 복구를 검증한다.
+
 ## 2026-11-01 추가 진행 — 데모 실행기 분리
 
 상태: **부분 구현**. 금융·정책·VOC 데모의 실행 단계 선택과 처리 코드를 공통 `backend/app/worker.py`에서 `backend/app/workloads/demo_execution.py`로 옮겨 기존 종류별 실행기 등록을 통해 호출한다. 이 변경은 실행 분기만 분리한다.

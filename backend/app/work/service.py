@@ -6,7 +6,7 @@ from sqlalchemy.exc import NoResultFound
 from app.domain.contracts import WorkStatus, TRANSITIONS, PolicyFollowupVerification, PolicyIndexReceipt, PolicyRegressionReport, PolicyReviewReport
 from pydantic import ValidationError
 from app.integrations.artifact_store import store_json
-from app.work.market import build_manifest, digest, verify_briefing, PROMPT_VERSION
+from app.work.market import build_manifest, digest, PROMPT_VERSION
 from app.work.policy import STEPS, build_policy_manifest, verify_policy
 from app.work.voc import verify_voc, DOCUMENTS as VOC_DOCUMENTS, DOCUMENT_QUERY as VOC_DOCUMENT_QUERY, DOCUMENT_PARAMETERS as VOC_DOCUMENT_PARAMETERS, RECORD_QUERY as VOC_RECORD_QUERY
 from app.integrations.search import retrieve_documents, demo_index_target, configuration as search_configuration
@@ -877,7 +877,7 @@ class Kernel:
                 kind = 'policy_index_v1'
             elif work['parent_work_id'] and work['task_id'] == 'TASK-002' and work['input_snapshot'].get('step_no') == 3:
                 kind = 'policy_regression_v1'
-            from app.workloads import text_workflow  # Register the built-in generic verifier.
+            from app.workloads import text_workflow, market_verifier  # Register trusted built-in verifiers.
             from app.workloads.registry import verifiers
             extension = verifiers.get(kind)
             if extension is None and kind not in ('mock_receipt','market_briefing_v1','policy_impact_v1','voc_report_v1','voc_report_v2','voc_report_v3','policy_followup_verification_v1','policy_index_v1','policy_regression_v1'):
@@ -901,28 +901,6 @@ class Kernel:
                     VALUES (:id,:run,:artifact,:suite,CAST(:result AS jsonb),:verdict)'''),
                     {'id':uid(),'run':run_id,'artifact':artifact_id,'suite':extension.suite_version,
                      'result':canonical(result),'verdict':'PASS' if result['passed'] else 'FAIL'})
-            elif kind == 'market_briefing_v1':
-                context = one(c, 'SELECT manifest,sha256 FROM run_contexts WHERE run_id=:id', {'id':run_id})
-                if not context:
-                    raise Conflict('market context missing')
-                result = verify_briefing(context['manifest'], content)
-                result['checks']['manifest_hash'] = digest(context['manifest']) == context['sha256']
-                result['checks']['model_provenance'] = run['agent_version'] == 'market-'+content.get('model_mode','')
-                current_docs = c.execute(text('SELECT document_id,version,title,body,sha256 FROM source_documents ORDER BY document_id,version')).mappings().all()
-                current_docs = [{'id':f"{d['document_id']}@{d['version']}",'title':d['title'],'body':d['body'],'sha256':d['sha256']}
-                                for d in current_docs if f"{d['document_id']}@{d['version']}" in context['manifest']['required_document_ids']]
-                result['checks']['source_current'] = current_docs == context['manifest']['authoritative_documents']
-                if context['manifest']['retrieval']['mode'] == 'OPENSEARCH':
-                    current_index,_ = retrieve_documents(context['manifest']['required_document_ids'])
-                    result['checks']['search_current'] = current_index == context['manifest']['documents']
-                result['passed'] = all(result['checks'].values())
-                refs = {'task_id':work['task_id'], 'task_version':work['task_version'], 'artifact_sha256':artifact_hash,
-                        'context_sha256':context['sha256'], 'dataset_version':context['manifest']['dataset_version'],
-                        'document_ids':[d['id'] for d in context['manifest']['documents']], 'retrieval':context['manifest']['retrieval']}
-                verifier, verification = 'market-validator-v3', 'market_deterministic'
-                c.execute(text('''INSERT INTO evaluations(evaluation_id,run_id,artifact_id,eval_suite_version,metric_results,verdict)
-                    VALUES (:id,:run,:artifact,'market-suite-v3',CAST(:result AS jsonb),:verdict)'''),
-                    {'id':uid(),'run':run_id,'artifact':artifact_id,'result':canonical(result),'verdict':'PASS' if result['passed'] else 'FAIL'})
             elif kind == 'policy_impact_v1':
                 context = one(c, 'SELECT manifest,sha256 FROM run_contexts WHERE run_id=:id', {'id':run_id})
                 if not context:
