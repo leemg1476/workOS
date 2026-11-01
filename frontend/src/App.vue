@@ -2,6 +2,7 @@
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import RunHistory from './RunHistory.vue'
 import WorkDesignStudio from './WorkDesignStudio.vue'
+import TextRegression from './TextRegression.vue'
 const tasks = ref([]), error = ref(''), selected = ref(null), loading = ref(''), artifacts = ref([]), comparison = ref(null), health = ref(null), runContext = ref(null), runSteps = ref([])
 const policyData = ref(null), policyWork = ref(null), policyMessage = ref(''), showPolicy = ref(false), policyReviewNote = ref(''), reviewContext = ref(null), reviewDecisionNote = ref('')
 const vocState = ref(null), proposals = ref([]), currentProposal = ref(''), showImprovements = ref(false), feedbackReason = ref('누락'), challenger = ref('challenger-v2'), actionBusy = ref(''), improvementMessage = ref('')
@@ -101,6 +102,7 @@ onUnmounted(() => clearInterval(timer))
             <div v-for="rec in artifact.content.recommendations" :key="rec.recommendation_id" class="voc-rec"><div><b>{{ rec.category }} · {{ rec.count }}건</b><p>{{ rec.action }}</p><small>근거 {{ rec.record_ids.join(', ') }}</small><small v-if="rec.document_citations"><br>가상 서비스 문서 {{ rec.document_citations.join(', ') }} · {{ artifact.content.retrieval_mode }}</small><small v-if="rec.comparison"><br>{{ rec.comparison==='SAME_CATEGORY' ? '이전 보고서와 동일 범주' : rec.comparison==='NEW_CATEGORY' ? '이전 보고서에 없는 범주' : '이전 보고서 없음' }}<span v-if="rec.previous_recommendation_id"> · {{ rec.previous_recommendation_id }}</span></small></div><button @click="createFeedback(artifact.artifact_id,rec.recommendation_id)" :disabled="!!actionBusy || !reportIsCurrent(artifact)">이 추천에 피드백 ↗</button></div>
             <p class="detail-note">미분류 {{ artifact.content.unclassified_ids.length }}건: {{ artifact.content.unclassified_ids.join(', ') || '없음' }} · <a :href="`${base}/runs/${artifact.run_id}`" target="_blank" rel="noopener noreferrer">원천 스냅샷 ↗</a></p>
           </div>
+          <TextRegression v-if="artifact.kind==='provided_text_report' && artifact.evidence?.some(e=>e.verification_type==='human_work_review')" :key="artifact.artifact_id" :base="base" :task-id="selected.work.task_id" :artifact="artifact" />
           <div v-for="e in artifact.evidence" :key="e.evidence_id" class="detail-note">검증기 {{ e.verifier_version }} · {{ e.verification_type==='human_work_review' ? '사람의 판단 · ' + e.result.decision : e.result.passed ? (e.result.requires_human_review ? '형식 검사 통과 · 사람 검토 필요' : '결정론적 검사 통과') : '검증 실패' }} · {{ e.verification_type==='human_work_review' ? ' · ' + e.result.note : JSON.stringify(e.result.checks) }}</div>
         </div>
       </section>

@@ -10,6 +10,7 @@ from app.work.db import engine, migrate
 from app.work.seed import seed
 from app.work.service import Kernel, Conflict, NotFound
 from app.evaluation.improvements import ImprovementService
+from app.evaluation.text_regression import TextCaseRequest, SuiteRequest, add_case, freeze_suite
 from app.integrations.search import readiness, SearchUnavailable
 from app.work.designs import CreateDesign, EditDesign, DesignFeedback, generate, create as create_design, revise as revise_design, apply_feedback
 from app.work.register_design import RegisterDesign, ScheduleState, register as register_design, set_schedule
@@ -162,6 +163,38 @@ def tasks():
 def jobs():
     with engine.connect() as c:
         return [dict(r) for r in c.execute(text('SELECT * FROM job_definitions ORDER BY job_id')).mappings()]
+
+
+@app.get('/api/tasks/{task_id}/regression-cases')
+def text_regression_cases(task_id: str):
+    with engine.connect() as c:
+        return [dict(row) for row in c.execute(text('''SELECT case_id,snapshot,snapshot_sha256,created_at
+            FROM text_regression_cases WHERE task_id=:task ORDER BY created_at DESC,case_id'''),{'task':task_id}).mappings()]
+
+
+@app.post('/api/tasks/{task_id}/regression-cases')
+def create_text_regression_case(task_id: str, body: TextCaseRequest):
+    try:
+        case_id,created=add_case(engine,task_id,body)
+    except ValueError as exc:
+        raise HTTPException(422,str(exc)) from exc
+    return {'case_id':case_id,'created':created}
+
+
+@app.get('/api/tasks/{task_id}/regression-suites')
+def text_regression_suites(task_id: str):
+    with engine.connect() as c:
+        return [dict(row) for row in c.execute(text('''SELECT suite_id,version,snapshot,snapshot_sha256,created_at
+            FROM text_regression_suites WHERE task_id=:task ORDER BY version DESC'''),{'task':task_id}).mappings()]
+
+
+@app.post('/api/tasks/{task_id}/regression-suites')
+def create_text_regression_suite(task_id: str, body: SuiteRequest):
+    try:
+        suite_id,created=freeze_suite(engine,task_id,body)
+    except ValueError as exc:
+        raise HTTPException(422,str(exc)) from exc
+    return {'suite_id':suite_id,'created':created}
 
 
 @app.post('/api/tasks/{task_id}/schedule')
