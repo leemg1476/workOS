@@ -89,3 +89,18 @@ def test_builtin_registrations_are_loaded_before_configured_extensions():
         registry.register_acceptance_hook('policy_impact_v1',lambda *args: None)
     with pytest.raises(ValueError, match='duplicate'):
         registry.register_verifier_kind_resolver('policy_impact_v1',lambda work:'example_total_v1')
+
+
+def test_trigger_hook_is_atomic_with_work_creation(kernel, monkeypatch):
+    from app.workloads import registry
+    with engine.begin() as c:
+        c.execute(text("UPDATE task_definitions SET acceptance_policy=CAST('{\"kind\":\"extension_trigger\"}' AS jsonb) WHERE task_id='TEST'"))
+    def fail_hook(kernel,c,job,work_id):
+        kernel._event(c,'extension.snapshot',work_id,{'snapshot':'test'})
+        raise ValueError('cannot pin input')
+    monkeypatch.setitem(registry.trigger_hooks,'extension_trigger',fail_hook)
+    with pytest.raises(ValueError,match='cannot pin input'):
+        kernel.trigger('test-job','trigger-fails',{})
+    with engine.connect() as c:
+        assert c.execute(text("SELECT count(*) FROM work_items WHERE job_id='test-job'")).scalar_one()==0
+        assert c.execute(text("SELECT count(*) FROM work_events WHERE event_type='extension.snapshot'")).scalar_one()==0

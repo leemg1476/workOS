@@ -11,7 +11,21 @@ def effective_contract(c, work_id, task_id, task_version, base, *, allow_evaluat
         FROM text_experiment_work m JOIN text_experiments x ON x.experiment_id=m.experiment_id
         JOIN text_regression_suites s ON s.suite_id=x.suite_id WHERE m.work_id=CAST(:id AS uuid)'''),{'id':str(work_id)}).mappings().first()
     if row is None:
-        return base, None
+        pinned=c.execute(text('''SELECT m.task_id,m.source_version,s.source_text,s.source_sha256
+            FROM text_source_work m JOIN text_source_versions s ON s.task_id=m.task_id AND s.version=m.source_version
+            WHERE m.work_id=CAST(:id AS uuid)'''),{'id':str(work_id)}).mappings().first()
+        if pinned is None:
+            created_after_migration=c.execute(text('''SELECT w.created_at >= m.applied_at FROM work_items w
+                JOIN schema_migrations m ON m.version='017_text_sources' WHERE w.work_id=CAST(:id AS uuid)'''),
+                {'id':str(work_id)}).scalar_one_or_none()
+            if created_after_migration:
+                raise Conflict('new text work has no pinned source')
+            return base, None
+        if pinned['task_id']!=task_id or digest(pinned['source_text'])!=pinned['source_sha256']:
+            raise Conflict('pinned source changed')
+        contract=deepcopy(base)
+        contract['source_text']=pinned['source_text']
+        return contract, None
     if (row['status'] not in (('RUNNING','EVALUATED') if allow_evaluated else ('RUNNING',)) or row['task_id']!=task_id or row['champion_version']!=task_version
         or digest(base)!=row['champion_contract_sha256'] or digest(row['candidate_plan'])!=row['candidate_plan_sha256']
         or row['suite_sha256']!=row['snapshot_sha256']):

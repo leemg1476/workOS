@@ -16,6 +16,7 @@ from app.evaluation.text_decisions import DecisionRequest, decide as decide_text
 from app.integrations.search import readiness, SearchUnavailable
 from app.work.designs import CreateDesign, EditDesign, DesignFeedback, generate, create as create_design, revise as revise_design, apply_feedback
 from app.work.register_design import RegisterDesign, ScheduleState, register as register_design, set_schedule
+from app.workloads.text_sources import UpdateTextSource, get_source, update_source
 
 
 @asynccontextmanager
@@ -253,6 +254,20 @@ def text_experiment_decision(experiment_id: UUID, body: DecisionRequest):
 @app.post('/api/tasks/{task_id}/schedule')
 def task_schedule(task_id: str, body: ScheduleState):
     return {'task_id':task_id,'changed':set_schedule(engine,task_id,body),'enabled':body.enabled}
+
+
+@app.get('/api/tasks/{task_id}/text-source')
+def task_text_source(task_id: str):
+    return get_source(engine,task_id)
+
+
+@app.put('/api/tasks/{task_id}/text-source')
+def task_text_source_update(task_id: str, body: UpdateTextSource):
+    try:
+        version,changed=update_source(engine,task_id,body)
+    except ValueError as exc:
+        raise HTTPException(422,str(exc)) from exc
+    return {'task_id':task_id,'version':version,'changed':changed}
 
 
 @app.post('/api/tasks/{task_id}/run')

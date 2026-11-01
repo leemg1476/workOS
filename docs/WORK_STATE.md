@@ -1,5 +1,22 @@
 # Work OS 작업 상태
 
+## 2026-11-01 추가 진행 — 지속 업무의 입력 버전과 실행 시점 고정
+
+상태: **부분 구현**. 등록된 텍스트 업무의 입력을 새 버전으로 저장하면 다음 수동·예약 실행부터 사용한다. 기존 WorkItem과 재시도는 생성 시 고정된 입력을 사용한다. 입력 변경은 새 실행을 자동으로 발생시키지 않는다.
+
+- `backend/migrations/017_text_sources.sql`, `backend/app/workloads/text_sources.py`: 사용자 입력 버전과 Work별 버전 연결을 수정·삭제 불가로 보존한다. 기존 업무의 등록 입력은 최초 사용 시 v1로 초기화한다. 수정은 예상 버전과 멱등 키로 동시 덮어쓰기를 막고, 텍스트와 해시를 기록한다.
+- `backend/app/workloads/registry.py`, `backend/app/work/service.py`, `backend/app/evaluation/text_runtime.py`: 업무별 트리거 후크가 작업 생성과 같은 트랜잭션에서 입력 버전을 고정한다. 017 적용 이후 만들어진 텍스트 작업에 고정 정보가 없으면 실행을 거부한다. 이전 작업과 고정 평가의 입력은 유지한다. 트리거 후크 실패는 작업 생성을 롤백한다.
+- `backend/app/workloads/text_workflow.py`, `backend/app/api/main.py`: 실행 컨텍스트에 입력 버전과 해시를 기록하고 구조 검증을 `provided-text-structure-v3`으로 버전 올렸다. 사용자 입력 조회·수정 API를 추가했다. `docker-compose.yml`은 예약 실행기에도 신뢰된 업무 모듈 설정을 전달한다.
+- `frontend/src/TextSourceEditor.vue`, `App.vue`, `style.css`: 업무 카드에서 현재 입력·버전을 확인하고 수정하며, 예약 실행 및 LIVE LLM 전송 가능성을 안내한다. 실행 상세에는 실제 사용한 입력 버전을 표시한다.
+- 전용 PostgreSQL·Redis에서 `python -m pytest -x -q tests/test_text_sources.py tests/test_registered_work.py tests/test_text_decisions.py tests/test_text_experiments.py tests/test_scheduler.py`: **22 passed, warning 1건**. 이후 동시 수정 및 고정 누락 차단 검사를 추가해 아래와 같이 후속 검증했다. `frontend`에서 `npm run build` 성공.
+- 후속 검증: 전체 `python -m pytest -x -q tests` **77 passed, warning 1건**(마지막 고정 누락 차단 및 트리거 후크 검사 추가 전 시작), 최신 `python -m pytest -x -q tests/test_text_sources.py tests/test_workload_extension.py tests/test_text_experiments.py tests/test_text_decisions.py tests/test_scheduler.py` **25 passed, warning 1건**. 동시 수정, 불변 입력, 기존 작업의 재시도, 예약 직후 입력 변경, 고정 누락 및 후크 실패 롤백을 확인했다.
+- 격리된 DB·API·UI·별도 worker에서 가상 입력을 v3으로 저장하고 실행해 `입력 v3 · MOCK`, 구조 검사 8/8, `WAITING_APPROVAL`을 화면에서 확인했다. 사용자 DB에 가상 업무를 생성하지 않았다. 같은 격리 DB에서 017 down/up으로 두 테이블 제거·재생성을 확인했고 `docker compose config --quiet`도 성공했다.
+- 기존 Compose에서 API·worker·scheduler·UI를 재빌드하고 017 테이블과 DB·OpenSearch 연결, 각 프로세스 실행 상태를 확인했다. LIVE 모델의 실제 내용 품질은 이번에 측정하지 않았다.
+
+한계: 텍스트는 사람이 직접 제공하며 자동 수집이나 외부 업무 시스템 연결은 없다. 이전 WorkItem은 과거 입력을 대상으로 하므로 현재 입력과 결과가 다를 수 있다. 기존 고정 평가 사례는 변경되지 않으며 문구 검사만으로 의미적 품질을 보장할 수 없다. 정책 이벤트·컨텍스트 등의 업무별 커널 코드는 아직 남아 있다.
+
+다음 세 단계: ① 정책 이벤트·검토와 데모 컨텍스트 구성의 커널 의존성을 줄인다. ② 평가 기준 및 단계 변경을 기존 고정 평가를 약화하지 않고 다루도록 확장한다. ③ 사용자 업무와 세 데모의 전체 E2E, 예약 연속성·장애 복구를 검증한다.
+
 ## 2026-11-01 추가 진행 — 정책·VOC 검증과 후속 예약의 업무 모듈화
 
 상태: **부분 구현**. 정책 변경 분석·하위 세 단계와 VOC 검증을 공통 `Kernel.submit`의 업무별 분기에서 `backend/app/workloads/policy_verifiers.py`, `voc_verifier.py`로 이전했다. Artifact 형식과 기존 검증기·평가셋 버전은 유지한다. 정책의 단계별 검증기 선택과 검증 통과 후 후속 작업 예약·기존 작업 복구도 등록된 `policy_lifecycle.py`가 처리한다.

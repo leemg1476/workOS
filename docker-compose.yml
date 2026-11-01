@@ -52,6 +52,7 @@ services:
       DATABASE_URL: postgresql+psycopg://workos:workos@postgres:5432/workos
       REDIS_URL: redis://redis:6379/0
       WORKOS_MODE: ${WORKOS_MODE:-MOCK}
+      WORKOS_WORKLOAD_MODULES: ${WORKOS_WORKLOAD_MODULES:-}
     depends_on:
       postgres: {condition: service_healthy}
   ui:

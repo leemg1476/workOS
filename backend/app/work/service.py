@@ -107,6 +107,13 @@ class Kernel:
             c.execute(text('''INSERT INTO work_items(work_id,job_id,task_id,task_version,input_snapshot,status)
                 VALUES (:id,:job,:task,:version,CAST(:snapshot AS jsonb),'CREATED')'''),
                 dict(id=work_id, job=job_id, task=job['task_id'], version=job['task_version'], snapshot=canonical(snapshot)))
+            from app.workloads.registry import load_configured, trigger_hooks
+            load_configured()
+            task = one(c, 'SELECT acceptance_policy FROM task_definitions WHERE task_id=:id AND version=:version',
+                       {'id':job['task_id'],'version':job['task_version']})
+            hook = trigger_hooks.get(task['acceptance_policy'].get('kind'))
+            if hook:
+                hook(self,c,dict(job),work_id)
             self._event(c, 'work.created', work_id, {'job_id': job_id, 'input_snapshot': snapshot}, actor='user', key=key)
             self._transition(c, work_id, 'READY', key)
             c.execute(text("INSERT INTO work_queue(work_id,status) VALUES (:id,'PENDING')"), {'id': work_id})

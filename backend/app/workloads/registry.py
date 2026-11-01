@@ -20,6 +20,7 @@ kind_executors = {}
 verifiers = {}
 verifier_kind_resolvers = {}
 acceptance_hooks = {}
+trigger_hooks = {}
 RESERVED_VERIFIERS = {'mock_receipt','market_briefing_v1','policy_impact_v1','voc_report_v1',
                       'voc_report_v2','voc_report_v3','policy_followup_verification_v1',
                       'policy_index_v1','policy_regression_v1'}
@@ -56,6 +57,12 @@ def register_acceptance_hook(kind, hook):
     acceptance_hooks[kind] = hook
 
 
+def register_trigger_hook(kind, hook):
+    if kind in trigger_hooks:
+        raise ValueError('duplicate trigger hook')
+    trigger_hooks[kind] = hook
+
+
 def register_kind_executor(kind, execute):
     if kind in kind_executors:
         raise ValueError('duplicate workload executor kind')
@@ -64,7 +71,7 @@ def register_kind_executor(kind, execute):
 
 def load_builtins():
     """Load the deployment's built-in workload registrations before extensions."""
-    for name in ('text_workflow','market_verifier','policy_verifiers','voc_verifier','policy_lifecycle','demo_execution'):
+    for name in ('text_workflow','text_sources','market_verifier','policy_verifiers','voc_verifier','policy_lifecycle','demo_execution'):
         importlib.import_module('app.workloads.' + name)
 
 
