@@ -59,6 +59,9 @@ def test_event_to_review_dag_is_idempotent_and_verified(kernel):
         first = kernel.claim()
         assert first['work_id'] == detail['followups'][0]['work_id']
         assert process_claim(kernel,first)['passed']
+        root_history = client.get('/api/tasks/TASK-002/runs').json()
+        assert len(root_history) == 1 and root_history[0]['run_id'] == str(run['run_id'])
+        assert root_history[0]['kind'] == 'policy_impact'
         detail = client.get(f'/api/policy-work/{root}').json()
         assert [x['status'] for x in detail['followups']] == ['COMMITTED','READY','BLOCKED','WAITING_APPROVAL']
         assert detail['followups'][0]['verification']['passed'] is True

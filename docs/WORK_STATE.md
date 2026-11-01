@@ -1,5 +1,17 @@
 # Work OS 작업 상태
 
+## 2026-11-01 추가 진행 — 업무별 실행 이력과 결과 비교 화면
+
+- 대시보드 상단의 `무엇이 달라졌나요?`에서 세 Task의 최상위 Run 최대 100건을 조회하고, 성공·검증 실패·실행 실패와 결과 요약을 표시한다. 이전 실행을 펼치거나 선택한 시도의 결과·근거·단계로 이동할 수 있다. 후속 DAG Run은 별도 정책 상세에서 확인한다.
+- 검증 통과한 두 실행을 선택해 금융 지표, 정책 변경 조항 수, VOC 범주별 건수를 비교한다. 데이터 증감을 품질 향상으로 판단하지 않는다. TASK-003은 별도의 고정 평가 결과에서 Champion/Challenger 점수·개선·퇴행·판정을 표시하고 근거 화면으로 연결한다. 모든 결과는 가상 사례의 범위를 명시한다.
+- `frontend/src/RunHistory.vue`, `frontend/src/App.vue`, `frontend/src/style.css`, `backend/app/api/main.py`, `tests/test_market.py`, `tests/test_policy.py`를 변경했다. 비금융 Task에 금융 전용 비교 API를 호출하면 422를 반환한다.
+- 전용 PostgreSQL에서 `python -m pytest -q tests/test_market.py tests/test_api.py tests/test_policy.py tests/test_voc.py`: **15 passed, warning 1건**. 이후 정책 후속 Run 제외 검사를 추가하고 `python -m pytest -q tests/test_policy.py`: **5 passed, warning 1건**. `npm run build`, `docker compose config --quiet` 성공.
+- 기존 Compose 데이터는 유지한 채 API·UI 이미지를 갱신하고 브라우저에서 금융 비교, VOC 평가 요약 및 과거 실행 상세, 정책 실행 기록과 선택한 정책 조항·출처를 확인했다. 별도 E2E 전체 시나리오는 이번 변경에서 재실행하지 않았다.
+
+한계: 이력은 최상위 Run 최근 100건이며, 데이터 변화와 결정론적 검사 수는 의미적 품질 점수가 아니다. 이전 업무 확장 경로는 여전히 부분 구현이다.
+
+다음 세 단계: ① 기존 세 업무의 실행·검증·정책 후속 DAG를 확장 모듈로 분리한다. ② 신규 업무의 컨텍스트·체크포인트·DAG와 검증기 버전 고정을 공통 계약으로 지원한다. ③ 복수 신규 업무의 커널 무수정 E2E와 기존 세 데모 회귀를 검증한다.
+
 ## 2026-11-01 추가 진행 — 신규 업무 실행·검증 확장 경로
 
 상태: **부분 구현**. 신규 업무 실행기와 독립 검증기를 신뢰된 배포 모듈로 등록하고 공통 커널에서 검증·발행하는 경로를 추가했다. 기존 세 데모의 업무별 분기와 정책 DAG는 여전히 커널·런타임에 남아 있어, 모든 종류의 신규 업무를 완전히 일반화한 것은 아니다.

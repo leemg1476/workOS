@@ -38,6 +38,11 @@ def test_market_comparison_and_citation_failure_recovery(kernel):
         detail = client.get(f'/api/work/{work}').json()
         assert detail['work']['status'] == 'REWORK_REQUIRED' and detail['work']['accepted_artifact_id'] is None
         assert detail['runs'][0]['status'] == 'VERIFICATION_FAILED'
+        history = client.get('/api/tasks/TASK-001/runs').json()
+        failure_row = next(r for r in history if r['run_id'] == str(failed_run))
+        assert failure_row['verdict'] == 'FAIL' and failure_row['kind'] == 'market_briefing'
+        assert failure_row['eval_suite_version'] == 'market-suite-v3'
+        assert client.get('/api/tasks/TASK-003/compare', params={'left':first,'right':second}).status_code == 422
         dashboard = next(t for t in client.get('/api/tasks').json() if t['task_id'] == 'TASK-001')
         failed = next(x for x in dashboard['recent_verifications'] if x['run_id'] == str(failed_run))
         assert failed['verdict'] == 'FAIL' and not failed['is_current']

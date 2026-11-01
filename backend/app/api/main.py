@@ -219,14 +219,17 @@ def decide_improvement(proposal_id: str, action: str, body: ActionRequest):
 @app.get('/api/tasks/{task_id}/runs')
 def task_runs(task_id: str):
     with engine.connect() as c:
-        return [dict(r) for r in c.execute(text('''SELECT r.run_id,r.work_id,r.status,r.attempt_no,r.model_id,r.started_at,
-            a.artifact_id,a.artifact_version,a.content,e.verdict FROM runs r JOIN work_items w ON w.work_id=r.work_id
+        return [dict(r) for r in c.execute(text('''SELECT r.run_id,r.work_id,r.status,r.attempt_no,r.model_id,r.started_at,r.error,
+            w.task_version,w.status AS work_status,a.kind,a.artifact_id,a.artifact_version,a.content,e.verdict,e.eval_suite_version
+            FROM runs r JOIN work_items w ON w.work_id=r.work_id
             LEFT JOIN artifacts a ON a.run_id=r.run_id LEFT JOIN evaluations e ON e.artifact_id=a.artifact_id
-            WHERE w.task_id=:task ORDER BY r.started_at DESC'''), {'task':task_id}).mappings()]
+            WHERE w.task_id=:task AND w.parent_work_id IS NULL ORDER BY r.started_at DESC LIMIT 100'''), {'task':task_id}).mappings()]
 
 
 @app.get('/api/tasks/{task_id}/compare')
 def compare(task_id: str, left: str, right: str):
+    if task_id != 'TASK-001':
+        raise HTTPException(422, 'comparison is available for market reports only')
     with engine.connect() as c:
         data = c.execute(text('''SELECT r.run_id,a.content FROM runs r JOIN work_items w ON w.work_id=r.work_id
             JOIN artifacts a ON a.run_id=r.run_id JOIN evaluations e ON e.artifact_id=a.artifact_id
