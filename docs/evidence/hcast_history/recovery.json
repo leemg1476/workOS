@@ -1,0 +1,181 @@
+{
+  "schema": "hcast-recovery-exploratory-v1",
+  "warning": "This is a post-hoc reattempt of a previously executed task, not independent holdout or human productivity evidence.",
+  "task_key": "local_research_tex/ar_report",
+  "human_baseline_minutes": 24,
+  "history_before": 12,
+  "history_used": [
+    {
+      "seq": 104,
+      "task_key": "local_research/task_not_moving_amy",
+      "question": "In how many MuJoCo tasks did the authors of the TRPO paper allow a nonzero reward even in the absence of motion?",
+      "prediction": "1개입니다.",
+      "expected": [
+        "2",
+        "two"
+      ],
+      "score": 0,
+      "work_id": "cb123154-c0de-4f5f-9f74-7e5c717b670e",
+      "run_id": "e5e45569-77d7-46f0-b4fa-d4f9701b97c4",
+      "artifact_id": "44b09522-0ebc-4dba-b1b2-87e46920fd20",
+      "artifact_sha256": "015d157d79045fdd2bd5b891a515943928a2e4649d0b55c462a514978565f4d2"
+    },
+    {
+      "seq": 200,
+      "task_key": "local_research/section_letter_theodore",
+      "question": "What is the second letter of the section in which the authors compare various surrogate objectives?",
+      "prediction": "o",
+      "expected": [
+        "o"
+      ],
+      "score": 1,
+      "work_id": "c55c0aac-fecd-45d0-8534-1f47d3cb3441",
+      "run_id": "2def0761-c1eb-4605-879c-96820fb403c2",
+      "artifact_id": "b4ab5523-2db8-4de6-808a-6a732c87f510",
+      "artifact_sha256": "ef0547830e348356b98a4b0c6bf9f1d16b10926d3237e7e6bcc3ad5df32b7c57"
+    },
+    {
+      "seq": 201,
+      "task_key": "local_research/clearer_section_letter_theodore",
+      "question": "What is the second letter of the first sentence in the section in which the authors compare various surrogate objectives?",
+      "prediction": "i",
+      "expected": [
+        "i"
+      ],
+      "score": 1,
+      "work_id": "a5378431-5bfa-44a7-95c4-c7768a0b893e",
+      "run_id": "48bb0312-f40d-4956-9b77-0fc8648ab67d",
+      "artifact_id": "931b2add-24c4-49af-b24c-70f8939d2415",
+      "artifact_sha256": "085f060ef8509f8568af263f40e87497e65808289b28be792a8576b22559699a"
+    },
+    {
+      "seq": 202,
+      "task_key": "local_research/td_month",
+      "question": "In which month was the TD algorithm for RL published?",
+      "prediction": "제공된 발췌문에는 월이 명시되어 있지 않습니다.",
+      "expected": [
+        "August",
+        "August 1988"
+      ],
+      "score": 0,
+      "work_id": "3a731f71-91da-4ba5-9dd8-cef25f05abcd",
+      "run_id": "2a8f2169-e9d2-4f44-862a-e556a283d953",
+      "artifact_id": "f5f42e48-41ec-4af7-9d55-207f09f3cc96",
+      "artifact_sha256": "53dea09c0e5e83721feeacc2f1cae0a67365487d0c226650cd2824e5ac3b033e"
+    }
+  ],
+  "retrieval_refs": [
+    {
+      "path": "tex/report/main-public-full.tex",
+      "offset": 37600,
+      "sha256": "85367a660532cab59b62d7248300099717ce92283ed83da2273a4fbb02eccae0",
+      "similarity": 0.11007482
+    },
+    {
+      "path": "tex/report/main-public-full.tex",
+      "offset": 18400,
+      "sha256": "0ec04fdbd3a52ab1e5d7d5fb3b74ff751a00808230619bac5ea3bba77c9806ae",
+      "similarity": 0.10268835
+    },
+    {
+      "path": "tex/report/main-public-full.tex",
+      "offset": 95200,
+      "sha256": "7f6a64a1ace1e01c1d1e062b354430b0b4e4190a4f205e69ed60283300d85dac",
+      "similarity": 0.08488412
+    },
+    {
+      "path": "tex/report/main-public-full.tex",
+      "offset": 17600,
+      "sha256": "ba22f920e5ab54d842cd69eaa30c39afcfc978d41efb455d1c8d3385bf90fc8a",
+      "similarity": 0.08157586
+    }
+  ],
+  "input_sha256": "ec2885d2b6b52444bb4c853f3b554993f1b6514f0a6f678158ae0a0bbc32e7ff",
+  "task_id": "USER-c7df8a1d-5f2b-4da0-87e1-7f7b9e6a02c3",
+  "work_id": "123711b3-2f42-4cfa-83bd-b59afe65e542",
+  "run_id": "ad20d7b5-3b0f-459e-9b32-13a92a872e39",
+  "wall_ms": 5547,
+  "work_status": "WAITING_APPROVAL",
+  "run_status": "SUCCEEDED",
+  "run_error": null,
+  "outcome": {
+    "artifact_id": "4b72a1d7-482f-488a-b72e-1f88dfce40a9",
+    "passed": true,
+    "result": {
+      "passed": true,
+      "checks": {
+        "task_and_labels": true,
+        "context_hash": true,
+        "input_hashes": true,
+        "steps_complete": true,
+        "output_present": true,
+        "execution_mode": true,
+        "evaluation_scope": true,
+        "source_version": true
+      },
+      "semantic_review": "NOT_PERFORMED",
+      "requires_human_review": true
+    }
+  },
+  "prediction": "7",
+  "score": 0,
+  "artifact_id": "4b72a1d7-482f-488a-b72e-1f88dfce40a9",
+  "artifact_sha256": "76c145bcdd8098cd37718194523af5c8fa3bd80ba38d308a338436bb4048e9ea",
+  "artifact_content": {
+    "steps": [
+      {
+        "text": "7",
+        "step_id": "answer",
+        "model_id": "gpt-6-luna",
+        "elapsed_ms": 5406,
+        "response_id": "resp_0b30303322577020016ae74da32ca487d08f46d0ba63c25859",
+        "input_tokens": 2118,
+        "output_tokens": 297
+      }
+    ],
+    "task_id": "USER-c7df8a1d-5f2b-4da0-87e1-7f7b9e6a02c3",
+    "data_mode": "USER_PROVIDED_TEXT",
+    "model_mode": "LIVE_LLM",
+    "source_sha256": "514350ca14fbb976823e31465e826383c35648390ddf82c9b615742c9613eb8e",
+    "contract_sha256": "efb2519a94b1675eaca97799962a7683e83eb744b5d3f748d046fef7dcdb2af7",
+    "semantic_review": "NOT_PERFORMED"
+  },
+  "evidence": [
+    {
+      "result": {
+        "checks": {
+          "context_hash": true,
+          "input_hashes": true,
+          "execution_mode": true,
+          "output_present": true,
+          "source_version": true,
+          "steps_complete": true,
+          "task_and_labels": true,
+          "evaluation_scope": true
+        },
+        "passed": true,
+        "semantic_review": "NOT_PERFORMED",
+        "requires_human_review": true
+      },
+      "created_at": "2026-11-01T14:33:10.506964+00:00",
+      "input_refs": {
+        "task_id": "USER-c7df8a1d-5f2b-4da0-87e1-7f7b9e6a02c3",
+        "task_version": 1,
+        "source_sha256": "514350ca14fbb976823e31465e826383c35648390ddf82c9b615742c9613eb8e",
+        "artifact_sha256": "76c145bcdd8098cd37718194523af5c8fa3bd80ba38d308a338436bb4048e9ea",
+        "contract_sha256": "efb2519a94b1675eaca97799962a7683e83eb744b5d3f748d046fef7dcdb2af7"
+      },
+      "artifact_id": "4b72a1d7-482f-488a-b72e-1f88dfce40a9",
+      "evidence_id": "bf6fc2ad-cb28-4fc6-8d31-d6c8319fa076",
+      "verifier_version": "provided-text-structure-v3",
+      "verification_type": "provided_text_structure"
+    }
+  ],
+  "context_sha256": "1d4d50a5f39ca2a6feee4bb2b15e925e69439bf6aa0ec9e7be78bf2bb8a517b0",
+  "source_sha256": "514350ca14fbb976823e31465e826383c35648390ddf82c9b615742c9613eb8e",
+  "contract_sha256": "efb2519a94b1675eaca97799962a7683e83eb744b5d3f748d046fef7dcdb2af7",
+  "model": "gpt-6-luna",
+  "response_id": "resp_0b30303322577020016ae74da32ca487d08f46d0ba63c25859",
+  "input_tokens": 2118,
+  "output_tokens": 297
+}

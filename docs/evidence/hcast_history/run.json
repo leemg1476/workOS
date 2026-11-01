@@ -1,0 +1,1247 @@
+{
+  "schema": "hcast-history-poc-v1",
+  "source_revision": "03438239d200fb3e89a5ddfc62ab4d23cc1866fb",
+  "human_time_reference": {
+    "task": "local_research_tex/ar_report",
+    "minutes": 24,
+    "kind": "METR published baseline time",
+    "source": "https://openreview.net/pdf?id=CGNJL6CeV0",
+    "comparable": false
+  },
+  "dataset": [
+    "https://github.com/METR/hcast-public/tree/03438239d200fb3e89a5ddfc62ab4d23cc1866fb/local_research",
+    "https://github.com/METR/hcast-public/tree/03438239d200fb3e89a5ddfc62ab4d23cc1866fb/local_research_tex"
+  ],
+  "corpus": {
+    "retrieval": "TF-IDF, word 1-2 grams, english stopwords; 1200 characters, stride 800, top 4; ties by source index",
+    "documents": [
+      {
+        "path": "tex/1502.05477/2015-ICML-TRPO-shiny.bbl",
+        "text_sha256": "fbafeb019a2795471c901a47e5864369dc64e4d0882e9fa56c9b35448b5c9f62",
+        "characters": 8473
+      },
+      {
+        "path": "tex/1502.05477/2015-ICML-TRPO-shiny.tex",
+        "text_sha256": "65efbdc10a0048a7bac623e8dd915b89b2fff3c7b307db5e5c56c816379c7b63",
+        "characters": 83727
+      },
+      {
+        "path": "tex/1707.06347/ppo-arxiv.tex",
+        "text_sha256": "8cfdde4ee851f1f5034be5decb69568b730a21fa6cf59d9e665a4d5af4ff15c1",
+        "characters": 220
+      },
+      {
+        "path": "tex/2302.13971/acl2023.bbl",
+        "text_sha256": "665d4981bb70b2fe8f5059ef45c9e717b7cc59fd53d2e2cd050904076cb7e681",
+        "characters": 35207
+      },
+      {
+        "path": "tex/2302.13971/acl2023.tex",
+        "text_sha256": "521de9af7a8c5eee8e069e6574865f578db67ba900a51f64d474388b59968995",
+        "characters": 43265
+      },
+      {
+        "path": "tex/2302.13971/appendix.tex",
+        "text_sha256": "bb4b7d2bb29e86fe7ba1e97d59060b3d858f79a6054d9cc676e3eb57d23fab0f",
+        "characters": 8212
+      },
+      {
+        "path": "tex/2302.13971/bias.tex",
+        "text_sha256": "b9dbcf231bc5c58c21338f189492a26ee9d040a4e05d60b524964d3a807a8c6f",
+        "characters": 10340
+      },
+      {
+        "path": "tex/2302.13971/generations.tex",
+        "text_sha256": "7399aabf691e9ef4e583f678878db0225cf9dc95bd88dace23137da1325d15f2",
+        "characters": 22415
+      },
+      {
+        "path": "tex/2307.15043/main.bbl",
+        "text_sha256": "1aff28df718881459a42ece59cb8320936a2135ea032d60815e17afe75154b22",
+        "characters": 17235
+      },
+      {
+        "path": "tex/2307.15043/main.tex",
+        "text_sha256": "89f8e8fad81f7821d01cd460057b2aaec77666cb5a588389326ea2e6e2a0ac38",
+        "characters": 8600
+      },
+      {
+        "path": "tex/2307.15043/sections/1-introduction.tex",
+        "text_sha256": "7b2f6a6cdd6267691cda8b313b83cdcacd790ace572503ffe1d3c227b0ff8334",
+        "characters": 11748
+      },
+      {
+        "path": "tex/2307.15043/sections/2-background.tex",
+        "text_sha256": "542159c6939f5aff3761747b23ba6ae2614d8b2193970d881dfc5e7e016cfc9a",
+        "characters": 10129
+      },
+      {
+        "path": "tex/2307.15043/sections/3-prelim.tex",
+        "text_sha256": "5f2bc4dec475c86cafe447b973a7b8540cc7e310ffd27c45cb55b6cd5abbece0",
+        "characters": 2131
+      },
+      {
+        "path": "tex/2307.15043/sections/3b-method.tex",
+        "text_sha256": "7c9dc30556d2909d5606d01abacb814b3b698a7b0d328e84abed597bfc94932e",
+        "characters": 15907
+      },
+      {
+        "path": "tex/2307.15043/sections/4-method.tex",
+        "text_sha256": "63ff977621f961e74ec7db1140e00dcd6c04ea7158382e4d87c0998b36f12f83",
+        "characters": 12355
+      },
+      {
+        "path": "tex/2307.15043/sections/5-transfer.tex",
+        "text_sha256": "857248135360a35974fda945d9e10ab06edfeb39768563b1718fd69bf0a02810",
+        "characters": 7925
+      },
+      {
+        "path": "tex/2307.15043/sections/6-benchmark.tex",
+        "text_sha256": "8ce4c05c2a750f00b2cc1f593a86de434815c6ae3d7b34d3e55c10f84b0e31a8",
+        "characters": 5991
+      },
+      {
+        "path": "tex/2307.15043/sections/7-experiments.tex",
+        "text_sha256": "2e5388d362e026863c0a7c6449ba46f532d104f037edacdfb519baa12299a3ed",
+        "characters": 28160
+      },
+      {
+        "path": "tex/2307.15043/sections/8-conclusion.tex",
+        "text_sha256": "5d53a642f5755864d8cb09eb0a35cb9a012c926dc0ae2ede5b0969ca418752d2",
+        "characters": 7317
+      },
+      {
+        "path": "tex/2307.15043/sections/9-appendix.tex",
+        "text_sha256": "7c6430093185c47fbd68e5b0701ab1000cfecdffaf4f2739a9f403ca7f6d6ea2",
+        "characters": 8805
+      },
+      {
+        "path": "tex/2307.15043/tables/baseline.tex",
+        "text_sha256": "4eb8a990c403c56ec1dd2923a82f59e22e3745440d4815b9916e6a06cfea230f",
+        "characters": 2876
+      },
+      {
+        "path": "tex/2307.15043/tables/black_box_results.tex",
+        "text_sha256": "3f72dcc62c0f819e33269cb5abb614608bfbb7abcdd1cb7a82c7d4dd0cffaf78",
+        "characters": 3861
+      },
+      {
+        "path": "tex/report/main-public-full.tex",
+        "text_sha256": "3bf47d4425e4522352cdc50100195146bbac6ab086c34489b6f048807734a091",
+        "characters": 101106
+      },
+      {
+        "path": "research/1502.05477.pdf",
+        "text_sha256": "76ceed1b1e5930a63d44210e1c998cf709c7d26c3db77d019fe0d9cfee1b6c81",
+        "characters": 59121
+      },
+      {
+        "path": "research/1707.06347.pdf",
+        "text_sha256": "3c580e046dd08548010d80216f6f4d4d6692fab45ebb57171ad34c0bc167bcde",
+        "characters": 26897
+      },
+      {
+        "path": "research/Proximal Policy Optimization - Wikipedia.html",
+        "text_sha256": "32ff66ccab65212d485cd12b6bc4778e1419b45e2405350ded79212d827afe1f",
+        "characters": 5368
+      },
+      {
+        "path": "research/Temporal difference learning - Wikipedia.html",
+        "text_sha256": "a1231bf9d4d5e6a0e77d88d694f60260cd10e92914a329c24a2b54cc0b1e995e",
+        "characters": 13690
+      }
+    ],
+    "chunks": 705
+  },
+  "history_policy": "Earlier independently scored successful baseline Work artifacts only, ranked by TF-IDF question similarity with threshold 0.08; maximum 2. Current/future records excluded. No human approval claimed.",
+  "plan": {
+    "name": "HCAST public local research task",
+    "objective": "Answer the research question using the supplied excerpts; use previous verified records only as supplementary context.",
+    "expected_result": "A single short answer in English, no explanation.",
+    "evaluation_criteria": [
+      "A short answer is returned for independent evaluation."
+    ],
+    "steps": [
+      {
+        "id": "answer",
+        "title": "Find the requested fact",
+        "purpose": "Read the question and excerpts. Give only the short answer; no explanation, answer prefix or extra text. Prior completed task records may be relevant but do not assume they answer the current question.",
+        "depends_on": []
+      }
+    ],
+    "open_questions": []
+  },
+  "tasks": [
+    {
+      "index": 1,
+      "task_key": "local_research/atari_epochs",
+      "question": "How many epochs did the original PPO paper use for Atari?",
+      "official_expected": [
+        "3",
+        "three"
+      ],
+      "history_before": 0,
+      "selected_history": [],
+      "retrieval_refs": [
+        {
+          "path": "research/1707.06347.pdf",
+          "offset": 23200,
+          "sha256": "20b536ef39af969d6a647d1383cb94a523041bf686c4387a81d4ca28de3ff6d4",
+          "similarity": 0.07395669
+        },
+        {
+          "path": "research/1707.06347.pdf",
+          "offset": 0,
+          "sha256": "df353e01ee1fe7a46c1061704c3201fa48a43aabba49d6112da64ed81839eef4",
+          "similarity": 0.07343424
+        },
+        {
+          "path": "research/1707.06347.pdf",
+          "offset": 12000,
+          "sha256": "591a04b906ce2cde512ea3a4217efb4cf95723f6a4d8e598a2a0550fe68db397",
+          "similarity": 0.06912657
+        },
+        {
+          "path": "research/1707.06347.pdf",
+          "offset": 22400,
+          "sha256": "e0b9d849842a27094bac68c8fcf677847dfbd2892e85242de8d6d61dd21afb60",
+          "similarity": 0.0667396
+        }
+      ],
+      "runs": [
+        {
+          "arm": "baseline",
+          "work_id": "33a1079f-74b9-4dfc-b549-9e999fa86f7e",
+          "run_id": "c997f837-512d-4e79-8f9f-e77e0aadc843",
+          "source_version": 1,
+          "wall_ms": 3391,
+          "work_status": "WAITING_APPROVAL",
+          "run_status": "SUCCEEDED",
+          "outcome": {
+            "artifact_id": "865253d4-77bc-47b9-9f0f-f692e1f89c8a",
+            "passed": true,
+            "result": {
+              "passed": true,
+              "checks": {
+                "task_and_labels": true,
+                "context_hash": true,
+                "input_hashes": true,
+                "steps_complete": true,
+                "output_present": true,
+                "execution_mode": true,
+                "evaluation_scope": true,
+                "source_version": true
+              },
+              "semantic_review": "NOT_PERFORMED",
+              "requires_human_review": true
+            }
+          },
+          "artifacts": [],
+          "prediction": "3회epoch입니다.",
+          "score": 0.0,
+          "artifact_id": "865253d4-77bc-47b9-9f0f-f692e1f89c8a",
+          "artifact_sha256": "1912e3766bc5f99791ffad9d31ff3a04d0cb1d7a794bb91017229b829c35faa4",
+          "artifact_content": {
+            "steps": [
+              {
+                "text": "3회epoch입니다.",
+                "step_id": "answer",
+                "model_id": "gpt-6-luna",
+                "elapsed_ms": 3297,
+                "response_id": "resp_0fa7349d281f0fed016ae74c4ccbc887d08981f0b5bd16fd47",
+                "input_tokens": 1697,
+                "output_tokens": 9
+              }
+            ],
+            "task_id": "USER-c7a7817b-42fa-462e-a228-2e3bdee32bcc",
+            "data_mode": "USER_PROVIDED_TEXT",
+            "model_mode": "LIVE_LLM",
+            "source_sha256": "be3f3f2e8d87cf7592ed47bb10d0ec4c380e57986994f1c2595b096275bb93f0",
+            "contract_sha256": "4912f6c5dad2fcadbec9dbb1cfa329c8ba233c4f4b2170114e4f0af4ab2df8ab",
+            "semantic_review": "NOT_PERFORMED"
+          },
+          "evidence": [
+            {
+              "result": {
+                "checks": {
+                  "context_hash": true,
+                  "input_hashes": true,
+                  "execution_mode": true,
+                  "output_present": true,
+                  "source_version": true,
+                  "steps_complete": true,
+                  "task_and_labels": true,
+                  "evaluation_scope": true
+                },
+                "passed": true,
+                "semantic_review": "NOT_PERFORMED",
+                "requires_human_review": true
+              },
+              "created_at": "2026-11-01T14:27:25.936481+00:00",
+              "input_refs": {
+                "task_id": "USER-c7a7817b-42fa-462e-a228-2e3bdee32bcc",
+                "task_version": 1,
+                "source_sha256": "be3f3f2e8d87cf7592ed47bb10d0ec4c380e57986994f1c2595b096275bb93f0",
+                "artifact_sha256": "1912e3766bc5f99791ffad9d31ff3a04d0cb1d7a794bb91017229b829c35faa4",
+                "contract_sha256": "4912f6c5dad2fcadbec9dbb1cfa329c8ba233c4f4b2170114e4f0af4ab2df8ab"
+              },
+              "artifact_id": "865253d4-77bc-47b9-9f0f-f692e1f89c8a",
+              "evidence_id": "84605ccc-12b9-4b59-8f06-bb951d7f271f",
+              "verifier_version": "provided-text-structure-v3",
+              "verification_type": "provided_text_structure"
+            }
+          ],
+          "context_sha256": "c5f6036d65af9dc20f04612335feb5387ff710e2b6f4d6511fd22dae6ab1cdd0",
+          "source_sha256": "be3f3f2e8d87cf7592ed47bb10d0ec4c380e57986994f1c2595b096275bb93f0",
+          "contract_sha256": "4912f6c5dad2fcadbec9dbb1cfa329c8ba233c4f4b2170114e4f0af4ab2df8ab",
+          "input_sha256": "e04746cb2af1c866fe86cb441ef6a4261706a3d82603231838000093ee34f778",
+          "retrieved_refs": [
+            {
+              "path": "research/1707.06347.pdf",
+              "offset": 23200,
+              "sha256": "20b536ef39af969d6a647d1383cb94a523041bf686c4387a81d4ca28de3ff6d4",
+              "similarity": 0.07395669
+            },
+            {
+              "path": "research/1707.06347.pdf",
+              "offset": 0,
+              "sha256": "df353e01ee1fe7a46c1061704c3201fa48a43aabba49d6112da64ed81839eef4",
+              "similarity": 0.07343424
+            },
+            {
+              "path": "research/1707.06347.pdf",
+              "offset": 12000,
+              "sha256": "591a04b906ce2cde512ea3a4217efb4cf95723f6a4d8e598a2a0550fe68db397",
+              "similarity": 0.06912657
+            },
+            {
+              "path": "research/1707.06347.pdf",
+              "offset": 22400,
+              "sha256": "e0b9d849842a27094bac68c8fcf677847dfbd2892e85242de8d6d61dd21afb60",
+              "similarity": 0.0667396
+            }
+          ],
+          "model": "gpt-6-luna",
+          "response_id": "resp_0fa7349d281f0fed016ae74c4ccbc887d08981f0b5bd16fd47",
+          "input_tokens": 1697,
+          "output_tokens": 9,
+          "model_elapsed_ms": 3297,
+          "run_error": null
+        }
+      ],
+      "history_after": 0
+    },
+    {
+      "index": 2,
+      "task_key": "local_research/which_does_worse",
+      "question": "On which continuous control environment does PPO do worse than a random baseline?",
+      "official_expected": [
+        "half cheetah",
+        "HalfCheetah-v1",
+        "half cheetah v1"
+      ],
+      "history_before": 0,
+      "selected_history": [],
+      "retrieval_refs": [
+        {
+          "path": "research/1707.06347.pdf",
+          "offset": 14400,
+          "sha256": "a9079c2c7be662cdbb6d416c7be1e4b65bd78f740b455a760bb89e9c54a772ca",
+          "similarity": 0.14868645
+        },
+        {
+          "path": "research/1707.06347.pdf",
+          "offset": 2400,
+          "sha256": "1c77c6621a1c3d3fed472b49eb328e16e4a3842d75b27d7851e153dd529fb73a",
+          "similarity": 0.114251
+        },
+        {
+          "path": "research/1707.06347.pdf",
+          "offset": 16000,
+          "sha256": "a9e352bdb4cb0d026cf23f04704dbe4c4483d30dea453521c048bbce00a16465",
+          "similarity": 0.08470938
+        },
+        {
+          "path": "research/1707.06347.pdf",
+          "offset": 16800,
+          "sha256": "11bd10993e7e936db21d303bf6f4cf0272207c845edbc2ce8d1c08073c241765",
+          "similarity": 0.08381721
+        }
+      ],
+      "runs": [
+        {
+          "arm": "baseline",
+          "work_id": "aa4af22f-011b-42f2-ab85-a1b2e350ef10",
+          "run_id": "643957e5-4a93-4716-bdc8-90a77973959a",
+          "source_version": 2,
+          "wall_ms": 1672,
+          "work_status": "WAITING_APPROVAL",
+          "run_status": "SUCCEEDED",
+          "outcome": {
+            "artifact_id": "21e719a7-2d2c-4a07-b1b8-756897bad68b",
+            "passed": true,
+            "result": {
+              "passed": true,
+              "checks": {
+                "task_and_labels": true,
+                "context_hash": true,
+                "input_hashes": true,
+                "steps_complete": true,
+                "output_present": true,
+                "execution_mode": true,
+                "evaluation_scope": true,
+                "source_version": true
+              },
+              "semantic_review": "NOT_PERFORMED",
+              "requires_human_review": true
+            }
+          },
+          "artifacts": [],
+          "prediction": "HalfCheetah-v1",
+          "score": 1.0,
+          "artifact_id": "21e719a7-2d2c-4a07-b1b8-756897bad68b",
+          "artifact_sha256": "74334d7b2a2aae1a08066323ea0e0f2af434930f48c93b72622aa1f6328ccd87",
+          "artifact_content": {
+            "steps": [
+              {
+                "text": "HalfCheetah-v1",
+                "step_id": "answer",
+                "model_id": "gpt-6-luna",
+                "elapsed_ms": 1594,
+                "response_id": "resp_0f43762b43048650016ae74c4e3d5c87d088c3a3afd873da29",
+                "input_tokens": 1578,
+                "output_tokens": 76
+              }
+            ],
+            "task_id": "USER-c7a7817b-42fa-462e-a228-2e3bdee32bcc",
+            "data_mode": "USER_PROVIDED_TEXT",
+            "model_mode": "LIVE_LLM",
+            "source_sha256": "0a2a7929ed0b9155034e668ab9979743674d6aafde99253edc3e36b5c417b194",
+            "contract_sha256": "1665fa65466a2e2737b5fbeff3c2204a3e31befcb9eb957960e44e2317397cdb",
+            "semantic_review": "NOT_PERFORMED"
+          },
+          "evidence": [
+            {
+              "result": {
+                "checks": {
+                  "context_hash": true,
+                  "input_hashes": true,
+                  "execution_mode": true,
+                  "output_present": true,
+                  "source_version": true,
+                  "steps_complete": true,
+                  "task_and_labels": true,
+                  "evaluation_scope": true
+                },
+                "passed": true,
+                "semantic_review": "NOT_PERFORMED",
+                "requires_human_review": true
+              },
+              "created_at": "2026-11-01T14:27:27.666597+00:00",
+              "input_refs": {
+                "task_id": "USER-c7a7817b-42fa-462e-a228-2e3bdee32bcc",
+                "task_version": 1,
+                "source_sha256": "0a2a7929ed0b9155034e668ab9979743674d6aafde99253edc3e36b5c417b194",
+                "artifact_sha256": "74334d7b2a2aae1a08066323ea0e0f2af434930f48c93b72622aa1f6328ccd87",
+                "contract_sha256": "1665fa65466a2e2737b5fbeff3c2204a3e31befcb9eb957960e44e2317397cdb"
+              },
+              "artifact_id": "21e719a7-2d2c-4a07-b1b8-756897bad68b",
+              "evidence_id": "67e74e37-0f72-4951-88cc-f9fc6defef08",
+              "verifier_version": "provided-text-structure-v3",
+              "verification_type": "provided_text_structure"
+            }
+          ],
+          "context_sha256": "3cdf6de5c8b80be4dcf407f6fe8dc962a8f935ef5c35d1a9fa2983125da7be09",
+          "source_sha256": "0a2a7929ed0b9155034e668ab9979743674d6aafde99253edc3e36b5c417b194",
+          "contract_sha256": "1665fa65466a2e2737b5fbeff3c2204a3e31befcb9eb957960e44e2317397cdb",
+          "input_sha256": "a7a81bf7ba3817cb767bdbfeb07c7efbe012a2bec4a41082c9671b34ba6871a5",
+          "retrieved_refs": [
+            {
+              "path": "research/1707.06347.pdf",
+              "offset": 14400,
+              "sha256": "a9079c2c7be662cdbb6d416c7be1e4b65bd78f740b455a760bb89e9c54a772ca",
+              "similarity": 0.14868645
+            },
+            {
+              "path": "research/1707.06347.pdf",
+              "offset": 2400,
+              "sha256": "1c77c6621a1c3d3fed472b49eb328e16e4a3842d75b27d7851e153dd529fb73a",
+              "similarity": 0.114251
+            },
+            {
+              "path": "research/1707.06347.pdf",
+              "offset": 16000,
+              "sha256": "a9e352bdb4cb0d026cf23f04704dbe4c4483d30dea453521c048bbce00a16465",
+              "similarity": 0.08470938
+            },
+            {
+              "path": "research/1707.06347.pdf",
+              "offset": 16800,
+              "sha256": "11bd10993e7e936db21d303bf6f4cf0272207c845edbc2ce8d1c08073c241765",
+              "similarity": 0.08381721
+            }
+          ],
+          "model": "gpt-6-luna",
+          "response_id": "resp_0f43762b43048650016ae74c4e3d5c87d088c3a3afd873da29",
+          "input_tokens": 1578,
+          "output_tokens": 76,
+          "model_elapsed_ms": 1594,
+          "run_error": null
+        },
+        {
+          "arm": "history",
+          "work_id": "a29ae073-ddd5-462f-a442-9c252381bd52",
+          "run_id": "6a18cba6-ffcd-434b-8ef5-207e3abfc8c6",
+          "source_version": 3,
+          "wall_ms": 1766,
+          "work_status": "WAITING_APPROVAL",
+          "run_status": "SUCCEEDED",
+          "outcome": {
+            "artifact_id": "49b49a7b-af5b-40f1-976b-9b1b7198971d",
+            "passed": true,
+            "result": {
+              "passed": true,
+              "checks": {
+                "task_and_labels": true,
+                "context_hash": true,
+                "input_hashes": true,
+                "steps_complete": true,
+                "output_present": true,
+                "execution_mode": true,
+                "evaluation_scope": true,
+                "source_version": true
+              },
+              "semantic_review": "NOT_PERFORMED",
+              "requires_human_review": true
+            }
+          },
+          "artifacts": [],
+          "prediction": "HalfCheetah 환경입니다.",
+          "score": 0.0,
+          "artifact_id": "49b49a7b-af5b-40f1-976b-9b1b7198971d",
+          "artifact_sha256": "7d91b1517e27aee3b11d2efa2f4bbade19c2a23c3ce842b26425e508150b36ba",
+          "artifact_content": {
+            "steps": [
+              {
+                "text": "HalfCheetah 환경입니다.",
+                "step_id": "answer",
+                "model_id": "gpt-6-luna",
+                "elapsed_ms": 1687,
+                "response_id": "resp_0b0e1d3eac5057f8016ae74c4ff0c087d0acc64f35834b5aa4",
+                "input_tokens": 1594,
+                "output_tokens": 74
+              }
+            ],
+            "task_id": "USER-c7a7817b-42fa-462e-a228-2e3bdee32bcc",
+            "data_mode": "USER_PROVIDED_TEXT",
+            "model_mode": "LIVE_LLM",
+            "source_sha256": "58675a9a6eda2f3c8ac61ca9a92ed7800fdd914232b114541b4a545738aa5566",
+            "contract_sha256": "5e956c84451c137799d2aa348e4cd82426a71e2b07cc20492a386395d755f1e5",
+            "semantic_review": "NOT_PERFORMED"
+          },
+          "evidence": [
+            {
+              "result": {
+                "checks": {
+                  "context_hash": true,
+                  "input_hashes": true,
+                  "execution_mode": true,
+                  "output_present": true,
+                  "source_version": true,
+                  "steps_complete": true,
+                  "task_and_labels": true,
+                  "evaluation_scope": true
+                },
+                "passed": true,
+                "semantic_review": "NOT_PERFORMED",
+                "requires_human_review": true
+              },
+              "created_at": "2026-11-01T14:27:29.460437+00:00",
+              "input_refs": {
+                "task_id": "USER-c7a7817b-42fa-462e-a228-2e3bdee32bcc",
+                "task_version": 1,
+                "source_sha256": "58675a9a6eda2f3c8ac61ca9a92ed7800fdd914232b114541b4a545738aa5566",
+                "artifact_sha256": "7d91b1517e27aee3b11d2efa2f4bbade19c2a23c3ce842b26425e508150b36ba",
+                "contract_sha256": "5e956c84451c137799d2aa348e4cd82426a71e2b07cc20492a386395d755f1e5"
+              },
+              "artifact_id": "49b49a7b-af5b-40f1-976b-9b1b7198971d",
+              "evidence_id": "3e010939-78dc-4b7e-9266-4d8d39038eb0",
+              "verifier_version": "provided-text-structure-v3",
+              "verification_type": "provided_text_structure"
+            }
+          ],
+          "context_sha256": "ffbc24ef37bc88f25a473b81d61cb0a725cbaa8ded8357e44488566e9f56fe01",
+          "source_sha256": "58675a9a6eda2f3c8ac61ca9a92ed7800fdd914232b114541b4a545738aa5566",
+          "contract_sha256": "5e956c84451c137799d2aa348e4cd82426a71e2b07cc20492a386395d755f1e5",
+          "input_sha256": "d5ad9c94935f70efae61c057ad3c92e646a316784e50ef6deab8cf5200c2b1b0",
+          "retrieved_refs": [
+            {
+              "path": "research/1707.06347.pdf",
+              "offset": 14400,
+              "sha256": "a9079c2c7be662cdbb6d416c7be1e4b65bd78f740b455a760bb89e9c54a772ca",
+              "similarity": 0.14868645
+            },
+            {
+              "path": "research/1707.06347.pdf",
+              "offset": 2400,
+              "sha256": "1c77c6621a1c3d3fed472b49eb328e16e4a3842d75b27d7851e153dd529fb73a",
+              "similarity": 0.114251
+            },
+            {
+              "path": "research/1707.06347.pdf",
+              "offset": 16000,
+              "sha256": "a9e352bdb4cb0d026cf23f04704dbe4c4483d30dea453521c048bbce00a16465",
+              "similarity": 0.08470938
+            },
+            {
+              "path": "research/1707.06347.pdf",
+              "offset": 16800,
+              "sha256": "11bd10993e7e936db21d303bf6f4cf0272207c845edbc2ce8d1c08073c241765",
+              "similarity": 0.08381721
+            }
+          ],
+          "model": "gpt-6-luna",
+          "response_id": "resp_0b0e1d3eac5057f8016ae74c4ff0c087d0acc64f35834b5aa4",
+          "input_tokens": 1594,
+          "output_tokens": 74,
+          "model_elapsed_ms": 1687,
+          "run_error": null
+        }
+      ],
+      "history_after": 1
+    },
+    {
+      "index": 3,
+      "task_key": "local_research_tex/33b_better_than_65b",
+      "question": "According to 2302.13971, on which Common Sense Reasoning task(s) does LLaMA-33B have better zero-shot performance than LLaMA-65B?",
+      "official_expected": [
+        "arc e, arc c",
+        "arc easy, arc challenge",
+        "arc easy, arc c",
+        "arc e, arc challenge",
+        "abstract and reasoning corpus easy, arc agi challenge",
+        "abstract and reasoning corpus easy, arc c",
+        "abstract and reasoning corpus easy, arc challenge",
+        "arc e, arc agi challenge",
+        "arc easy, arc agi challenge"
+      ],
+      "history_before": 1,
+      "selected_history": [],
+      "retrieval_refs": [
+        {
+          "path": "tex/2302.13971/acl2023.tex",
+          "offset": 20000,
+          "sha256": "f79e50e4c6ef2bf4fabd7f2dae4278ef294a5bdce2a7015ba7294a1934309ebf",
+          "similarity": 0.17292515
+        },
+        {
+          "path": "tex/2302.13971/acl2023.tex",
+          "offset": 19200,
+          "sha256": "f1a860bf885b2776222133e50092c93897d80921c0c1bd04f1ea5f043985daba",
+          "similarity": 0.1492152
+        },
+        {
+          "path": "tex/2302.13971/acl2023.tex",
+          "offset": 30400,
+          "sha256": "015e075a460b862510c6864945ce6a075d04040bd352b72f83042e0306550584",
+          "similarity": 0.14674937
+        },
+        {
+          "path": "tex/2302.13971/acl2023.tex",
+          "offset": 16000,
+          "sha256": "164ae9968d70d0e448f31901be61cf76476a61a6975b9837df2edd9ec52a756b",
+          "similarity": 0.13793185
+        }
+      ],
+      "runs": [
+        {
+          "arm": "baseline",
+          "work_id": "f28ec8c2-864e-4861-b51a-7a1208eaced0",
+          "run_id": "e10219b3-5fe9-408a-9bb5-d576ec799050",
+          "source_version": 4,
+          "wall_ms": 2812,
+          "work_status": "WAITING_APPROVAL",
+          "run_status": "SUCCEEDED",
+          "outcome": {
+            "artifact_id": "e719e8ac-45ca-4f51-867e-449bafb3e984",
+            "passed": true,
+            "result": {
+              "passed": true,
+              "checks": {
+                "task_and_labels": true,
+                "context_hash": true,
+                "input_hashes": true,
+                "steps_complete": true,
+                "output_present": true,
+                "execution_mode": true,
+                "evaluation_scope": true,
+                "source_version": true
+              },
+              "semantic_review": "NOT_PERFORMED",
+              "requires_human_review": true
+            }
+          },
+          "artifacts": [],
+          "prediction": "ARC Easy와 ARC Challenge.",
+          "score": 0,
+          "artifact_id": "e719e8ac-45ca-4f51-867e-449bafb3e984",
+          "artifact_sha256": "64bc99e5294035efa72f016ce08369d2a8b049cd4e9ec9f8cbe1a529affd8f1f",
+          "artifact_content": {
+            "steps": [
+              {
+                "text": "ARC Easy와 ARC Challenge.",
+                "step_id": "answer",
+                "model_id": "gpt-6-luna",
+                "elapsed_ms": 2735,
+                "response_id": "resp_072f5e06d07afbc3016ae74c51c46087d083f56a84923cc27a",
+                "input_tokens": 2030,
+                "output_tokens": 216
+              }
+            ],
+            "task_id": "USER-c7a7817b-42fa-462e-a228-2e3bdee32bcc",
+            "data_mode": "USER_PROVIDED_TEXT",
+            "model_mode": "LIVE_LLM",
+            "source_sha256": "c396c51f6bb64bc8c9a36281fafaae407a6faea5cf15e1c5981ee07eac2443da",
+            "contract_sha256": "d9c1c65c52499e02302ca395ac824b62f591d9514f6f8b7f51aefba405e011de",
+            "semantic_review": "NOT_PERFORMED"
+          },
+          "evidence": [
+            {
+              "result": {
+                "checks": {
+                  "context_hash": true,
+                  "input_hashes": true,
+                  "execution_mode": true,
+                  "output_present": true,
+                  "source_version": true,
+                  "steps_complete": true,
+                  "task_and_labels": true,
+                  "evaluation_scope": true
+                },
+                "passed": true,
+                "semantic_review": "NOT_PERFORMED",
+                "requires_human_review": true
+              },
+              "created_at": "2026-11-01T14:27:32.315537+00:00",
+              "input_refs": {
+                "task_id": "USER-c7a7817b-42fa-462e-a228-2e3bdee32bcc",
+                "task_version": 1,
+                "source_sha256": "c396c51f6bb64bc8c9a36281fafaae407a6faea5cf15e1c5981ee07eac2443da",
+                "artifact_sha256": "64bc99e5294035efa72f016ce08369d2a8b049cd4e9ec9f8cbe1a529affd8f1f",
+                "contract_sha256": "d9c1c65c52499e02302ca395ac824b62f591d9514f6f8b7f51aefba405e011de"
+              },
+              "artifact_id": "e719e8ac-45ca-4f51-867e-449bafb3e984",
+              "evidence_id": "9a666420-2588-4b79-98f1-253932dcef06",
+              "verifier_version": "provided-text-structure-v3",
+              "verification_type": "provided_text_structure"
+            }
+          ],
+          "context_sha256": "936ab3737b2c643f41386e698bb4d20f1682e610d4ce20716292a51ee508a627",
+          "source_sha256": "c396c51f6bb64bc8c9a36281fafaae407a6faea5cf15e1c5981ee07eac2443da",
+          "contract_sha256": "d9c1c65c52499e02302ca395ac824b62f591d9514f6f8b7f51aefba405e011de",
+          "input_sha256": "3671fb3cf1b3b27adb54aaf15628560a6c814ab70c5fe93ef453e55575e8d9f8",
+          "retrieved_refs": [
+            {
+              "path": "tex/2302.13971/acl2023.tex",
+              "offset": 20000,
+              "sha256": "f79e50e4c6ef2bf4fabd7f2dae4278ef294a5bdce2a7015ba7294a1934309ebf",
+              "similarity": 0.17292515
+            },
+            {
+              "path": "tex/2302.13971/acl2023.tex",
+              "offset": 19200,
+              "sha256": "f1a860bf885b2776222133e50092c93897d80921c0c1bd04f1ea5f043985daba",
+              "similarity": 0.1492152
+            },
+            {
+              "path": "tex/2302.13971/acl2023.tex",
+              "offset": 30400,
+              "sha256": "015e075a460b862510c6864945ce6a075d04040bd352b72f83042e0306550584",
+              "similarity": 0.14674937
+            },
+            {
+              "path": "tex/2302.13971/acl2023.tex",
+              "offset": 16000,
+              "sha256": "164ae9968d70d0e448f31901be61cf76476a61a6975b9837df2edd9ec52a756b",
+              "similarity": 0.13793185
+            }
+          ],
+          "model": "gpt-6-luna",
+          "response_id": "resp_072f5e06d07afbc3016ae74c51c46087d083f56a84923cc27a",
+          "input_tokens": 2030,
+          "output_tokens": 216,
+          "model_elapsed_ms": 2735,
+          "run_error": null
+        },
+        {
+          "arm": "history",
+          "work_id": "4b950074-51b5-4c5a-b91a-3feaeff19475",
+          "run_id": "0b3c3439-e305-4296-971a-fff4808adf87",
+          "source_version": 5,
+          "wall_ms": 3235,
+          "work_status": "WAITING_APPROVAL",
+          "run_status": "SUCCEEDED",
+          "outcome": {
+            "artifact_id": "45b7c688-0b09-430c-a816-07fd23c06ad0",
+            "passed": true,
+            "result": {
+              "passed": true,
+              "checks": {
+                "task_and_labels": true,
+                "context_hash": true,
+                "input_hashes": true,
+                "steps_complete": true,
+                "output_present": true,
+                "execution_mode": true,
+                "evaluation_scope": true,
+                "source_version": true
+              },
+              "semantic_review": "NOT_PERFORMED",
+              "requires_human_review": true
+            }
+          },
+          "artifacts": [],
+          "prediction": "ARC Easy와 ARC Challenge.",
+          "score": 0,
+          "artifact_id": "45b7c688-0b09-430c-a816-07fd23c06ad0",
+          "artifact_sha256": "3a76c81d9c45fe1e5e301f73ae39878151cc1351f2de37a93254f0f3ffaae8b7",
+          "artifact_content": {
+            "steps": [
+              {
+                "text": "ARC Easy와 ARC Challenge.",
+                "step_id": "answer",
+                "model_id": "gpt-6-luna",
+                "elapsed_ms": 3156,
+                "response_id": "resp_088b6e5a91b04ce7016ae74c550f4487d0a77a0a2d187956e7",
+                "input_tokens": 2047,
+                "output_tokens": 169
+              }
+            ],
+            "task_id": "USER-c7a7817b-42fa-462e-a228-2e3bdee32bcc",
+            "data_mode": "USER_PROVIDED_TEXT",
+            "model_mode": "LIVE_LLM",
+            "source_sha256": "20dbc54a307499665cfd2caf898dd45b2a3fdc9b4ac55e17ce963dec5d17379d",
+            "contract_sha256": "568e0bb57d078fb32d5cb1d7dc590b5ff59a43c0fd521237ee9d3fc2fc3d8f8d",
+            "semantic_review": "NOT_PERFORMED"
+          },
+          "evidence": [
+            {
+              "result": {
+                "checks": {
+                  "context_hash": true,
+                  "input_hashes": true,
+                  "execution_mode": true,
+                  "output_present": true,
+                  "source_version": true,
+                  "steps_complete": true,
+                  "task_and_labels": true,
+                  "evaluation_scope": true
+                },
+                "passed": true,
+                "semantic_review": "NOT_PERFORMED",
+                "requires_human_review": true
+              },
+              "created_at": "2026-11-01T14:27:35.582316+00:00",
+              "input_refs": {
+                "task_id": "USER-c7a7817b-42fa-462e-a228-2e3bdee32bcc",
+                "task_version": 1,
+                "source_sha256": "20dbc54a307499665cfd2caf898dd45b2a3fdc9b4ac55e17ce963dec5d17379d",
+                "artifact_sha256": "3a76c81d9c45fe1e5e301f73ae39878151cc1351f2de37a93254f0f3ffaae8b7",
+                "contract_sha256": "568e0bb57d078fb32d5cb1d7dc590b5ff59a43c0fd521237ee9d3fc2fc3d8f8d"
+              },
+              "artifact_id": "45b7c688-0b09-430c-a816-07fd23c06ad0",
+              "evidence_id": "4685c203-5672-4587-9ef6-742adc416bd7",
+              "verifier_version": "provided-text-structure-v3",
+              "verification_type": "provided_text_structure"
+            }
+          ],
+          "context_sha256": "9dd06f46547ea64754b1cd05c183a00b5a5fe6e0fef5922375c9f22b8d5b34de",
+          "source_sha256": "20dbc54a307499665cfd2caf898dd45b2a3fdc9b4ac55e17ce963dec5d17379d",
+          "contract_sha256": "568e0bb57d078fb32d5cb1d7dc590b5ff59a43c0fd521237ee9d3fc2fc3d8f8d",
+          "input_sha256": "7e0ba16df8c32c7e8c19dc14e19481b6b354ea53efafb3f5e6713d30f254206c",
+          "retrieved_refs": [
+            {
+              "path": "tex/2302.13971/acl2023.tex",
+              "offset": 20000,
+              "sha256": "f79e50e4c6ef2bf4fabd7f2dae4278ef294a5bdce2a7015ba7294a1934309ebf",
+              "similarity": 0.17292515
+            },
+            {
+              "path": "tex/2302.13971/acl2023.tex",
+              "offset": 19200,
+              "sha256": "f1a860bf885b2776222133e50092c93897d80921c0c1bd04f1ea5f043985daba",
+              "similarity": 0.1492152
+            },
+            {
+              "path": "tex/2302.13971/acl2023.tex",
+              "offset": 30400,
+              "sha256": "015e075a460b862510c6864945ce6a075d04040bd352b72f83042e0306550584",
+              "similarity": 0.14674937
+            },
+            {
+              "path": "tex/2302.13971/acl2023.tex",
+              "offset": 16000,
+              "sha256": "164ae9968d70d0e448f31901be61cf76476a61a6975b9837df2edd9ec52a756b",
+              "similarity": 0.13793185
+            }
+          ],
+          "model": "gpt-6-luna",
+          "response_id": "resp_088b6e5a91b04ce7016ae74c550f4487d0a77a0a2d187956e7",
+          "input_tokens": 2047,
+          "output_tokens": 169,
+          "model_elapsed_ms": 3156,
+          "run_error": null
+        }
+      ],
+      "history_after": 1
+    },
+    {
+      "index": 4,
+      "task_key": "local_research_tex/more_bias",
+      "question": "According to 2302.13971, between LLaMA and GPT3, for how many of the CrowS-Pairs categories does LLaMA show higher bias?",
+      "official_expected": [
+        "6",
+        "six"
+      ],
+      "history_before": 1,
+      "selected_history": [],
+      "retrieval_refs": [
+        {
+          "path": "tex/2302.13971/bias.tex",
+          "offset": 3200,
+          "sha256": "2221cfb55745941681a5f8d5ae4092265a9b1fa2e7b2897ef9c345540a7ac8af",
+          "similarity": 0.19110323
+        },
+        {
+          "path": "tex/2302.13971/bias.tex",
+          "offset": 4000,
+          "sha256": "2c516d11c769b8a3ccc02e84700d209b63dff20c634967242e162cc8a486fc9d",
+          "similarity": 0.15466935
+        },
+        {
+          "path": "tex/2302.13971/bias.tex",
+          "offset": 4800,
+          "sha256": "3372c55faaf20da522d2b0a4b32b1819c494bbd7c1ac929fde7da1a32f118cf8",
+          "similarity": 0.13883399
+        },
+        {
+          "path": "tex/2302.13971/bias.tex",
+          "offset": 2400,
+          "sha256": "3b4f976803bad3957099f430462c279c366a7feb29d549f853d2cb56cb02fbf3",
+          "similarity": 0.12883916
+        }
+      ],
+      "runs": [
+        {
+          "arm": "baseline",
+          "work_id": "134fb3d0-cfed-435e-a98e-3bc7e7aea6db",
+          "run_id": "13a92535-dc5a-4007-8216-6a341c4866ad",
+          "source_version": 6,
+          "wall_ms": 2109,
+          "work_status": "WAITING_APPROVAL",
+          "run_status": "SUCCEEDED",
+          "outcome": {
+            "artifact_id": "518833bc-c465-40a4-b605-4bf87278097f",
+            "passed": true,
+            "result": {
+              "passed": true,
+              "checks": {
+                "task_and_labels": true,
+                "context_hash": true,
+                "input_hashes": true,
+                "steps_complete": true,
+                "output_present": true,
+                "execution_mode": true,
+                "evaluation_scope": true,
+                "source_version": true
+              },
+              "semantic_review": "NOT_PERFORMED",
+              "requires_human_review": true
+            }
+          },
+          "artifacts": [],
+          "prediction": "6개 카테고리",
+          "score": 0,
+          "artifact_id": "518833bc-c465-40a4-b605-4bf87278097f",
+          "artifact_sha256": "2c9091dcc5b51a1c11e504299bf69e8221da004ed0460cb8c016857cd0f19f93",
+          "artifact_content": {
+            "steps": [
+              {
+                "text": "6개 카테고리",
+                "step_id": "answer",
+                "model_id": "gpt-6-luna",
+                "elapsed_ms": 2016,
+                "response_id": "resp_0b7825de91d26742016ae74c57dfe887d08abe8aef4b41e5e0",
+                "input_tokens": 1617,
+                "output_tokens": 121
+              }
+            ],
+            "task_id": "USER-c7a7817b-42fa-462e-a228-2e3bdee32bcc",
+            "data_mode": "USER_PROVIDED_TEXT",
+            "model_mode": "LIVE_LLM",
+            "source_sha256": "a63c323ea835365788b067fe648955df2a3b16ed0c87302b2efd1fb40bc17c61",
+            "contract_sha256": "2d7a434dc0b1a2588fea2b4445a88e21cc5f459f9e67dd833801ecbd1ec33727",
+            "semantic_review": "NOT_PERFORMED"
+          },
+          "evidence": [
+            {
+              "result": {
+                "checks": {
+                  "context_hash": true,
+                  "input_hashes": true,
+                  "execution_mode": true,
+                  "output_present": true,
+                  "source_version": true,
+                  "steps_complete": true,
+                  "task_and_labels": true,
+                  "evaluation_scope": true
+                },
+                "passed": true,
+                "semantic_review": "NOT_PERFORMED",
+                "requires_human_review": true
+              },
+              "created_at": "2026-11-01T14:27:37.725475+00:00",
+              "input_refs": {
+                "task_id": "USER-c7a7817b-42fa-462e-a228-2e3bdee32bcc",
+                "task_version": 1,
+                "source_sha256": "a63c323ea835365788b067fe648955df2a3b16ed0c87302b2efd1fb40bc17c61",
+                "artifact_sha256": "2c9091dcc5b51a1c11e504299bf69e8221da004ed0460cb8c016857cd0f19f93",
+                "contract_sha256": "2d7a434dc0b1a2588fea2b4445a88e21cc5f459f9e67dd833801ecbd1ec33727"
+              },
+              "artifact_id": "518833bc-c465-40a4-b605-4bf87278097f",
+              "evidence_id": "30b18952-ef4b-48de-9f54-3e4708434532",
+              "verifier_version": "provided-text-structure-v3",
+              "verification_type": "provided_text_structure"
+            }
+          ],
+          "context_sha256": "f652e0b2e01aea8bc75a112626ce0339b1d069fd481c09bf13d58caa54812410",
+          "source_sha256": "a63c323ea835365788b067fe648955df2a3b16ed0c87302b2efd1fb40bc17c61",
+          "contract_sha256": "2d7a434dc0b1a2588fea2b4445a88e21cc5f459f9e67dd833801ecbd1ec33727",
+          "input_sha256": "e6ec6790900738d4b67d2c19f9d6bf2c1a1a47264206f3d274c491c1fbc6a7b4",
+          "retrieved_refs": [
+            {
+              "path": "tex/2302.13971/bias.tex",
+              "offset": 3200,
+              "sha256": "2221cfb55745941681a5f8d5ae4092265a9b1fa2e7b2897ef9c345540a7ac8af",
+              "similarity": 0.19110323
+            },
+            {
+              "path": "tex/2302.13971/bias.tex",
+              "offset": 4000,
+              "sha256": "2c516d11c769b8a3ccc02e84700d209b63dff20c634967242e162cc8a486fc9d",
+              "similarity": 0.15466935
+            },
+            {
+              "path": "tex/2302.13971/bias.tex",
+              "offset": 4800,
+              "sha256": "3372c55faaf20da522d2b0a4b32b1819c494bbd7c1ac929fde7da1a32f118cf8",
+              "similarity": 0.13883399
+            },
+            {
+              "path": "tex/2302.13971/bias.tex",
+              "offset": 2400,
+              "sha256": "3b4f976803bad3957099f430462c279c366a7feb29d549f853d2cb56cb02fbf3",
+              "similarity": 0.12883916
+            }
+          ],
+          "model": "gpt-6-luna",
+          "response_id": "resp_0b7825de91d26742016ae74c57dfe887d08abe8aef4b41e5e0",
+          "input_tokens": 1617,
+          "output_tokens": 121,
+          "model_elapsed_ms": 2016,
+          "run_error": null
+        },
+        {
+          "arm": "history",
+          "work_id": "4b195d3e-bb1c-48fa-9e7c-593461f20945",
+          "run_id": "4ec50541-0945-48ce-85b4-ba10c5bcb9a5",
+          "source_version": 7,
+          "wall_ms": 2500,
+          "work_status": "WAITING_APPROVAL",
+          "run_status": "SUCCEEDED",
+          "outcome": {
+            "artifact_id": "3a51bd61-5488-4f1f-8b52-eed1851e051f",
+            "passed": true,
+            "result": {
+              "passed": true,
+              "checks": {
+                "task_and_labels": true,
+                "context_hash": true,
+                "input_hashes": true,
+                "steps_complete": true,
+                "output_present": true,
+                "execution_mode": true,
+                "evaluation_scope": true,
+                "source_version": true
+              },
+              "semantic_review": "NOT_PERFORMED",
+              "requires_human_review": true
+            }
+          },
+          "artifacts": [],
+          "prediction": "6개 범주입니다.",
+          "score": 0,
+          "artifact_id": "3a51bd61-5488-4f1f-8b52-eed1851e051f",
+          "artifact_sha256": "d0146f2a27248bd7e0511cb5f1cac990714c294c054d76f2b0d74bfa12e1df9c",
+          "artifact_content": {
+            "steps": [
+              {
+                "text": "6개 범주입니다.",
+                "step_id": "answer",
+                "model_id": "gpt-6-luna",
+                "elapsed_ms": 2422,
+                "response_id": "resp_05f903da6093d6e9016ae74c5a063087d0b47057780ee0a064",
+                "input_tokens": 1633,
+                "output_tokens": 152
+              }
+            ],
+            "task_id": "USER-c7a7817b-42fa-462e-a228-2e3bdee32bcc",
+            "data_mode": "USER_PROVIDED_TEXT",
+            "model_mode": "LIVE_LLM",
+            "source_sha256": "274594f145ab43b256f61c711c9ff119a57b86f9c8ec49be07c06bb590167bde",
+            "contract_sha256": "8e0a79fc6a08faaace35cd5d32413c51995a8bfc991434cb6de8d7fa474e2332",
+            "semantic_review": "NOT_PERFORMED"
+          },
+          "evidence": [
+            {
+              "result": {
+                "checks": {
+                  "context_hash": true,
+                  "input_hashes": true,
+                  "execution_mode": true,
+                  "output_present": true,
+                  "source_version": true,
+                  "steps_complete": true,
+                  "task_and_labels": true,
+                  "evaluation_scope": true
+                },
+                "passed": true,
+                "semantic_review": "NOT_PERFORMED",
+                "requires_human_review": true
+              },
+              "created_at": "2026-11-01T14:27:40.256134+00:00",
+              "input_refs": {
+                "task_id": "USER-c7a7817b-42fa-462e-a228-2e3bdee32bcc",
+                "task_version": 1,
+                "source_sha256": "274594f145ab43b256f61c711c9ff119a57b86f9c8ec49be07c06bb590167bde",
+                "artifact_sha256": "d0146f2a27248bd7e0511cb5f1cac990714c294c054d76f2b0d74bfa12e1df9c",
+                "contract_sha256": "8e0a79fc6a08faaace35cd5d32413c51995a8bfc991434cb6de8d7fa474e2332"
+              },
+              "artifact_id": "3a51bd61-5488-4f1f-8b52-eed1851e051f",
+              "evidence_id": "ba106899-9668-4a53-bddc-083e63acf749",
+              "verifier_version": "provided-text-structure-v3",
+              "verification_type": "provided_text_structure"
+            }
+          ],
+          "context_sha256": "562005d68bb90e4381bdd8fdb453fe139ae57f6d34de3780e89ffe53e13dd47b",
+          "source_sha256": "274594f145ab43b256f61c711c9ff119a57b86f9c8ec49be07c06bb590167bde",
+          "contract_sha256": "8e0a79fc6a08faaace35cd5d32413c51995a8bfc991434cb6de8d7fa474e2332",
+          "input_sha256": "79e14f764dee73c9571c10f52cab074cf902639c09efdc9ccb11c6849c6a5cfa",
+          "retrieved_refs": [
+            {
+              "path": "tex/2302.13971/bias.tex",
+              "offset": 3200,
+              "sha256": "2221cfb55745941681a5f8d5ae4092265a9b1fa2e7b2897ef9c345540a7ac8af",
+              "similarity": 0.19110323
+            },
+            {
+              "path": "tex/2302.13971/bias.tex",
+              "offset": 4000,
+              "sha256": "2c516d11c769b8a3ccc02e84700d209b63dff20c634967242e162cc8a486fc9d",
+              "similarity": 0.15466935
+            },
+            {
+              "path": "tex/2302.13971/bias.tex",
+              "offset": 4800,
+              "sha256": "3372c55faaf20da522d2b0a4b32b1819c494bbd7c1ac929fde7da1a32f118cf8",
+              "similarity": 0.13883399
+            },
+            {
+              "path": "tex/2302.13971/bias.tex",
+              "offset": 2400,
+              "sha256": "3b4f976803bad3957099f430462c279c366a7feb29d549f853d2cb56cb02fbf3",
+              "similarity": 0.12883916
+            }
+          ],
+          "model": "gpt-6-luna",
+          "response_id": "resp_05f903da6093d6e9016ae74c5a063087d0b47057780ee0a064",
+          "input_tokens": 1633,
+          "output_tokens": 152,
+          "model_elapsed_ms": 2422,
+          "run_error": null
+        }
+      ],
+      "history_after": 1
+    },
+    {
+      "index": 5,
+      "task_key": "local_research_tex/ar_report",
+      "question": "According to the AR report, how many tasks did the best-performing agent complete?",
+      "official_expected": [
+        "4",
+        "four"
+      ],
+      "history_before": 1,
+      "selected_history": [],
+      "retrieval_refs": [
+        {
+          "path": "tex/report/main-public-full.tex",
+          "offset": 37600,
+          "sha256": "85367a660532cab59b62d7248300099717ce92283ed83da2273a4fbb02eccae0",
+          "similarity": 0.11007482
+        },
+        {
+          "path": "tex/report/main-public-full.tex",
+          "offset": 18400,
+          "sha256": "0ec04fdbd3a52ab1e5d7d5fb3b74ff751a00808230619bac5ea3bba77c9806ae",
+          "similarity": 0.10268835
+        },
+        {
+          "path": "tex/report/main-public-full.tex",
+          "offset": 95200,
+          "sha256": "7f6a64a1ace1e01c1d1e062b354430b0b4e4190a4f205e69ed60283300d85dac",
+          "similarity": 0.08488412
+        },
+        {
+          "path": "tex/report/main-public-full.tex",
+          "offset": 17600,
+          "sha256": "ba22f920e5ab54d842cd69eaa30c39afcfc978d41efb455d1c8d3385bf90fc8a",
+          "similarity": 0.08157586
+        }
+      ],
+      "runs": [
+        {
+          "arm": "baseline",
+          "work_id": "25e64332-4c8c-4219-9d65-87f9a3f6f80b",
+          "run_id": "4746d44d-3e8f-485a-a86a-7b0c19e1af96",
+          "source_version": 8,
+          "wall_ms": 5454,
+          "work_status": "REWORK_REQUIRED",
+          "run_status": "FAILED",
+          "outcome": null,
+          "artifacts": [],
+          "prediction": null,
+          "score": 0,
+          "run_error": "workload execution failed: ValueError"
+        },
+        {
+          "arm": "history",
+          "work_id": "f9dd6c5a-0bcd-4cf9-98ce-2bfa9927465b",
+          "run_id": "5954ba1b-8bfa-4cb6-9861-de19bef91905",
+          "source_version": 9,
+          "wall_ms": 5906,
+          "work_status": "REWORK_REQUIRED",
+          "run_status": "FAILED",
+          "outcome": null,
+          "artifacts": [],
+          "prediction": null,
+          "score": 0,
+          "run_error": "workload execution failed: ValueError"
+        }
+      ],
+      "history_after": 1
+    }
+  ],
+  "task_id": "USER-c7a7817b-42fa-462e-a228-2e3bdee32bcc",
+  "design_id": "a480c1fe-997b-44ad-877d-eae0cfd26477"
+}
