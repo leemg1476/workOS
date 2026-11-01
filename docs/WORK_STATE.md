@@ -1,5 +1,16 @@
 # Work OS 작업 상태
 
+## 2026-11-01 추가 진행 — 데모 실행기 분리
+
+상태: **부분 구현**. 금융·정책·VOC 데모의 실행 단계 선택과 처리 코드를 공통 `backend/app/worker.py`에서 `backend/app/workloads/demo_execution.py`로 옮겨 기존 종류별 실행기 등록을 통해 호출한다. 이 변경은 실행 분기만 분리한다.
+
+- `python -m pytest -q tests/test_market.py tests/test_policy.py tests/test_voc.py tests/test_registered_work.py tests/test_workload_extension.py`: **20 passed, warning 1건**. 격리된 PostgreSQL·Redis와 기존 테스트 검색 서비스를 사용했다. 기존 사용자 DB에 테스트 업무를 생성하지 않았다.
+- `docker compose -p workos-p0 up -d --build --no-deps worker` 성공. 실행기 분리에 대한 새 전 경로 브라우저 시연은 하지 않았다.
+
+한계: `backend/app/work/service.py`에는 세 데모의 검증·정책 이벤트·후속 DAG·복구 분기가 남아 있으므로 구조 전환이 완료된 것은 아니다. 텍스트 업무의 의미 품질과 평가 기준 변경도 지원 범위가 제한적이다.
+
+다음 세 단계: ① 기존 데모의 검증기를 등록형 업무 모듈로 이전하고 기존 검증 근거·실패 동작을 유지한다. ② 정책 후속 DAG와 이벤트 처리·복구를 업무 모듈 경계로 분리한다. ③ 세 데모 및 사용자 업무의 전체 흐름과 장애 복구를 검증한다.
+
 ## 2026-11-01 추가 진행 — 평가된 업무 방식의 명시적 결정
 
 상태: **부분 구현**. 고정 사례 비교에 통과한 후보를 사람이 이유를 적고 같은 Task의 다른 버전으로 적용하거나 기각하고, 적용한 버전을 이전 버전으로 되돌릴 수 있다. 동일 Job의 설정과 예약은 유지하며 이후 생성되는 WorkItem에 적용한다. 비교의 PASS는 문구 검사에 한정되며 의미 품질 향상을 보장하지 않는다.
