@@ -172,7 +172,7 @@ class Kernel:
             count += sum(self._open_policy_review(c,row['work_id'],str(row['run_id'])) for row in roots)
             return count
 
-    def trigger(self, job_id, key, snapshot):
+    def trigger(self, job_id, key, snapshot, *, expected_due=None):
         with self.engine.begin() as c:
             self._lock(c)
             existing = one(c, 'SELECT subject_id,payload FROM work_events WHERE idempotency_key=:key', {'key': key})
@@ -183,6 +183,10 @@ class Kernel:
             job = one(c, 'SELECT * FROM job_definitions WHERE job_id=:id AND enabled', {'id': job_id})
             if not job:
                 raise NotFound('enabled job not found')
+            if expected_due is not None:
+                cursor = one(c, 'SELECT next_due_at FROM job_schedule_cursors WHERE job_id=:id', {'id':job_id})
+                if not cursor or cursor['next_due_at'] != expected_due:
+                    return None, False
             work_id = uid()
             c.execute(text('''INSERT INTO work_items(work_id,job_id,task_id,task_version,input_snapshot,status)
                 VALUES (:id,:job,:task,:version,CAST(:snapshot AS jsonb),'CREATED')'''),
@@ -869,6 +873,7 @@ class Kernel:
                 kind = 'policy_index_v1'
             elif work['parent_work_id'] and work['task_id'] == 'TASK-002' and work['input_snapshot'].get('step_no') == 3:
                 kind = 'policy_regression_v1'
+            from app.workloads import text_workflow  # Register the built-in generic verifier.
             from app.workloads.registry import verifiers
             extension = verifiers.get(kind)
             if extension is None and kind not in ('mock_receipt','market_briefing_v1','policy_impact_v1','voc_report_v1','voc_report_v2','voc_report_v3','policy_followup_verification_v1','policy_index_v1','policy_regression_v1'):
@@ -1110,7 +1115,9 @@ class Kernel:
             c.execute(text('''INSERT INTO evidence(evidence_id,artifact_id,verification_type,input_refs,result,verifier_version)
                 VALUES (:id,:artifact,:verification,CAST(:refs AS jsonb),CAST(:result AS jsonb),:verifier)'''),
                 {'id':uid(), 'artifact':artifact_id, 'verification':verification, 'refs':canonical(refs), 'result':canonical(result), 'verifier':verifier})
-            if passed:
+            if passed and result.get('requires_human_review') is True:
+                self._transition(c, work['work_id'], 'WAITING_APPROVAL', run_id)
+            elif passed:
                 old = work['accepted_artifact_id']
                 self._transition(c, work['work_id'], 'ACCEPTED', run_id)
                 c.execute(text('UPDATE work_items SET accepted_artifact_id=:artifact WHERE work_id=:work'), {'artifact': artifact_id, 'work': work['work_id']})
@@ -1131,3 +1138,42 @@ class Kernel:
             c.execute(text("UPDATE work_queue SET status='DONE',lease_until=NULL WHERE work_id=:id"), {'id': work['work_id']})
             self._event(c, 'run.verified', run_id, {'artifact_id': artifact_id, **result})
             return {'artifact_id': artifact_id, 'passed': passed, 'result': result}
+
+    def review_artifact(self, work_id, artifact_id, decision, note, idempotency_key):
+        note = note.strip()
+        if not note or decision not in ('ACCEPT','REJECT'):
+            raise Conflict('a review decision and note are required')
+        key = 'work.review:' + idempotency_key
+        payload = {'work_id':str(work_id),'artifact_id':str(artifact_id),'decision':decision,'note':note}
+        with self.engine.begin() as c:
+            self._lock(c)
+            previous = one(c,'SELECT payload FROM work_events WHERE idempotency_key=:key',{'key':key})
+            if previous:
+                if previous['payload'] != payload:
+                    raise Conflict('review idempotency key already used')
+                return False
+            work = self._work(c,work_id)
+            if work['status'] != 'WAITING_APPROVAL':
+                raise Conflict('work is not awaiting review')
+            candidate = one(c,'''SELECT a.*,r.status AS run_status,e.result AS verification FROM artifacts a
+                JOIN runs r ON r.run_id=a.run_id JOIN evidence e ON e.artifact_id=a.artifact_id
+                WHERE a.artifact_id=:artifact AND r.work_id=:work AND e.result->>'requires_human_review'='true'
+                  AND r.attempt_no=(SELECT max(attempt_no) FROM runs WHERE work_id=:work)''',
+                {'artifact':artifact_id,'work':work_id})
+            if not candidate or candidate['run_status']!='SUCCEEDED' or candidate['verification'].get('passed') is not True or digest(candidate['content']) != candidate['sha256']:
+                raise Conflict('review target is not current or structurally verified')
+            review = {'decision':decision,'note':note,'scope':'HUMAN_JUDGMENT_NOT_INDEPENDENT_FACT_VERIFICATION'}
+            c.execute(text('''INSERT INTO evidence(evidence_id,artifact_id,verification_type,input_refs,result,verifier_version)
+                VALUES (:id,:artifact,'human_work_review',CAST(:refs AS jsonb),CAST(:result AS jsonb),'human-work-review-v1')'''),
+                {'id':uid(),'artifact':artifact_id,'refs':canonical({'artifact_sha256':candidate['sha256']}),'result':canonical(review)})
+            if decision == 'ACCEPT':
+                old = work['accepted_artifact_id']
+                self._transition(c,work_id,'ACCEPTED',str(artifact_id))
+                c.execute(text('UPDATE work_items SET accepted_artifact_id=:artifact WHERE work_id=:work'),{'artifact':artifact_id,'work':work_id})
+                self._transition(c,work_id,'COMMITTED',str(artifact_id))
+                if old and str(old)!=str(artifact_id):
+                    self.stale_descendants(c,work_id,str(artifact_id))
+            else:
+                self._transition(c,work_id,'REWORK_REQUIRED',str(artifact_id))
+            self._event(c,'work.reviewed',work_id,payload,actor='user',cause=str(artifact_id),key=key)
+            return True

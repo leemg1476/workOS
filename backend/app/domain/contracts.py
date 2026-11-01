@@ -23,13 +23,13 @@ TRANSITIONS = {
     WorkStatus.READY: {WorkStatus.RUNNING, WorkStatus.BLOCKED, WorkStatus.CANCELLED},
     WorkStatus.RUNNING: {WorkStatus.SUBMITTED, WorkStatus.REWORK_REQUIRED, WorkStatus.CANCELLED},
     WorkStatus.SUBMITTED: {WorkStatus.VERIFYING, WorkStatus.REWORK_REQUIRED},
-    WorkStatus.VERIFYING: {WorkStatus.ACCEPTED, WorkStatus.REWORK_REQUIRED},
+    WorkStatus.VERIFYING: {WorkStatus.ACCEPTED, WorkStatus.REWORK_REQUIRED, WorkStatus.WAITING_APPROVAL},
     WorkStatus.ACCEPTED: {WorkStatus.COMMITTED, WorkStatus.REWORK_REQUIRED},
     WorkStatus.COMMITTED: {WorkStatus.STALE},
     WorkStatus.STALE: {WorkStatus.READY, WorkStatus.WAITING_APPROVAL, WorkStatus.CANCELLED},
     WorkStatus.REWORK_REQUIRED: {WorkStatus.READY, WorkStatus.CANCELLED},
     WorkStatus.BLOCKED: {WorkStatus.READY, WorkStatus.CANCELLED},
-    WorkStatus.WAITING_APPROVAL: {WorkStatus.READY, WorkStatus.CANCELLED},
+    WorkStatus.WAITING_APPROVAL: {WorkStatus.READY, WorkStatus.CANCELLED, WorkStatus.ACCEPTED, WorkStatus.REWORK_REQUIRED},
 }
 
 
@@ -46,6 +46,13 @@ class DependencyRequest(BaseModel):
 
 class RetryRequest(BaseModel):
     idempotency_key: str = Field(min_length=1, max_length=200)
+
+
+class WorkReviewRequest(BaseModel):
+    artifact_id: str
+    decision: Literal['ACCEPT','REJECT']
+    note: str = Field(min_length=1, max_length=2000)
+    idempotency_key: str = Field(min_length=1, max_length=160)
 
 
 class SubmitRequest(BaseModel):

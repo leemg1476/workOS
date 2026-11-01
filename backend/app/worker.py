@@ -8,7 +8,9 @@ from app.runtime.graph import GraphRunner
 from app.integrations.search import index_demo_policy
 from app.evaluation.policy_regression import make_report as make_policy_regression_report
 from redis.exceptions import RedisError
-from app.workloads.registry import executors
+from app.workloads.registry import executors, kind_executors
+from app.workloads import text_workflow
+from sqlalchemy import text
 
 
 def process_claim(kernel, claim):
@@ -16,6 +18,12 @@ def process_claim(kernel, claim):
         executor = executors.get((claim['task_id'], claim['task_version']))
         if executor is not None:
             return kernel.submit(claim['run_id'], executor(claim))
+        with kernel.engine.connect() as c:
+            task = c.execute(text('SELECT acceptance_policy,output_schema FROM task_definitions WHERE task_id=:id AND version=:version'),
+                {'id':claim['task_id'],'version':claim['task_version']}).mappings().one()
+        kind_executor = kind_executors.get(task['acceptance_policy'].get('kind'))
+        if kind_executor is not None:
+            return kernel.submit(claim['run_id'], kind_executor(kernel,claim,task['output_schema']))
         if claim['task_id'] == 'TASK-002' and claim['input_snapshot'].get('step_no') == 3:
             manifest = kernel.prepare_policy_regression(claim['run_id'])
             return kernel.submit(claim['run_id'],make_policy_regression_report(manifest))

@@ -6,7 +6,7 @@ from croniter import croniter
 from sqlalchemy import text
 from app.work.db import engine, migrate
 from app.work.seed import seed
-from app.work.service import Kernel
+from app.work.service import Kernel, NotFound
 from app.work.notifications import client, dispatch
 from redis.exceptions import RedisError
 
@@ -29,7 +29,10 @@ def tick(db, now=None):
     for job in due:
         fire = job['next_due_at'].astimezone(timezone.utc)
         key = f"cron:{job['job_id']}:{fire.isoformat()}"
-        _, created = Kernel(db).trigger(job['job_id'], key, {'scheduled_for': fire.isoformat()})
+        try:
+            _, created = Kernel(db).trigger(job['job_id'], key, {'scheduled_for': fire.isoformat()}, expected_due=fire)
+        except NotFound:
+            continue  # The job was disabled after the due-job snapshot was read.
         with db.begin() as c:
             c.execute(text('UPDATE job_schedule_cursors SET next_due_at=:next WHERE job_id=:job AND next_due_at=:old'),
                       {'next': next_due(job['schedule'], job['timezone'], fire), 'job': job['job_id'], 'old': fire})

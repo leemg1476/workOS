@@ -5,13 +5,14 @@ import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
-from app.domain.contracts import TriggerRequest, DependencyRequest, RetryRequest, DocumentUpdatedRequest, FeedbackRequest, ActionRequest, PolicyReviewNoteRequest, PolicyReviewDecisionRequest
+from app.domain.contracts import TriggerRequest, DependencyRequest, RetryRequest, DocumentUpdatedRequest, FeedbackRequest, ActionRequest, PolicyReviewNoteRequest, PolicyReviewDecisionRequest, WorkReviewRequest
 from app.work.db import engine, migrate
 from app.work.seed import seed
 from app.work.service import Kernel, Conflict, NotFound
 from app.evaluation.improvements import ImprovementService
 from app.integrations.search import readiness, SearchUnavailable
 from app.work.designs import CreateDesign, EditDesign, DesignFeedback, generate, create as create_design, revise as revise_design, apply_feedback
+from app.work.register_design import RegisterDesign, ScheduleState, register as register_design, set_schedule
 
 
 @asynccontextmanager
@@ -39,6 +40,14 @@ def new_work_design(body: CreateDesign):
         raise HTTPException(502, 'work plan generation failed') from exc
     design_id = create_design(engine, body.description, plan, meta)
     return {'design_id':design_id, 'revision':1, 'plan':plan.model_dump(), **meta, 'status':'DRAFT'}
+
+
+@app.post('/api/work-designs/{design_id}/register')
+def register_work_design(design_id: UUID, body: RegisterDesign):
+    try:
+        return register_design(engine,str(design_id),body)
+    except ValueError as exc:
+        raise HTTPException(422,str(exc)) from exc
 
 
 @app.get('/api/work-designs')
@@ -120,7 +129,7 @@ def health():
 @app.get('/api/tasks')
 def tasks():
     with engine.connect() as c:
-        tasks = [dict(r) for r in c.execute(text('''SELECT t.task_id,t.version,t.name,t.objective,j.job_id,j.trigger_type,j.schedule,j.event_filter,
+        tasks = [dict(r) for r in c.execute(text('''SELECT t.task_id,t.version,t.name,t.objective,t.acceptance_policy->>'kind' AS execution_kind,j.job_id,j.trigger_type,j.schedule,j.event_filter,j.enabled AS job_enabled,
           w.work_id,w.status,r.run_id,r.status AS run_status,r.error
           FROM task_definitions t JOIN job_definitions j ON j.task_id=t.task_id AND j.task_version=t.version
           LEFT JOIN LATERAL (SELECT * FROM work_items WHERE task_id=t.task_id AND parent_work_id IS NULL ORDER BY created_at DESC LIMIT 1) w ON true
@@ -155,6 +164,11 @@ def jobs():
         return [dict(r) for r in c.execute(text('SELECT * FROM job_definitions ORDER BY job_id')).mappings()]
 
 
+@app.post('/api/tasks/{task_id}/schedule')
+def task_schedule(task_id: str, body: ScheduleState):
+    return {'task_id':task_id,'changed':set_schedule(engine,task_id,body),'enabled':body.enabled}
+
+
 @app.post('/api/tasks/{task_id}/run')
 def trigger(task_id: str, body: TriggerRequest):
     if task_id == 'TASK-002':
@@ -164,7 +178,10 @@ def trigger(task_id: str, body: TriggerRequest):
         if options.get('dataset_version','v1') not in ('v1','v2') or options.get('model_mode','MOCK') not in ('MOCK','LIVE_LLM') or not isinstance(options.get('omit_document',False),bool):
             raise HTTPException(422, 'invalid demo dataset, model mode, or fault option')
     work, created = kernel.trigger(task_id+'-JOB', body.idempotency_key, body.input_snapshot)
-    return {'work_id': work, 'created': created, 'data_mode': 'DEMO DATA', 'model_mode':body.input_snapshot.get('model_mode','MOCK')}
+    with engine.connect() as c:
+        mode = c.execute(text('''SELECT t.acceptance_policy->>'kind' FROM work_items w JOIN task_definitions t
+            ON t.task_id=w.task_id AND t.version=w.task_version WHERE w.work_id=CAST(:id AS uuid)'''),{'id':work}).scalar_one()
+    return {'work_id': work, 'created': created, 'data_mode': 'USER_PROVIDED_TEXT' if mode=='provided_text_workflow_v1' else 'DEMO DATA', 'model_mode':body.input_snapshot.get('model_mode','MOCK') if mode!='provided_text_workflow_v1' else 'TASK_CONTRACT'}
 
 
 @app.get('/api/policies/{document_id}')
@@ -284,7 +301,8 @@ def decide_improvement(proposal_id: str, action: str, body: ActionRequest):
 def task_runs(task_id: str):
     with engine.connect() as c:
         return [dict(r) for r in c.execute(text('''SELECT r.run_id,r.work_id,r.status,r.attempt_no,r.model_id,r.started_at,r.error,
-            w.task_version,w.status AS work_status,a.kind,a.artifact_id,a.artifact_version,a.content,e.verdict,e.eval_suite_version
+            w.task_version,w.status AS work_status,a.kind,a.artifact_id,a.artifact_version,a.content,e.verdict,e.eval_suite_version,
+            EXISTS(SELECT 1 FROM evidence review WHERE review.artifact_id=a.artifact_id AND review.verification_type='human_work_review' AND review.result->>'decision'='ACCEPT') AS human_accepted
             FROM runs r JOIN work_items w ON w.work_id=r.work_id
             LEFT JOIN artifacts a ON a.run_id=r.run_id LEFT JOIN evaluations e ON e.artifact_id=a.artifact_id
             WHERE w.task_id=:task AND w.parent_work_id IS NULL ORDER BY r.started_at DESC LIMIT 100'''), {'task':task_id}).mappings()]
@@ -314,6 +332,16 @@ def compare(task_id: str, left: str, right: str):
 @app.post('/api/work/{work_id}/retry')
 def retry(work_id: str, body: RetryRequest):
     return {'work_id': work_id, 'queued': kernel.retry(work_id, body.idempotency_key)}
+
+
+@app.post('/api/work/{work_id}/review')
+def review_work(work_id: UUID, body: WorkReviewRequest):
+    try:
+        artifact_id = UUID(body.artifact_id)
+    except ValueError as exc:
+        raise HTTPException(422,'invalid artifact ID') from exc
+    changed = kernel.review_artifact(str(work_id),str(artifact_id),body.decision,body.note,body.idempotency_key)
+    return {'work_id':str(work_id),'recorded':changed,'decision':body.decision}
 
 
 @app.post('/api/work/{work_id}/revalidate')

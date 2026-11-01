@@ -16,6 +16,7 @@ class Verifier:
 
 
 executors = {}
+kind_executors = {}
 verifiers = {}
 
 
@@ -33,6 +34,12 @@ def register_verifier(kind, verifier):
     if kind in verifiers or kind in reserved:
         raise ValueError('duplicate workload verifier')
     verifiers[kind] = verifier
+
+
+def register_kind_executor(kind, execute):
+    if kind in kind_executors:
+        raise ValueError('duplicate workload executor kind')
+    kind_executors[kind] = execute
 
 
 def load_configured():
