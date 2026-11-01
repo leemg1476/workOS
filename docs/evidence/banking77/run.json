@@ -1,0 +1,1057 @@
+{
+  "schema": "banking77-workos-evidence-v1",
+  "source_revision": "57ec275d8078af65b7731c2a98be812d844a6d6b",
+  "source_urls": {
+    "train.csv": "https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/57ec275d8078af65b7731c2a98be812d844a6d6b/banking_data/train.csv",
+    "test.csv": "https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/57ec275d8078af65b7731c2a98be812d844a6d6b/banking_data/test.csv"
+  },
+  "source_sha256": {
+    "train.csv": "b06e26ac675513959a63135f11b94ea7786ed02da65db93a5650d8838cbc664b",
+    "test.csv": "d12d6e3bc4c3103966ae786dc435913c0c563dfa328f5a3646d0e62cfeeb474d"
+  },
+  "sampling": {
+    "seed": "workos-banking77-holdout-v1",
+    "per_category": 5,
+    "category_order": [
+      "card_arrival",
+      "card_delivery_estimate",
+      "card_linking",
+      "card_payment_fee_charged",
+      "card_payment_not_recognised",
+      "card_payment_wrong_exchange_rate",
+      "card_swallowed",
+      "declined_card_payment"
+    ],
+    "selection": "sha256(seed:csv_record_number), ascending; ordering sha256(seed:order:csv_record_number), ascending",
+    "holdout_split": "official test.csv",
+    "train_split": "official train.csv",
+    "train_rows": 1140
+  },
+  "baseline": {
+    "name": "TF-IDF word 1-2gram + LinearSVC",
+    "sklearn_version": "1.7.2",
+    "training_ms": 31,
+    "inference_ms": 0
+  },
+  "environment": {
+    "python": "3.10.0",
+    "model_configured": "gpt-6-luna"
+  },
+  "cases": [
+    {
+      "source_csv_record_number": 814,
+      "text": "im not sure what this charge is for",
+      "expected": "card_payment_fee_charged",
+      "id": "Q01",
+      "baseline_prediction": "card_payment_not_recognised",
+      "workos_prediction": "card_payment_fee_charged"
+    },
+    {
+      "source_csv_record_number": 1083,
+      "text": "There is a charge on my card that I did not make",
+      "expected": "card_payment_not_recognised",
+      "id": "Q02",
+      "baseline_prediction": "card_payment_not_recognised",
+      "workos_prediction": "card_payment_not_recognised"
+    },
+    {
+      "source_csv_record_number": 1827,
+      "text": "My card payment didn't work, can you help?",
+      "expected": "declined_card_payment",
+      "id": "Q03",
+      "baseline_prediction": "declined_card_payment",
+      "workos_prediction": "declined_card_payment"
+    },
+    {
+      "source_csv_record_number": 314,
+      "text": "I am waiting for my card to arrive.",
+      "expected": "card_delivery_estimate",
+      "id": "Q04",
+      "baseline_prediction": "card_arrival",
+      "workos_prediction": "card_arrival"
+    },
+    {
+      "source_csv_record_number": 159,
+      "text": "Your exchange rate is totally wrong for my card payment",
+      "expected": "card_payment_wrong_exchange_rate",
+      "id": "Q05",
+      "baseline_prediction": "card_payment_wrong_exchange_rate",
+      "workos_prediction": "card_payment_wrong_exchange_rate"
+    },
+    {
+      "source_csv_record_number": 315,
+      "text": "I need my card as soon as possible.",
+      "expected": "card_delivery_estimate",
+      "id": "Q06",
+      "baseline_prediction": "card_delivery_estimate",
+      "workos_prediction": "card_delivery_estimate"
+    },
+    {
+      "source_csv_record_number": 123,
+      "text": "I made a currency exchange and think I was charged more than I should of been.",
+      "expected": "card_payment_wrong_exchange_rate",
+      "id": "Q07",
+      "baseline_prediction": "card_payment_wrong_exchange_rate",
+      "workos_prediction": "card_payment_fee_charged"
+    },
+    {
+      "source_csv_record_number": 31,
+      "text": "i want to track the card you sent",
+      "expected": "card_arrival",
+      "id": "Q08",
+      "baseline_prediction": "card_arrival",
+      "workos_prediction": "card_delivery_estimate"
+    },
+    {
+      "source_csv_record_number": 3,
+      "text": "I still have not received my new card, I ordered over a week ago.",
+      "expected": "card_arrival",
+      "id": "Q09",
+      "baseline_prediction": "card_arrival",
+      "workos_prediction": "card_arrival"
+    },
+    {
+      "source_csv_record_number": 1933,
+      "text": "How can I get my card back out?",
+      "expected": "card_swallowed",
+      "id": "Q10",
+      "baseline_prediction": "card_swallowed",
+      "workos_prediction": "card_swallowed"
+    },
+    {
+      "source_csv_record_number": 802,
+      "text": "I payed with a card and was charged an extra fee",
+      "expected": "card_payment_fee_charged",
+      "id": "Q11",
+      "baseline_prediction": "card_payment_fee_charged",
+      "workos_prediction": "card_payment_fee_charged"
+    },
+    {
+      "source_csv_record_number": 1105,
+      "text": "What should I do to get transactions off of my account if I didn't make them?  My card must have been compromised and I need to freeze it asap!",
+      "expected": "card_payment_not_recognised",
+      "id": "Q12",
+      "baseline_prediction": "card_payment_not_recognised",
+      "workos_prediction": "card_payment_not_recognised"
+    },
+    {
+      "source_csv_record_number": 1956,
+      "text": "What should I do with my atm that got stuck?",
+      "expected": "card_swallowed",
+      "id": "Q13",
+      "baseline_prediction": "card_swallowed",
+      "workos_prediction": "card_swallowed"
+    },
+    {
+      "source_csv_record_number": 57,
+      "text": "Hello, I found the card I misplaced and I need to reactive it, how do I do that?",
+      "expected": "card_linking",
+      "id": "Q14",
+      "baseline_prediction": "card_linking",
+      "workos_prediction": "card_linking"
+    },
+    {
+      "source_csv_record_number": 1927,
+      "text": "Atm took my card",
+      "expected": "card_swallowed",
+      "id": "Q15",
+      "baseline_prediction": "card_swallowed",
+      "workos_prediction": "card_swallowed"
+    },
+    {
+      "source_csv_record_number": 313,
+      "text": "When can I expect to receive my new card?",
+      "expected": "card_delivery_estimate",
+      "id": "Q16",
+      "baseline_prediction": "card_delivery_estimate",
+      "workos_prediction": "card_delivery_estimate"
+    },
+    {
+      "source_csv_record_number": 1089,
+      "text": "I found an unauthorized card payment",
+      "expected": "card_payment_not_recognised",
+      "id": "Q17",
+      "baseline_prediction": "card_payment_not_recognised",
+      "workos_prediction": "card_payment_not_recognised"
+    },
+    {
+      "source_csv_record_number": 1814,
+      "text": "My latest payment was declined, I was told everything was back to working order. What happened?",
+      "expected": "declined_card_payment",
+      "id": "Q18",
+      "baseline_prediction": "declined_card_payment",
+      "workos_prediction": "declined_card_payment"
+    },
+    {
+      "source_csv_record_number": 52,
+      "text": "How do I link a new card?",
+      "expected": "card_linking",
+      "id": "Q19",
+      "baseline_prediction": "card_linking",
+      "workos_prediction": "card_linking"
+    },
+    {
+      "source_csv_record_number": 56,
+      "text": "Can I link my new card?",
+      "expected": "card_linking",
+      "id": "Q20",
+      "baseline_prediction": "card_linking",
+      "workos_prediction": "card_linking"
+    },
+    {
+      "source_csv_record_number": 12,
+      "text": "How do I track my card?",
+      "expected": "card_arrival",
+      "id": "Q21",
+      "baseline_prediction": "card_arrival",
+      "workos_prediction": "card_arrival"
+    },
+    {
+      "source_csv_record_number": 1838,
+      "text": "Card payment declined?",
+      "expected": "declined_card_payment",
+      "id": "Q22",
+      "baseline_prediction": "declined_card_payment",
+      "workos_prediction": "declined_card_payment"
+    },
+    {
+      "source_csv_record_number": 9,
+      "text": "i have not received my card",
+      "expected": "card_arrival",
+      "id": "Q23",
+      "baseline_prediction": "card_arrival",
+      "workos_prediction": "card_arrival"
+    },
+    {
+      "source_csv_record_number": 1088,
+      "text": "What should I do if I see a payment I didn't make?",
+      "expected": "card_payment_not_recognised",
+      "id": "Q24",
+      "baseline_prediction": "card_payment_not_recognised",
+      "workos_prediction": "card_payment_not_recognised"
+    },
+    {
+      "source_csv_record_number": 1960,
+      "text": "WTF??? I tried to withdraw some money at a Metro bank on High St. Kensington and without any notice it disappeared in the machine. The bank was already closed so I couldn't do anything. How do I get it back?",
+      "expected": "card_swallowed",
+      "id": "Q25",
+      "baseline_prediction": "card_swallowed",
+      "workos_prediction": "card_swallowed"
+    },
+    {
+      "source_csv_record_number": 829,
+      "text": "I have been charged with a fee for paying with my card.",
+      "expected": "card_payment_fee_charged",
+      "id": "Q26",
+      "baseline_prediction": "card_payment_fee_charged",
+      "workos_prediction": "card_payment_fee_charged"
+    },
+    {
+      "source_csv_record_number": 294,
+      "text": "Can I have my card delivered on a specific day?",
+      "expected": "card_delivery_estimate",
+      "id": "Q27",
+      "baseline_prediction": "card_delivery_estimate",
+      "workos_prediction": "card_delivery_estimate"
+    },
+    {
+      "source_csv_record_number": 60,
+      "text": "Where on the website do I go to link my card?",
+      "expected": "card_linking",
+      "id": "Q28",
+      "baseline_prediction": "card_linking",
+      "workos_prediction": "card_linking"
+    },
+    {
+      "source_csv_record_number": 305,
+      "text": "Whats the delivery time to the United States?",
+      "expected": "card_delivery_estimate",
+      "id": "Q29",
+      "baseline_prediction": "card_delivery_estimate",
+      "workos_prediction": "card_delivery_estimate"
+    },
+    {
+      "source_csv_record_number": 1811,
+      "text": "I was out today looking forward to pay with my new card, turns out the payment just kept getting declined. This is really sad, what's going on?",
+      "expected": "declined_card_payment",
+      "id": "Q30",
+      "baseline_prediction": "declined_card_payment",
+      "workos_prediction": "declined_card_payment"
+    },
+    {
+      "source_csv_record_number": 151,
+      "text": "I wasn't applied the correct exchange rate for an item I bought",
+      "expected": "card_payment_wrong_exchange_rate",
+      "id": "Q31",
+      "baseline_prediction": "card_payment_wrong_exchange_rate",
+      "workos_prediction": "card_payment_wrong_exchange_rate"
+    },
+    {
+      "source_csv_record_number": 818,
+      "text": "I made a card payment and a fee is showing up?",
+      "expected": "card_payment_fee_charged",
+      "id": "Q32",
+      "baseline_prediction": "card_payment_fee_charged",
+      "workos_prediction": "card_payment_fee_charged"
+    },
+    {
+      "source_csv_record_number": 816,
+      "text": "When would my card be charged an extra fee for a transaction?",
+      "expected": "card_payment_fee_charged",
+      "id": "Q33",
+      "baseline_prediction": "card_payment_fee_charged",
+      "workos_prediction": "card_payment_fee_charged"
+    },
+    {
+      "source_csv_record_number": 1824,
+      "text": "Why is my debit card being declined when I have money?",
+      "expected": "declined_card_payment",
+      "id": "Q34",
+      "baseline_prediction": "declined_card_payment",
+      "workos_prediction": "declined_card_payment"
+    },
+    {
+      "source_csv_record_number": 1936,
+      "text": "My ATM got stuck and I'm not sure what to do.",
+      "expected": "card_swallowed",
+      "id": "Q35",
+      "baseline_prediction": "card_swallowed",
+      "workos_prediction": "card_swallowed"
+    },
+    {
+      "source_csv_record_number": 1092,
+      "text": "There are some payments with my card that I don't know where they are coming from. Just checked today and it's been since a couple days as well! What to I do? Can I revert this retrospectively? My card needs to be frozen immediately as well!",
+      "expected": "card_payment_not_recognised",
+      "id": "Q36",
+      "baseline_prediction": "card_payment_not_recognised",
+      "workos_prediction": "card_payment_not_recognised"
+    },
+    {
+      "source_csv_record_number": 154,
+      "text": "I paid for something in foreign currency but noticed the exchange rate is incorrect.",
+      "expected": "card_payment_wrong_exchange_rate",
+      "id": "Q37",
+      "baseline_prediction": "card_payment_wrong_exchange_rate",
+      "workos_prediction": "card_payment_wrong_exchange_rate"
+    },
+    {
+      "source_csv_record_number": 62,
+      "text": "How do I link to my credit card with you?",
+      "expected": "card_linking",
+      "id": "Q38",
+      "baseline_prediction": "card_linking",
+      "workos_prediction": "card_linking"
+    },
+    {
+      "source_csv_record_number": 6,
+      "text": "My card has not arrived yet.",
+      "expected": "card_arrival",
+      "id": "Q39",
+      "baseline_prediction": "card_arrival",
+      "workos_prediction": "card_arrival"
+    },
+    {
+      "source_csv_record_number": 145,
+      "text": "I believe my card payment exchange rate is incorrect.",
+      "expected": "card_payment_wrong_exchange_rate",
+      "id": "Q40",
+      "baseline_prediction": "card_payment_wrong_exchange_rate",
+      "workos_prediction": "card_payment_wrong_exchange_rate"
+    }
+  ],
+  "runs": [
+    {
+      "batch": 1,
+      "case_ids": [
+        "Q01",
+        "Q02",
+        "Q03",
+        "Q04",
+        "Q05",
+        "Q06",
+        "Q07",
+        "Q08",
+        "Q09",
+        "Q10"
+      ],
+      "work_id": "b9512aaa-3296-41c2-828b-829a91ed4399",
+      "run_id": "1b4738de-67b3-4806-809a-3a5c45822d6c",
+      "wall_ms": 9265,
+      "outcome": {
+        "artifact_id": "2a4a5a89-391b-40cd-a94f-ecfc6ca47a73",
+        "passed": true,
+        "result": {
+          "passed": true,
+          "checks": {
+            "task_and_labels": true,
+            "context_hash": true,
+            "input_hashes": true,
+            "steps_complete": true,
+            "output_present": true,
+            "execution_mode": true,
+            "evaluation_scope": true,
+            "source_version": true
+          },
+          "semantic_review": "NOT_PERFORMED",
+          "requires_human_review": true
+        }
+      },
+      "work_status": "WAITING_APPROVAL",
+      "run_info": {
+        "run_id": "1b4738de-67b3-4806-809a-3a5c45822d6c",
+        "work_id": "b9512aaa-3296-41c2-828b-829a91ed4399",
+        "attempt_no": 1,
+        "status": "SUCCEEDED",
+        "agent_version": "provided_text_workflow_v1",
+        "model_id": "gpt-6-luna",
+        "prompt_version": "provided-text-step-v1",
+        "started_at": "2026-11-01T14:15:56.715932+00:00",
+        "finished_at": "2026-11-01T14:16:05.923296+00:00",
+        "error": null,
+        "context": {
+          "manifest": {
+            "run_id": "1b4738de-67b3-4806-809a-3a5c45822d6c",
+            "task_id": "USER-2a6e3cd1-fe71-4be8-b578-7794d15b2b0f",
+            "contract": {
+              "plan": {
+                "name": "BANKING77 intent routing evaluation",
+                "steps": [
+                  {
+                    "id": "classify",
+                    "title": "Classify customer queries",
+                    "purpose": "Classify each query in source_text into one of these eight banking intent codes: T1=card_arrival; T2=card_delivery_estimate; T3=card_linking; T4=card_payment_fee_charged; T5=card_payment_not_recognised; T6=card_payment_wrong_exchange_rate; T7=card_swallowed; T8=declined_card_payment. Return only one line per query in exact format Q01|T1. Preserve each query ID, output one code per query. No explanations.",
+                    "depends_on": []
+                  }
+                ],
+                "objective": "Classify each provided banking query into exactly one intent code.",
+                "open_questions": [],
+                "expected_result": "One ID and one intent code per input query.",
+                "evaluation_criteria": [
+                  "Every input has exactly one allowed code."
+                ]
+              },
+              "design_id": "191e5c01-e9bb-4261-ac57-c8b7a9f9d12f",
+              "model_mode": "LIVE_LLM",
+              "source_text": "Q01 im not sure what this charge is for\nQ02 There is a charge on my card that I did not make\nQ03 My card payment didn't work, can you help?\nQ04 I am waiting for my card to arrive.\nQ05 Your exchange rate is totally wrong for my card payment\nQ06 I need my card as soon as possible.\nQ07 I made a currency exchange and think I was charged more than I should of been.\nQ08 i want to track the card you sent\nQ09 I still have not received my new card, I ordered over a week ago.\nQ10 How can I get my card back out?",
+              "execution_kind": "provided_text_workflow_v1",
+              "design_revision": 2
+            },
+            "task_version": 1,
+            "graph_version": "provided_text_workflow_v1",
+            "source_sha256": "2454e5450041a93402a74544db4fcf97ce6dc673bb989460354bdf88e089b429",
+            "input_snapshot": {},
+            "prompt_version": "provided-text-step-v1",
+            "source_version": 1,
+            "contract_sha256": "69bcaefcd2b47a48faea1a387164ed81b30588a121863901d860953af2a2e327"
+          },
+          "sha256": "2cf5be3fe694fdd696a9ca64dab99130dbb3b576f65294f41181dc44b159e1d3"
+        },
+        "steps": [
+          {
+            "graph_version": "provided_text_workflow_v1",
+            "node_name": "classify",
+            "status": "STARTED",
+            "error_type": null,
+            "created_at": "2026-11-01T14:15:56.772440+00:00"
+          },
+          {
+            "graph_version": "provided_text_workflow_v1",
+            "node_name": "classify",
+            "status": "SUCCEEDED",
+            "error_type": null,
+            "created_at": "2026-11-01T14:16:05.917846+00:00"
+          }
+        ]
+      },
+      "artifacts": [
+        {
+          "artifact_id": "2a4a5a89-391b-40cd-a94f-ecfc6ca47a73",
+          "run_id": "1b4738de-67b3-4806-809a-3a5c45822d6c",
+          "kind": "provided_text_report",
+          "uri": "postgres://artifacts/2a4a5a89-391b-40cd-a94f-ecfc6ca47a73",
+          "content": {
+            "steps": [
+              {
+                "text": "Q01|T4\nQ02|T5\nQ03|T8\nQ04|T1\nQ05|T6\nQ06|T2\nQ07|T4\nQ08|T2\nQ09|T1\nQ10|T7",
+                "step_id": "classify",
+                "model_id": "gpt-6-luna",
+                "elapsed_ms": 9140,
+                "response_id": "resp_07d8300a96c7e7ce016ae7499fc41087d0a59d38f9a89d783c",
+                "input_tokens": 381,
+                "output_tokens": 406
+              }
+            ],
+            "task_id": "USER-2a6e3cd1-fe71-4be8-b578-7794d15b2b0f",
+            "data_mode": "USER_PROVIDED_TEXT",
+            "model_mode": "LIVE_LLM",
+            "source_sha256": "2454e5450041a93402a74544db4fcf97ce6dc673bb989460354bdf88e089b429",
+            "contract_sha256": "69bcaefcd2b47a48faea1a387164ed81b30588a121863901d860953af2a2e327",
+            "semantic_review": "NOT_PERFORMED"
+          },
+          "sha256": "f0496e3c5cbf2c5df3c57750872339bd4bf9bb683b4f68b7e695d3da8271751f",
+          "schema_version": "1",
+          "created_at": "2026-11-01T14:16:05.923296+00:00",
+          "artifact_version": null,
+          "evidence": [
+            {
+              "result": {
+                "checks": {
+                  "context_hash": true,
+                  "input_hashes": true,
+                  "execution_mode": true,
+                  "output_present": true,
+                  "source_version": true,
+                  "steps_complete": true,
+                  "task_and_labels": true,
+                  "evaluation_scope": true
+                },
+                "passed": true,
+                "semantic_review": "NOT_PERFORMED",
+                "requires_human_review": true
+              },
+              "created_at": "2026-11-01T14:16:05.923296+00:00",
+              "input_refs": {
+                "task_id": "USER-2a6e3cd1-fe71-4be8-b578-7794d15b2b0f",
+                "task_version": 1,
+                "source_sha256": "2454e5450041a93402a74544db4fcf97ce6dc673bb989460354bdf88e089b429",
+                "artifact_sha256": "f0496e3c5cbf2c5df3c57750872339bd4bf9bb683b4f68b7e695d3da8271751f",
+                "contract_sha256": "69bcaefcd2b47a48faea1a387164ed81b30588a121863901d860953af2a2e327"
+              },
+              "artifact_id": "2a4a5a89-391b-40cd-a94f-ecfc6ca47a73",
+              "evidence_id": "4e3ecb13-69f6-476e-8705-37b5030dee2d",
+              "verifier_version": "provided-text-structure-v3",
+              "verification_type": "provided_text_structure"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "batch": 2,
+      "case_ids": [
+        "Q11",
+        "Q12",
+        "Q13",
+        "Q14",
+        "Q15",
+        "Q16",
+        "Q17",
+        "Q18",
+        "Q19",
+        "Q20"
+      ],
+      "work_id": "78e5770f-a20a-4bd5-be19-42cca18f7d55",
+      "run_id": "4e8720a2-34a8-424e-8339-ce329efe15a1",
+      "wall_ms": 4093,
+      "outcome": {
+        "artifact_id": "d271130e-d9d9-436d-ae6d-8d0fb387e458",
+        "passed": true,
+        "result": {
+          "passed": true,
+          "checks": {
+            "task_and_labels": true,
+            "context_hash": true,
+            "input_hashes": true,
+            "steps_complete": true,
+            "output_present": true,
+            "execution_mode": true,
+            "evaluation_scope": true,
+            "source_version": true
+          },
+          "semantic_review": "NOT_PERFORMED",
+          "requires_human_review": true
+        }
+      },
+      "work_status": "WAITING_APPROVAL",
+      "run_info": {
+        "run_id": "4e8720a2-34a8-424e-8339-ce329efe15a1",
+        "work_id": "78e5770f-a20a-4bd5-be19-42cca18f7d55",
+        "attempt_no": 1,
+        "status": "SUCCEEDED",
+        "agent_version": "provided_text_workflow_v1",
+        "model_id": "gpt-6-luna",
+        "prompt_version": "provided-text-step-v1",
+        "started_at": "2026-11-01T14:16:05.999620+00:00",
+        "finished_at": "2026-11-01T14:16:10.054971+00:00",
+        "error": null,
+        "context": {
+          "manifest": {
+            "run_id": "4e8720a2-34a8-424e-8339-ce329efe15a1",
+            "task_id": "USER-2a6e3cd1-fe71-4be8-b578-7794d15b2b0f",
+            "contract": {
+              "plan": {
+                "name": "BANKING77 intent routing evaluation",
+                "steps": [
+                  {
+                    "id": "classify",
+                    "title": "Classify customer queries",
+                    "purpose": "Classify each query in source_text into one of these eight banking intent codes: T1=card_arrival; T2=card_delivery_estimate; T3=card_linking; T4=card_payment_fee_charged; T5=card_payment_not_recognised; T6=card_payment_wrong_exchange_rate; T7=card_swallowed; T8=declined_card_payment. Return only one line per query in exact format Q01|T1. Preserve each query ID, output one code per query. No explanations.",
+                    "depends_on": []
+                  }
+                ],
+                "objective": "Classify each provided banking query into exactly one intent code.",
+                "open_questions": [],
+                "expected_result": "One ID and one intent code per input query.",
+                "evaluation_criteria": [
+                  "Every input has exactly one allowed code."
+                ]
+              },
+              "design_id": "191e5c01-e9bb-4261-ac57-c8b7a9f9d12f",
+              "model_mode": "LIVE_LLM",
+              "source_text": "Q11 I payed with a card and was charged an extra fee\nQ12 What should I do to get transactions off of my account if I didn't make them?  My card must have been compromised and I need to freeze it asap!\nQ13 What should I do with my atm that got stuck?\nQ14 Hello, I found the card I misplaced and I need to reactive it, how do I do that?\nQ15 Atm took my card\nQ16 When can I expect to receive my new card?\nQ17 I found an unauthorized card payment\nQ18 My latest payment was declined, I was told everything was back to working order. What happened?\nQ19 How do I link a new card?\nQ20 Can I link my new card?",
+              "execution_kind": "provided_text_workflow_v1",
+              "design_revision": 2
+            },
+            "task_version": 1,
+            "graph_version": "provided_text_workflow_v1",
+            "source_sha256": "a2a8cea4a8b5fed64229fd74b49bd8e8ae261f1c26295e712714bae7b64eedac",
+            "input_snapshot": {},
+            "prompt_version": "provided-text-step-v1",
+            "source_version": 2,
+            "contract_sha256": "7769d03646195bc68a9c38d25296bf2cab2d9e5029549a57a371f84b42e4a968"
+          },
+          "sha256": "71bbf5453cc5b01fa91fef825c48224f6306f3949b186b74998ac8685ce91fa6"
+        },
+        "steps": [
+          {
+            "graph_version": "provided_text_workflow_v1",
+            "node_name": "classify",
+            "status": "STARTED",
+            "error_type": null,
+            "created_at": "2026-11-01T14:16:06.032614+00:00"
+          },
+          {
+            "graph_version": "provided_text_workflow_v1",
+            "node_name": "classify",
+            "status": "SUCCEEDED",
+            "error_type": null,
+            "created_at": "2026-11-01T14:16:10.051613+00:00"
+          }
+        ]
+      },
+      "artifacts": [
+        {
+          "artifact_id": "d271130e-d9d9-436d-ae6d-8d0fb387e458",
+          "run_id": "4e8720a2-34a8-424e-8339-ce329efe15a1",
+          "kind": "provided_text_report",
+          "uri": "postgres://artifacts/d271130e-d9d9-436d-ae6d-8d0fb387e458",
+          "content": {
+            "steps": [
+              {
+                "text": "Q11|T4\nQ12|T5\nQ13|T7\nQ14|T3\nQ15|T7\nQ16|T2\nQ17|T5\nQ18|T8\nQ19|T3\nQ20|T3",
+                "step_id": "classify",
+                "model_id": "gpt-6-luna",
+                "elapsed_ms": 4015,
+                "response_id": "resp_088ceb97c7d8dd26016ae749a64ab887d08fa39276d19eedf0",
+                "input_tokens": 404,
+                "output_tokens": 232
+              }
+            ],
+            "task_id": "USER-2a6e3cd1-fe71-4be8-b578-7794d15b2b0f",
+            "data_mode": "USER_PROVIDED_TEXT",
+            "model_mode": "LIVE_LLM",
+            "source_sha256": "a2a8cea4a8b5fed64229fd74b49bd8e8ae261f1c26295e712714bae7b64eedac",
+            "contract_sha256": "7769d03646195bc68a9c38d25296bf2cab2d9e5029549a57a371f84b42e4a968",
+            "semantic_review": "NOT_PERFORMED"
+          },
+          "sha256": "9070a5785f655088f5b947532365f326b4fb3bff43c56cd38a66fba7d9a83dca",
+          "schema_version": "1",
+          "created_at": "2026-11-01T14:16:10.054971+00:00",
+          "artifact_version": null,
+          "evidence": [
+            {
+              "result": {
+                "checks": {
+                  "context_hash": true,
+                  "input_hashes": true,
+                  "execution_mode": true,
+                  "output_present": true,
+                  "source_version": true,
+                  "steps_complete": true,
+                  "task_and_labels": true,
+                  "evaluation_scope": true
+                },
+                "passed": true,
+                "semantic_review": "NOT_PERFORMED",
+                "requires_human_review": true
+              },
+              "created_at": "2026-11-01T14:16:10.054971+00:00",
+              "input_refs": {
+                "task_id": "USER-2a6e3cd1-fe71-4be8-b578-7794d15b2b0f",
+                "task_version": 1,
+                "source_sha256": "a2a8cea4a8b5fed64229fd74b49bd8e8ae261f1c26295e712714bae7b64eedac",
+                "artifact_sha256": "9070a5785f655088f5b947532365f326b4fb3bff43c56cd38a66fba7d9a83dca",
+                "contract_sha256": "7769d03646195bc68a9c38d25296bf2cab2d9e5029549a57a371f84b42e4a968"
+              },
+              "artifact_id": "d271130e-d9d9-436d-ae6d-8d0fb387e458",
+              "evidence_id": "0f403da1-7353-4c22-b3f9-24a34ca8a445",
+              "verifier_version": "provided-text-structure-v3",
+              "verification_type": "provided_text_structure"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "batch": 3,
+      "case_ids": [
+        "Q21",
+        "Q22",
+        "Q23",
+        "Q24",
+        "Q25",
+        "Q26",
+        "Q27",
+        "Q28",
+        "Q29",
+        "Q30"
+      ],
+      "work_id": "9cb65a77-02df-4870-8b9c-2fd480bbd964",
+      "run_id": "a499cdc6-8b81-49f2-a3ee-49dab0bbdce2",
+      "wall_ms": 2875,
+      "outcome": {
+        "artifact_id": "53abdd51-3809-48b1-8d04-2fce978aa084",
+        "passed": true,
+        "result": {
+          "passed": true,
+          "checks": {
+            "task_and_labels": true,
+            "context_hash": true,
+            "input_hashes": true,
+            "steps_complete": true,
+            "output_present": true,
+            "execution_mode": true,
+            "evaluation_scope": true,
+            "source_version": true
+          },
+          "semantic_review": "NOT_PERFORMED",
+          "requires_human_review": true
+        }
+      },
+      "work_status": "WAITING_APPROVAL",
+      "run_info": {
+        "run_id": "a499cdc6-8b81-49f2-a3ee-49dab0bbdce2",
+        "work_id": "9cb65a77-02df-4870-8b9c-2fd480bbd964",
+        "attempt_no": 1,
+        "status": "SUCCEEDED",
+        "agent_version": "provided_text_workflow_v1",
+        "model_id": "gpt-6-luna",
+        "prompt_version": "provided-text-step-v1",
+        "started_at": "2026-11-01T14:16:10.130956+00:00",
+        "finished_at": "2026-11-01T14:16:12.965252+00:00",
+        "error": null,
+        "context": {
+          "manifest": {
+            "run_id": "a499cdc6-8b81-49f2-a3ee-49dab0bbdce2",
+            "task_id": "USER-2a6e3cd1-fe71-4be8-b578-7794d15b2b0f",
+            "contract": {
+              "plan": {
+                "name": "BANKING77 intent routing evaluation",
+                "steps": [
+                  {
+                    "id": "classify",
+                    "title": "Classify customer queries",
+                    "purpose": "Classify each query in source_text into one of these eight banking intent codes: T1=card_arrival; T2=card_delivery_estimate; T3=card_linking; T4=card_payment_fee_charged; T5=card_payment_not_recognised; T6=card_payment_wrong_exchange_rate; T7=card_swallowed; T8=declined_card_payment. Return only one line per query in exact format Q01|T1. Preserve each query ID, output one code per query. No explanations.",
+                    "depends_on": []
+                  }
+                ],
+                "objective": "Classify each provided banking query into exactly one intent code.",
+                "open_questions": [],
+                "expected_result": "One ID and one intent code per input query.",
+                "evaluation_criteria": [
+                  "Every input has exactly one allowed code."
+                ]
+              },
+              "design_id": "191e5c01-e9bb-4261-ac57-c8b7a9f9d12f",
+              "model_mode": "LIVE_LLM",
+              "source_text": "Q21 How do I track my card?\nQ22 Card payment declined?\nQ23 i have not received my card\nQ24 What should I do if I see a payment I didn't make?\nQ25 WTF??? I tried to withdraw some money at a Metro bank on High St. Kensington and without any notice it disappeared in the machine. The bank was already closed so I couldn't do anything. How do I get it back?\nQ26 I have been charged with a fee for paying with my card.\nQ27 Can I have my card delivered on a specific day?\nQ28 Where on the website do I go to link my card?\nQ29 Whats the delivery time to the United States?\nQ30 I was out today looking forward to pay with my new card, turns out the payment just kept getting declined. This is really sad, what's going on?",
+              "execution_kind": "provided_text_workflow_v1",
+              "design_revision": 2
+            },
+            "task_version": 1,
+            "graph_version": "provided_text_workflow_v1",
+            "source_sha256": "510c7bc83fc6f6d49a8a7bf9ce6263d86c3809b64c75d48df016f1520376fdc3",
+            "input_snapshot": {},
+            "prompt_version": "provided-text-step-v1",
+            "source_version": 3,
+            "contract_sha256": "c62107a8af066ca5f563375d683872c68c798a88a35798c4f102cc3f63af0a23"
+          },
+          "sha256": "b4a10d17e7642e9502cd38e370c2e8de4d994ab2ecb508076c65efd8ee79caa7"
+        },
+        "steps": [
+          {
+            "graph_version": "provided_text_workflow_v1",
+            "node_name": "classify",
+            "status": "STARTED",
+            "error_type": null,
+            "created_at": "2026-11-01T14:16:10.165587+00:00"
+          },
+          {
+            "graph_version": "provided_text_workflow_v1",
+            "node_name": "classify",
+            "status": "SUCCEEDED",
+            "error_type": null,
+            "created_at": "2026-11-01T14:16:12.959558+00:00"
+          }
+        ]
+      },
+      "artifacts": [
+        {
+          "artifact_id": "53abdd51-3809-48b1-8d04-2fce978aa084",
+          "run_id": "a499cdc6-8b81-49f2-a3ee-49dab0bbdce2",
+          "kind": "provided_text_report",
+          "uri": "postgres://artifacts/53abdd51-3809-48b1-8d04-2fce978aa084",
+          "content": {
+            "steps": [
+              {
+                "text": "Q21|T1\nQ22|T8\nQ23|T1\nQ24|T5\nQ25|T7\nQ26|T4\nQ27|T2\nQ28|T3\nQ29|T2\nQ30|T8",
+                "step_id": "classify",
+                "model_id": "gpt-6-luna",
+                "elapsed_ms": 2781,
+                "response_id": "resp_0da686006b27df48016ae749aa63b087d0926ae41358839793",
+                "input_tokens": 424,
+                "output_tokens": 158
+              }
+            ],
+            "task_id": "USER-2a6e3cd1-fe71-4be8-b578-7794d15b2b0f",
+            "data_mode": "USER_PROVIDED_TEXT",
+            "model_mode": "LIVE_LLM",
+            "source_sha256": "510c7bc83fc6f6d49a8a7bf9ce6263d86c3809b64c75d48df016f1520376fdc3",
+            "contract_sha256": "c62107a8af066ca5f563375d683872c68c798a88a35798c4f102cc3f63af0a23",
+            "semantic_review": "NOT_PERFORMED"
+          },
+          "sha256": "d139b7be7f4edf7c1ff65c44af9c213a08059196a95461cb907db18f5076fd9c",
+          "schema_version": "1",
+          "created_at": "2026-11-01T14:16:12.965252+00:00",
+          "artifact_version": null,
+          "evidence": [
+            {
+              "result": {
+                "checks": {
+                  "context_hash": true,
+                  "input_hashes": true,
+                  "execution_mode": true,
+                  "output_present": true,
+                  "source_version": true,
+                  "steps_complete": true,
+                  "task_and_labels": true,
+                  "evaluation_scope": true
+                },
+                "passed": true,
+                "semantic_review": "NOT_PERFORMED",
+                "requires_human_review": true
+              },
+              "created_at": "2026-11-01T14:16:12.965252+00:00",
+              "input_refs": {
+                "task_id": "USER-2a6e3cd1-fe71-4be8-b578-7794d15b2b0f",
+                "task_version": 1,
+                "source_sha256": "510c7bc83fc6f6d49a8a7bf9ce6263d86c3809b64c75d48df016f1520376fdc3",
+                "artifact_sha256": "d139b7be7f4edf7c1ff65c44af9c213a08059196a95461cb907db18f5076fd9c",
+                "contract_sha256": "c62107a8af066ca5f563375d683872c68c798a88a35798c4f102cc3f63af0a23"
+              },
+              "artifact_id": "53abdd51-3809-48b1-8d04-2fce978aa084",
+              "evidence_id": "44039c52-239f-4244-82cc-f553416574e2",
+              "verifier_version": "provided-text-structure-v3",
+              "verification_type": "provided_text_structure"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "batch": 4,
+      "case_ids": [
+        "Q31",
+        "Q32",
+        "Q33",
+        "Q34",
+        "Q35",
+        "Q36",
+        "Q37",
+        "Q38",
+        "Q39",
+        "Q40"
+      ],
+      "work_id": "07ff129e-7df8-4d05-aa16-49f5c67d10b2",
+      "run_id": "b8b39d77-c726-4fdb-a329-a973fa3315e5",
+      "wall_ms": 2672,
+      "outcome": {
+        "artifact_id": "36738a44-be40-43c6-9d13-fa5027fa39d4",
+        "passed": true,
+        "result": {
+          "passed": true,
+          "checks": {
+            "task_and_labels": true,
+            "context_hash": true,
+            "input_hashes": true,
+            "steps_complete": true,
+            "output_present": true,
+            "execution_mode": true,
+            "evaluation_scope": true,
+            "source_version": true
+          },
+          "semantic_review": "NOT_PERFORMED",
+          "requires_human_review": true
+        }
+      },
+      "work_status": "WAITING_APPROVAL",
+      "run_info": {
+        "run_id": "b8b39d77-c726-4fdb-a329-a973fa3315e5",
+        "work_id": "07ff129e-7df8-4d05-aa16-49f5c67d10b2",
+        "attempt_no": 1,
+        "status": "SUCCEEDED",
+        "agent_version": "provided_text_workflow_v1",
+        "model_id": "gpt-6-luna",
+        "prompt_version": "provided-text-step-v1",
+        "started_at": "2026-11-01T14:16:13.035281+00:00",
+        "finished_at": "2026-11-01T14:16:15.667153+00:00",
+        "error": null,
+        "context": {
+          "manifest": {
+            "run_id": "b8b39d77-c726-4fdb-a329-a973fa3315e5",
+            "task_id": "USER-2a6e3cd1-fe71-4be8-b578-7794d15b2b0f",
+            "contract": {
+              "plan": {
+                "name": "BANKING77 intent routing evaluation",
+                "steps": [
+                  {
+                    "id": "classify",
+                    "title": "Classify customer queries",
+                    "purpose": "Classify each query in source_text into one of these eight banking intent codes: T1=card_arrival; T2=card_delivery_estimate; T3=card_linking; T4=card_payment_fee_charged; T5=card_payment_not_recognised; T6=card_payment_wrong_exchange_rate; T7=card_swallowed; T8=declined_card_payment. Return only one line per query in exact format Q01|T1. Preserve each query ID, output one code per query. No explanations.",
+                    "depends_on": []
+                  }
+                ],
+                "objective": "Classify each provided banking query into exactly one intent code.",
+                "open_questions": [],
+                "expected_result": "One ID and one intent code per input query.",
+                "evaluation_criteria": [
+                  "Every input has exactly one allowed code."
+                ]
+              },
+              "design_id": "191e5c01-e9bb-4261-ac57-c8b7a9f9d12f",
+              "model_mode": "LIVE_LLM",
+              "source_text": "Q31 I wasn't applied the correct exchange rate for an item I bought\nQ32 I made a card payment and a fee is showing up?\nQ33 When would my card be charged an extra fee for a transaction?\nQ34 Why is my debit card being declined when I have money?\nQ35 My ATM got stuck and I'm not sure what to do.\nQ36 There are some payments with my card that I don't know where they are coming from. Just checked today and it's been since a couple days as well! What to I do? Can I revert this retrospectively? My card needs to be frozen immediately as well!\nQ37 I paid for something in foreign currency but noticed the exchange rate is incorrect.\nQ38 How do I link to my credit card with you?\nQ39 My card has not arrived yet.\nQ40 I believe my card payment exchange rate is incorrect.",
+              "execution_kind": "provided_text_workflow_v1",
+              "design_revision": 2
+            },
+            "task_version": 1,
+            "graph_version": "provided_text_workflow_v1",
+            "source_sha256": "8255a5f2f55dded05640b38737d28fb7772dbb5b3eb294f46a3057963c74c3ab",
+            "input_snapshot": {},
+            "prompt_version": "provided-text-step-v1",
+            "source_version": 4,
+            "contract_sha256": "d310b51a7de61b96a4bd47e09c2a362402755f07f79deca7cc6c98ec6cc246b2"
+          },
+          "sha256": "86dbf7a1427f4dfc09e7784b04a77883c2c26d740955929c102cad4c9a899702"
+        },
+        "steps": [
+          {
+            "graph_version": "provided_text_workflow_v1",
+            "node_name": "classify",
+            "status": "STARTED",
+            "error_type": null,
+            "created_at": "2026-11-01T14:16:13.063128+00:00"
+          },
+          {
+            "graph_version": "provided_text_workflow_v1",
+            "node_name": "classify",
+            "status": "SUCCEEDED",
+            "error_type": null,
+            "created_at": "2026-11-01T14:16:15.661756+00:00"
+          }
+        ]
+      },
+      "artifacts": [
+        {
+          "artifact_id": "36738a44-be40-43c6-9d13-fa5027fa39d4",
+          "run_id": "b8b39d77-c726-4fdb-a329-a973fa3315e5",
+          "kind": "provided_text_report",
+          "uri": "postgres://artifacts/36738a44-be40-43c6-9d13-fa5027fa39d4",
+          "content": {
+            "steps": [
+              {
+                "text": "Q31|T6\nQ32|T4\nQ33|T4\nQ34|T8\nQ35|T7\nQ36|T5\nQ37|T6\nQ38|T3\nQ39|T1\nQ40|T6",
+                "step_id": "classify",
+                "model_id": "gpt-6-luna",
+                "elapsed_ms": 2594,
+                "response_id": "resp_08f7107a2861a098016ae749ad3a6887d0a0195626640fa5c6",
+                "input_tokens": 429,
+                "output_tokens": 201
+              }
+            ],
+            "task_id": "USER-2a6e3cd1-fe71-4be8-b578-7794d15b2b0f",
+            "data_mode": "USER_PROVIDED_TEXT",
+            "model_mode": "LIVE_LLM",
+            "source_sha256": "8255a5f2f55dded05640b38737d28fb7772dbb5b3eb294f46a3057963c74c3ab",
+            "contract_sha256": "d310b51a7de61b96a4bd47e09c2a362402755f07f79deca7cc6c98ec6cc246b2",
+            "semantic_review": "NOT_PERFORMED"
+          },
+          "sha256": "2db59c4904f67fd178c29fe2029bea10774e2c205d8d0dd2c68855feed279ff2",
+          "schema_version": "1",
+          "created_at": "2026-11-01T14:16:15.667153+00:00",
+          "artifact_version": null,
+          "evidence": [
+            {
+              "result": {
+                "checks": {
+                  "context_hash": true,
+                  "input_hashes": true,
+                  "execution_mode": true,
+                  "output_present": true,
+                  "source_version": true,
+                  "steps_complete": true,
+                  "task_and_labels": true,
+                  "evaluation_scope": true
+                },
+                "passed": true,
+                "semantic_review": "NOT_PERFORMED",
+                "requires_human_review": true
+              },
+              "created_at": "2026-11-01T14:16:15.667153+00:00",
+              "input_refs": {
+                "task_id": "USER-2a6e3cd1-fe71-4be8-b578-7794d15b2b0f",
+                "task_version": 1,
+                "source_sha256": "8255a5f2f55dded05640b38737d28fb7772dbb5b3eb294f46a3057963c74c3ab",
+                "artifact_sha256": "2db59c4904f67fd178c29fe2029bea10774e2c205d8d0dd2c68855feed279ff2",
+                "contract_sha256": "d310b51a7de61b96a4bd47e09c2a362402755f07f79deca7cc6c98ec6cc246b2"
+              },
+              "artifact_id": "36738a44-be40-43c6-9d13-fa5027fa39d4",
+              "evidence_id": "278c04f3-7427-4890-b247-5863c6d5b919",
+              "verifier_version": "provided-text-structure-v3",
+              "verification_type": "provided_text_structure"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "task_id": "USER-2a6e3cd1-fe71-4be8-b578-7794d15b2b0f",
+  "design_id": "191e5c01-e9bb-4261-ac57-c8b7a9f9d12f",
+  "plan": {
+    "name": "BANKING77 intent routing evaluation",
+    "objective": "Classify each provided banking query into exactly one intent code.",
+    "expected_result": "One ID and one intent code per input query.",
+    "evaluation_criteria": [
+      "Every input has exactly one allowed code."
+    ],
+    "steps": [
+      {
+        "id": "classify",
+        "title": "Classify customer queries",
+        "purpose": "Classify each query in source_text into one of these eight banking intent codes: T1=card_arrival; T2=card_delivery_estimate; T3=card_linking; T4=card_payment_fee_charged; T5=card_payment_not_recognised; T6=card_payment_wrong_exchange_rate; T7=card_swallowed; T8=declined_card_payment. Return only one line per query in exact format Q01|T1. Preserve each query ID, output one code per query. No explanations.",
+        "depends_on": []
+      }
+    ],
+    "open_questions": []
+  },
+  "codes": {
+    "T1": "card_arrival",
+    "T2": "card_delivery_estimate",
+    "T3": "card_linking",
+    "T4": "card_payment_fee_charged",
+    "T5": "card_payment_not_recognised",
+    "T6": "card_payment_wrong_exchange_rate",
+    "T7": "card_swallowed",
+    "T8": "declined_card_payment"
+  }
+}
