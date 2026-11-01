@@ -1,5 +1,18 @@
 # Work OS 작업 상태
 
+## 2026-11-01 추가 진행 — 자연어 업무 구조 초안
+
+상태: **부분 구현**. 사람의 자연어 설명을 LIVE_LLM 또는 명시적 MOCK으로 업무 목표·기대 결과·평가 기준·단계·선행 관계·확인 질문의 초안으로 변환한다. 화면에서 직접 수정하거나 저장된 초안에 자연어 변경 요청을 보내 새 버전을 만들 수 있다. `work_design_revisions`는 과거 구조·변경 요청·모델 식별자를 보존하고 수정·삭제를 막는다. DAG 순환·미등록 의존성, 중복 ID, 낡은 버전의 덮어쓰기를 거부한다.
+
+- `backend/migrations/012_work_design.sql`, `backend/app/work/designs.py`, `backend/app/api/main.py`: 초안·불변 버전·생성/직접 수정/자연어 피드백 API. API 컨테이너가 선택적 `.env.apikey`를 읽도록 구성했으며 키는 저장·출력하지 않는다. OpenAI Structured Outputs로 구조를 생성하고 애플리케이션에서 별도로 그래프를 검증한다.
+- `frontend/src/WorkDesignStudio.vue`, `frontend/src/App.vue`, `frontend/src/style.css`: 자연어 입력과 초안 생성, 단계·선행 관계 시각화 및 수정, 단계 추가/삭제, 평가 기준, 변경 요청, 버전 이력. 화면은 이 결과를 실행 전 초안으로 명시한다.
+- 전용 PostgreSQL의 `python -m pytest -q tests/test_work_designs.py tests/test_api.py tests/test_kernel.py`: **14 passed, warning 1건**. 초안 저장, 직접 수정, 오래된 버전 충돌, DAG 순환 거부, 자연어 피드백 버전 및 원본 보존을 확인했다. `npm run build`, `docker compose config --quiet` 성공.
+- 별도 테스트 DB의 실제 API에서 사용자 제공 모델 설정으로 자연어 생성과 자연어 피드백을 호출해 `LIVE_LLM → HUMAN_FEEDBACK_LLM`, revision 2, `gpt-6-luna`를 확인했다. 실제 모델 결과의 의미적 정확성은 평가하지 않았다. 기존 Compose에 새 API와 UI를 반영하고 브라우저에서 입력 및 초안 빈 화면을 확인했다. 이후 버전 이력 화면 보강은 빌드로만 확인했다.
+
+한계: **새 초안은 TaskDefinition/Job으로 승격되거나 지속 실행되지 않는다.** 자연어 피드백은 설계 초안만 수정하며 실행 결과를 재평가하거나 검증된 성능 개선을 보장하지 않는다. 기존 업무별 커널 분기, 범용 DAG 실행·검증기·실행 후 개선 평가, 자동 반복 실행은 미완료다. 기존 세 데모의 전체 E2E는 이번 변경에서 재실행하지 않았다.
+
+다음 세 단계: ① 사람이 확인한 구조를 버전 고정된 Task/Job과 실행 가능한 노드·출처·검증 계약으로 등록하고, 지원하지 않는 능력은 명시적으로 차단한다. ② 공통 DAG 실행·이력·검증과 안전한 정기 수행을 연결하며 기존 세 업무의 특수 분기를 모듈로 이관한다. ③ 실행별 사람 피드백을 고정 평가셋과 동일 입력 Champion/Challenger 실험으로 연결해 명시적 적용·기각·롤백을 검증한다.
+
 ## 2026-11-01 추가 진행 — 업무별 실행 이력과 결과 비교 화면
 
 - 대시보드 상단의 `무엇이 달라졌나요?`에서 세 Task의 최상위 Run 최대 100건을 조회하고, 성공·검증 실패·실행 실패와 결과 요약을 표시한다. 이전 실행을 펼치거나 선택한 시도의 결과·근거·단계로 이동할 수 있다. 후속 DAG Run은 별도 정책 상세에서 확인한다.

@@ -14,6 +14,9 @@ services:
       retries: 20
   api:
     build: ./backend
+    env_file:
+      - path: .env.apikey
+        required: false
     environment:
       DATABASE_URL: postgresql+psycopg://workos:workos@postgres:5432/workos
       WORKOS_MODE: ${WORKOS_MODE:-MOCK}

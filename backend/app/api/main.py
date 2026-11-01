@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 from decimal import Decimal
+from uuid import UUID
 import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,6 +11,7 @@ from app.work.seed import seed
 from app.work.service import Kernel, Conflict, NotFound
 from app.evaluation.improvements import ImprovementService
 from app.integrations.search import readiness, SearchUnavailable
+from app.work.designs import CreateDesign, EditDesign, DesignFeedback, generate, create as create_design, revise as revise_design, apply_feedback
 
 
 @asynccontextmanager
@@ -25,6 +27,68 @@ app = FastAPI(title='Work OS Kernel', version='0.1.0', lifespan=lifespan)
 app.add_middleware(CORSMiddleware, allow_origins=[os.getenv('WORKOS_UI_ORIGIN','http://localhost:5173')], allow_methods=['*'], allow_headers=['*'])
 kernel = Kernel(engine)
 improvements = ImprovementService(engine)
+
+
+@app.post('/api/work-designs')
+def new_work_design(body: CreateDesign):
+    try:
+        plan, meta = generate(body.description, body.mode)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(502, 'work plan generation failed') from exc
+    design_id = create_design(engine, body.description, plan, meta)
+    return {'design_id':design_id, 'revision':1, 'plan':plan.model_dump(), **meta, 'status':'DRAFT'}
+
+
+@app.get('/api/work-designs')
+def work_designs():
+    with engine.connect() as c:
+        return [dict(row) for row in c.execute(text('''SELECT DISTINCT ON (design_id) design_id,revision,description,plan,origin,model_id,response_id,feedback,created_at
+            FROM work_design_revisions ORDER BY design_id,revision DESC''')).mappings()]
+
+
+@app.put('/api/work-designs/{design_id}')
+def edit_work_design(design_id: UUID, body: EditDesign):
+    try:
+        revision = revise_design(engine, str(design_id), body.revision, body.plan)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+    except RuntimeError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    if revision is None:
+        raise HTTPException(404, 'work design not found')
+    return {'design_id':str(design_id),'revision':revision,'status':'DRAFT'}
+
+
+@app.get('/api/work-designs/{design_id}/revisions')
+def work_design_revisions(design_id: UUID):
+    with engine.connect() as c:
+        rows = c.execute(text('''SELECT design_id,revision,plan,origin,model_id,response_id,feedback,created_at
+            FROM work_design_revisions WHERE design_id=:id ORDER BY revision DESC'''), {'id':design_id}).mappings().all()
+    if not rows:
+        raise HTTPException(404, 'work design not found')
+    return [dict(row) for row in rows]
+
+
+@app.post('/api/work-designs/{design_id}/feedback')
+def feedback_work_design(design_id: UUID, body: DesignFeedback):
+    with engine.connect() as c:
+        current = c.execute(text('''SELECT revision,plan FROM work_design_revisions WHERE design_id=:id ORDER BY revision DESC LIMIT 1'''), {'id':design_id}).mappings().first()
+    if current is None:
+        raise HTTPException(404, 'work design not found')
+    if current['revision'] != body.revision:
+        raise HTTPException(409, 'revision conflict')
+    try:
+        plan, meta = apply_feedback(current['plan'],body.feedback)
+        revision = revise_design(engine,str(design_id),body.revision,plan,meta,body.feedback)
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+    except RuntimeError as exc:
+        raise HTTPException(409, str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(502, 'work plan feedback failed') from exc
+    return {'design_id':str(design_id),'revision':revision,'status':'DRAFT',**meta}
 
 
 @app.exception_handler(Conflict)

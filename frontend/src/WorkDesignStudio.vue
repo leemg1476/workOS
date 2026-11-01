@@ -1,0 +1,35 @@
+<script setup>
+import { ref, onMounted } from 'vue'
+const props=defineProps({base:{type:String,required:true}})
+const feedback=ref(''), revisions=ref([])
+const description=ref(''), mode=ref('LIVE_LLM'), designs=ref([]), selected=ref(null), error=ref(''), message=ref(''), busy=ref(false)
+async function refresh() { const r=await fetch(`${props.base}/work-designs`); if(!r.ok) throw Error(); designs.value=await r.json() }
+function select(d) { selected.value=JSON.parse(JSON.stringify(d)); revisions.value=[]; error.value='';message.value=''; fetch(`${props.base}/work-designs/${d.design_id}/revisions`).then(r=>{ if(!r.ok) throw Error(); return r.json() }).then(data=>{ if(selected.value?.design_id===d.design_id) revisions.value=data }).catch(()=>{error.value='버전 이력을 불러오지 못했습니다.'}) }
+async function generate() {
+  busy.value=true; error.value=''; message.value=''
+  try { const r=await fetch(`${props.base}/work-designs`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({description:description.value,mode:mode.value})}); const d=await r.json(); if(!r.ok) throw Error(d.detail || '초안 생성 실패'); await refresh(); select(designs.value.find(x=>x.design_id===d.design_id)); message.value='초안을 생성했습니다. 내용과 확인 질문을 검토해 주세요.' }
+  catch(e){error.value=e.message || '초안을 만들지 못했습니다.'} finally{busy.value=false}
+}
+async function save() {
+  busy.value=true;error.value='';message.value=''
+  try { const r=await fetch(`${props.base}/work-designs/${selected.value.design_id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({revision:selected.value.revision,plan:selected.value.plan})}); const d=await r.json(); if(!r.ok) throw Error(d.detail || '저장 실패'); const id=selected.value.design_id; await refresh(); select(designs.value.find(x=>x.design_id===id));message.value='수정한 업무 구조를 새 버전으로 저장했습니다.' }
+  catch(e){error.value=e.message || '저장하지 못했습니다.'} finally {busy.value=false}
+}
+function addStep() { const steps=selected.value.plan.steps; let n=steps.length+1; while(steps.some(x=>x.id==='step'+n)) n++; steps.push({id:'step'+n,title:'새 단계',purpose:'수행 내용을 입력하세요.',depends_on:[]}) }
+function removeStep(index) { selected.value.plan.steps.splice(index,1) }
+async function sendFeedback() {
+  busy.value=true;error.value='';message.value=''
+  try { const r=await fetch(`${props.base}/work-designs/${selected.value.design_id}/feedback`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({revision:selected.value.revision,feedback:feedback.value})}); const d=await r.json(); if(!r.ok) throw Error(d.detail || '변경 요청 실패'); const id=selected.value.design_id; await refresh(); select(designs.value.find(x=>x.design_id===id)); feedback.value=''; message.value='변경 요청을 반영한 새 초안입니다. 실제 성능 개선은 아직 평가되지 않았습니다.' }
+  catch(e){error.value=e.message || '변경 요청을 처리하지 못했습니다.'} finally{busy.value=false}
+}
+function setLines(event) { selected.value.plan.evaluation_criteria=event.target.value.split('\n') }
+function setDeps(step,event) { step.depends_on=event.target.value.split(',').map(x=>x.trim()).filter(Boolean) }
+onMounted(() => refresh().catch(()=>{error.value='저장된 업무 초안을 불러오지 못했습니다.'}))
+</script>
+<template>
+<section class="design-studio" aria-labelledby="design-title">
+  <div class="studio-head"><div><small>NEW WORK / 업무 설계</small><h2 id="design-title">새 업무를 설명해 주세요.</h2><p>목표와 원하는 결과를 적으면 업무 단계와 평가 기준의 초안을 만듭니다.</p></div><span>DRAFT</span></div>
+  <div class="studio-grid"><div class="studio-input"><label for="work-description">어떤 업무인가요?</label><textarea id="work-description" v-model="description" rows="5" maxlength="5000" placeholder="예: 매주 고객 문의를 살펴보고 자주 발생한 문제와 개선할 점을 정리해줘."></textarea><label for="design-mode">초안 생성 방식</label><select id="design-mode" v-model="mode"><option value="LIVE_LLM">LIVE LLM · 입력한 설명을 모델로 전송</option><option value="MOCK">MOCK · 고정 예시 초안</option></select><button @click="generate" :disabled="busy || !description.trim()">{{ busy ? '처리 중…' : '업무 구조 초안 만들기 →' }}</button><p>입력에 포함된 내용이 선택한 모델 서비스로 전송됩니다.</p><p v-if="error" class="studio-error" role="alert">{{ error }}</p><p v-if="message" class="studio-message" role="status">{{ message }}</p><div v-if="designs.length" class="studio-list"><b>저장된 초안</b><button v-for="d in designs" :key="d.design_id" @click="select(d)" :class="{chosen:selected?.design_id===d.design_id}">{{ d.plan.name }} · v{{ d.revision }} · {{ d.origin }}</button></div></div>
+  <div class="studio-preview"><div v-if="!selected" class="studio-empty"><b>여기에 업무 구조가 표시됩니다.</b><p>단계와 선행 관계, 기대 결과와 평가 기준을 확인하고 직접 고칠 수 있습니다.</p></div><template v-else><div class="studio-plan-head"><div><small>{{ selected.origin }} · v{{ selected.revision }} · 초안</small><h3>업무 구조 미리보기</h3></div><b>실행 전 검토</b></div><p class="studio-boundary">초안은 아직 실행 가능한 업무가 아닙니다. 데이터 연결·검증기·지속 실행과 피드백 개선은 구현 중입니다.</p><label>업무 이름<input v-model="selected.plan.name"></label><label>목표<textarea v-model="selected.plan.objective" rows="2"></textarea></label><label>기대 결과<textarea v-model="selected.plan.expected_result" rows="2"></textarea></label><div class="studio-flow"><div v-for="(step,i) in selected.plan.steps" :key="i" class="studio-step"><span>{{ String(i+1).padStart(2,'0') }}</span><div><p class="studio-dependency">{{ step.depends_on.length ? '선행: ' + step.depends_on.join(', ') : '시작 단계' }}</p><label>단계 이름<input v-model="step.title"></label><label>수행 내용<textarea v-model="step.purpose" rows="2"></textarea></label><label>단계 ID<input v-model="step.id"></label><label>선행 단계 ID <small>쉼표로 구분</small><input :value="step.depends_on.join(', ')" @change="setDeps(step,$event)"></label><button class="secondary" @click="removeStep(i)" :disabled="selected.plan.steps.length<=1">단계 삭제</button></div></div><button class="secondary" @click="addStep" :disabled="selected.plan.steps.length>=12">+ 단계 추가</button></div><label>평가 기준 <small>한 줄에 하나씩</small><textarea :value="selected.plan.evaluation_criteria.join('\n')" @change="setLines" rows="4"></textarea></label><div v-if="selected.plan.open_questions.length" class="studio-questions"><b>사람이 확인할 질문</b><ul><li v-for="q in selected.plan.open_questions" :key="q">{{ q }}</li></ul></div><button @click="save" :disabled="busy">수정 내용 새 버전으로 저장</button><details v-if="revisions.length" class="studio-versions"><summary>업무 구조 버전 이력 · {{ revisions.length }}개</summary><div v-for="version in revisions" :key="version.revision"><b>v{{ version.revision }} · {{ version.origin }}</b><p>{{ version.plan.expected_result }}</p><p v-if="version.feedback">변경 요청: {{ version.feedback }}</p><small v-if="version.model_id">모델 {{ version.model_id }}</small></div></details><div class="studio-feedback"><label>자연어 변경 요청<textarea v-model="feedback" rows="3" maxlength="3000" placeholder="기대 결과, 평가 기준, 단계 변경을 요청하세요."></textarea></label><p>저장된 버전을 기준으로 요청과 구조를 LIVE LLM에 전송합니다. 직접 수정한 내용은 먼저 저장하세요.</p><button @click="sendFeedback" :disabled="busy || !feedback.trim()">변경 요청으로 새 초안 만들기 →</button></div></template></div></div>
+</section>
+</template>
