@@ -9,13 +9,15 @@ from app.work.market import digest
 from sqlalchemy import text
 
 
-def install_model(monkeypatch, *, regress=False, vary_model=False):
+def install_model(monkeypatch, *, regress=False, vary_model=False, always_pass=False):
     class Responses:
         def create(self, **kwargs):
             body=json.loads(kwargs['input'][1]['content'])
             purpose=body['step']['purpose']
             improved='개선' in purpose
             output=('배송 내용' if improved else '내용 누락')
+            if always_pass:
+                output='배송 내용'
             if regress and not improved and '두번째' in body['source_text']:
                 output='배송 내용'
             if regress and improved and '두번째' in body['source_text']:
@@ -199,3 +201,170 @@ def test_tampered_candidate_output_and_hash_cannot_be_evaluated(kernel,monkeypat
         response=client.post('/api/text-experiments/'+exp+'/finish',json={'idempotency_key':'finish-tampered'})
         assert response.status_code==409
         assert client.get('/api/tasks/'+task+'/text-experiments').json()[0]['result'] is None
+
+
+def test_changed_step_ids_require_explicit_case_target_and_are_applicable(kernel,monkeypatch):
+    install_model(monkeypatch)
+    with TestClient(app) as client:
+        task,design,suite,request=make_experiment(client,kernel)
+        plan=client.get('/api/work-designs/'+design+'/revisions').json()[0]['plan']
+        plan['steps'][0]['id']='answer'
+        assert client.put('/api/work-designs/'+design,json={'revision':3,'plan':plan}).status_code==200
+        case=client.get('/api/tasks/'+task+'/regression-cases').json()[0]['case_id']
+        request={**request,'candidate_revision':4}
+        assert client.post('/api/tasks/'+task+'/text-experiments',json=request).status_code==409
+        assert client.post('/api/tasks/'+task+'/text-experiments',json={**request,'candidate_targets':{case:'missing'}}).status_code==409
+        request['candidate_targets']={case:'answer'}
+        start=client.post('/api/tasks/'+task+'/text-experiments',json=request)
+        assert start.status_code==200
+        exp=start.json()['experiment_id']
+        assert client.post('/api/tasks/'+task+'/text-experiments',json={**request,'candidate_targets':{case:'collect'}}).status_code==409
+        run_pair(kernel,1)
+        assert client.post('/api/text-experiments/'+exp+'/finish',json={'idempotency_key':'finish-new-target'}).status_code==200
+        result=client.get('/api/tasks/'+task+'/text-experiments').json()[0]['result']
+        assert result['candidate_targets']=={case:'answer'}
+        assert result['cases'][0]['step_id']=='collect' and result['cases'][0]['candidate_step_id']=='answer'
+        assert result['champion_passed']==0 and result['challenger_passed']==1
+        assert client.post('/api/text-experiments/'+exp+'/decision',json={'decision':'APPLY','note':'단계 대응을 검토','idempotency_key':'apply-new-target'}).status_code==200
+        with engine.connect() as c:
+            plan=c.execute(text('SELECT output_schema FROM task_definitions WHERE task_id=:task AND active'),{'task':task}).scalar_one()['plan']
+            assert plan['steps'][0]['id']=='answer'
+        context=client.get('/api/tasks/'+task+'/text-experiment-context').json()
+        assert context['champion_targets'][case]=='answer'
+        plan['steps'][0]['id']='reply'
+        assert client.put('/api/work-designs/'+design,json={'revision':4,'plan':plan}).status_code==200
+        next_request={'suite_id':suite,'candidate_revision':5,'candidate_targets':{case:'reply'},'idempotency_key':'second-mapping'}
+        second=client.post('/api/tasks/'+task+'/text-experiments',json=next_request)
+        assert second.status_code==200
+        run_pair(kernel,1)
+        assert client.post('/api/text-experiments/'+second.json()['experiment_id']+'/finish',json={'idempotency_key':'finish-second-mapping'}).status_code==200
+        result=client.get('/api/tasks/'+task+'/text-experiments').json()[0]['result']
+        assert result['champion_targets']=={case:'answer'} and result['candidate_targets']=={case:'reply'}
+        assert result['cases'][0]['champion_step_id']=='answer' and result['cases'][0]['candidate_step_id']=='reply'
+
+
+def test_case_target_mapping_is_immutable(kernel,monkeypatch):
+    import pytest
+    from sqlalchemy.exc import DBAPIError
+    install_model(monkeypatch)
+    with TestClient(app) as client:
+        task,_,_,request=make_experiment(client,kernel)
+        exp=client.post('/api/tasks/'+task+'/text-experiments',json=request).json()['experiment_id']
+        with pytest.raises(DBAPIError), engine.begin() as c:
+            c.execute(text("UPDATE text_experiment_targets SET targets='{}'::jsonb WHERE experiment_id=:id"),{'id':exp})
+
+
+def test_new_suite_must_retain_previously_frozen_cases(kernel,monkeypatch):
+    install_model(monkeypatch)
+    with TestClient(app) as client:
+        task,_,_,_=make_experiment(client,kernel,second=True)
+        cases=client.get('/api/tasks/'+task+'/regression-cases').json()
+        response=client.post('/api/tasks/'+task+'/regression-suites',json={'case_ids':[cases[0]['case_id']],'idempotency_key':'omit-prior'})
+        assert response.status_code==409
+
+
+def test_criteria_can_be_added_with_frozen_case_without_claiming_method_gain(kernel,monkeypatch):
+    install_model(monkeypatch,always_pass=True)
+    with TestClient(app) as client:
+        task,design,suite,_=make_experiment(client,kernel)
+        plan=client.get('/api/work-designs/'+design+'/revisions').json()[0]['plan']
+        plan['steps'][0]['purpose']='기존 단계'
+        plan['evaluation_criteria'].append('사례가 없는 기준')
+        assert client.put('/api/work-designs/'+design,json={'revision':3,'plan':plan}).status_code==200
+        request={'suite_id':suite,'candidate_revision':4,'idempotency_key':'criteria-missing'}
+        assert client.post('/api/tasks/'+task+'/text-experiments',json=request).status_code==409
+        plan['evaluation_criteria'][-1]='배송을 언급'
+        assert client.put('/api/work-designs/'+design,json={'revision':4,'plan':plan}).status_code==200
+        response=client.post('/api/tasks/'+task+'/text-experiments',json={**request,'candidate_revision':5,'idempotency_key':'criteria-ok'})
+        assert response.status_code==200
+        exp=response.json()['experiment_id'];run_pair(kernel,1)
+        assert client.post('/api/text-experiments/'+exp+'/finish',json={'idempotency_key':'finish-criteria'}).status_code==200
+        report=client.get('/api/tasks/'+task+'/text-experiments').json()[0]
+        assert report['verdict']=='PASS' and report['result']['change_kind']=='CRITERIA_ADDITION'
+        assert report['result']['gains']==[] and report['result']['gates']['all_cases_pass'] is True
+        assert report['result']['semantic_quality']=='NOT_EVALUATED'
+        assert client.post('/api/text-experiments/'+exp+'/decision',json={'decision':'APPLY','note':'새 기준 검토','idempotency_key':'apply-criteria'}).status_code==200
+        with engine.connect() as c:
+            contract=c.execute(text('SELECT output_schema FROM task_definitions WHERE task_id=:task AND active'),{'task':task}).scalar_one()
+            assert contract['plan']['evaluation_criteria']==['배송 포함','배송을 언급']
+
+
+def test_criteria_and_workflow_cannot_change_in_same_experiment(kernel,monkeypatch):
+    install_model(monkeypatch)
+    with TestClient(app) as client:
+        task,design,suite,_=make_experiment(client,kernel)
+        plan=client.get('/api/work-designs/'+design+'/revisions').json()[0]['plan']
+        plan['evaluation_criteria'].append('배송을 언급')
+        assert client.put('/api/work-designs/'+design,json={'revision':3,'plan':plan}).status_code==200
+        response=client.post('/api/tasks/'+task+'/text-experiments',json={'suite_id':suite,'candidate_revision':4,'idempotency_key':'two-changes'})
+        assert response.status_code==409
+
+
+def test_criteria_addition_requires_all_frozen_checks_to_pass(kernel,monkeypatch):
+    install_model(monkeypatch)
+    with TestClient(app) as client:
+        task,design,suite,_=make_experiment(client,kernel)
+        plan=client.get('/api/work-designs/'+design+'/revisions').json()[0]['plan']
+        plan['steps'][0]['purpose']='기존 단계'
+        plan['evaluation_criteria'].append('배송을 언급')
+        assert client.put('/api/work-designs/'+design,json={'revision':3,'plan':plan}).status_code==200
+        response=client.post('/api/tasks/'+task+'/text-experiments',json={'suite_id':suite,'candidate_revision':4,'idempotency_key':'criteria-fail'})
+        exp=response.json()['experiment_id'];run_pair(kernel,1)
+        assert client.post('/api/text-experiments/'+exp+'/finish',json={'idempotency_key':'finish-criteria-fail'}).status_code==200
+        report=client.get('/api/tasks/'+task+'/text-experiments').json()[0]
+        assert report['verdict']=='FAIL' and not report['result']['gates']['all_cases_pass']
+        assert client.post('/api/text-experiments/'+exp+'/decision',json={'decision':'APPLY','note':'불통과','idempotency_key':'apply-failure'}).status_code==409
+
+
+def test_expected_result_change_preserves_old_and_new_cases(kernel,monkeypatch):
+    install_model(monkeypatch,always_pass=True)
+    with TestClient(app) as client:
+        task,design,suite,_=make_experiment(client,kernel)
+        plan=client.get('/api/work-designs/'+design+'/revisions').json()[0]['plan']
+        plan['steps'][0]['purpose']='기존 단계';plan['expected_result']='배송과 다음 조치 요약'
+        assert client.put('/api/work-designs/'+design,json={'revision':3,'plan':plan}).status_code==200
+        request={'suite_id':suite,'candidate_revision':4,'idempotency_key':'missing-outcome-cases'}
+        assert client.post('/api/tasks/'+task+'/text-experiments',json=request).status_code==409
+        first=client.get('/api/tasks/'+task+'/regression-cases').json()[0]
+        case_ids=[first['case_id']]
+        for i,expected in enumerate(('배송 문의 요약','배송과 다음 조치 요약')):
+            request_case={'artifact_id':first['snapshot']['source_artifact_id'],'step_id':'collect',
+                'input_text':'익명 배송 문의','expected_behavior':expected,'feedback':'기대 결과 확인',
+                'required_phrases':['배송'],'forbidden_phrases':[],'idempotency_key':f'expected-case-{i}'}
+            response=client.post('/api/tasks/'+task+'/regression-cases',json=request_case)
+            assert response.status_code==200;case_ids.append(response.json()['case_id'])
+        new_suite=client.post('/api/tasks/'+task+'/regression-suites',json={'case_ids':case_ids,'idempotency_key':'expected-suite'}).json()['suite_id']
+        response=client.post('/api/tasks/'+task+'/text-experiments',json={**request,'suite_id':new_suite,'idempotency_key':'expected-ready'})
+        assert response.status_code==200
+        exp=response.json()['experiment_id'];run_pair(kernel,3)
+        assert client.post('/api/text-experiments/'+exp+'/finish',json={'idempotency_key':'finish-expected'}).status_code==200
+        report=client.get('/api/tasks/'+task+'/text-experiments').json()[0]
+        assert report['verdict']=='PASS' and report['result']['change_kind']=='EXPECTED_RESULT_CHANGE'
+        assert report['result']['expected_result_change']['from']=='배송 문의 요약'
+        assert report['result']['expected_result_change']['to']=='배송과 다음 조치 요약'
+        assert len(report['result']['expected_result_change']['case_ids'])==2
+        assert client.post('/api/text-experiments/'+exp+'/decision',json={'decision':'APPLY','note':'두 기대 결과 사례 검토','idempotency_key':'apply-expected'}).status_code==200
+        with engine.connect() as c:
+            contract=c.execute(text('SELECT output_schema FROM task_definitions WHERE task_id=:task AND active'),{'task':task}).scalar_one()
+            assert contract['plan']['expected_result']=='배송과 다음 조치 요약'
+
+
+def test_paired_replay_handles_more_than_ten_retained_cases(kernel,monkeypatch):
+    install_model(monkeypatch)
+    with TestClient(app) as client:
+        task,_,_,request=make_experiment(client,kernel)
+        original=client.get('/api/tasks/'+task+'/regression-cases').json()[0]
+        ids=[original['case_id']]
+        for i in range(10):
+            body={'artifact_id':original['snapshot']['source_artifact_id'],'step_id':'collect',
+                'input_text':f'익명 배송 문의 {i}','expected_behavior':f'배송 확인 {i}','feedback':'배송 확인',
+                'required_phrases':['배송'],'forbidden_phrases':[],'idempotency_key':f'many-case-{i}'}
+            response=client.post('/api/tasks/'+task+'/regression-cases',json=body)
+            assert response.status_code==200;ids.append(response.json()['case_id'])
+        suite=client.post('/api/tasks/'+task+'/regression-suites',json={'case_ids':ids,'idempotency_key':'eleven-cases'}).json()['suite_id']
+        exp=client.post('/api/tasks/'+task+'/text-experiments',json={**request,'suite_id':suite,'idempotency_key':'eleven-replay'}).json()['experiment_id']
+        run_pair(kernel,11)
+        assert client.post('/api/text-experiments/'+exp+'/finish',json={'idempotency_key':'finish-eleven'}).status_code==200
+        report=client.get('/api/tasks/'+task+'/text-experiments').json()[0]
+        assert report['result']['case_count']==11 and report['result']['challenger_passed']==11
+        assert report['verdict']=='PASS'

@@ -11,7 +11,7 @@ from app.work.seed import seed
 from app.work.service import Kernel, Conflict, NotFound
 from app.evaluation.improvements import ImprovementService
 from app.evaluation.text_regression import TextCaseRequest, SuiteRequest, add_case, freeze_suite
-from app.evaluation.text_experiments import ExperimentRequest, FinalizeRequest, start as start_text_experiment, finish as finish_text_experiment
+from app.evaluation.text_experiments import ExperimentRequest, FinalizeRequest, start as start_text_experiment, finish as finish_text_experiment, active_targets as active_text_targets
 from app.evaluation.text_decisions import DecisionRequest, decide as decide_text_experiment
 from app.integrations.search import readiness, SearchUnavailable
 from app.work.designs import CreateDesign, EditDesign, DesignFeedback, generate, create as create_design, revise as revise_design, apply_feedback
@@ -231,7 +231,8 @@ def text_experiment_context(task_id: str):
             raise HTTPException(404,'active registered text task not found')
         latest=c.execute(text('''SELECT revision,plan FROM work_design_revisions WHERE design_id=:id ORDER BY revision DESC LIMIT 1'''),
                          {'id':task['design_id']}).mappings().one()
-        return {**dict(task),'latest_revision':latest['revision'],'latest_plan':latest['plan']}
+        return {**dict(task),'latest_revision':latest['revision'],'latest_plan':latest['plan'],
+                'champion_targets':active_text_targets(c,task_id,task['version'])}
 
 
 @app.post('/api/tasks/{task_id}/text-experiments')

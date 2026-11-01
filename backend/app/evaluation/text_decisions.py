@@ -3,7 +3,7 @@ from copy import deepcopy
 from typing import Literal
 from pydantic import BaseModel, Field
 from sqlalchemy import text
-from app.evaluation.text_experiments import _active, _suite, _side_result
+from app.evaluation.text_experiments import _active, _suite, _side_result, _targets, evaluation_pass
 from app.work.market import digest
 from app.work.service import Kernel, Conflict, NotFound, canonical, one, uid
 
@@ -45,8 +45,7 @@ def decide(db, experiment_id, body):
             if by_kind:
                 raise Conflict('an experiment decision already exists')
         elif body.decision=='APPLY':
-            if by_kind or exp['verdict']!='PASS' or not all(exp['result'].get('gates',{}).get(k) is True for k in
-                ('all_executions_valid','same_live_model','zero_regressions','at_least_one_gain')):
+            if by_kind or exp['verdict']!='PASS' or not evaluation_pass(exp['result']):
                 raise Conflict('only an undecided passing comparison can be applied')
             if generation!=exp['experiment_generation'] or current['version']!=exp['champion_version']:
                 raise Conflict('active method changed since the comparison')
@@ -60,9 +59,14 @@ def decide(db, experiment_id, body):
             saved={x['case_id']:x for x in exp['result']['cases']}
             if len(saved)!=len(snapshot['cases']):
                 raise Conflict('evaluation cases changed')
+            targets=_targets(c,exp,snapshot)
+            if 'candidate_targets' in exp['result'] and (exp['result']['candidate_targets']!=targets['challenger']
+                or exp['result'].get('champion_targets')!=targets['champion']
+                or exp['result'].get('target_mapping_sha256')!=digest(targets)):
+                raise Conflict('evaluation target mapping changed')
             for entry in snapshot['cases']:
-                old=_side_result(c,exp,entry,'CHAMPION',current['output_schema'])
-                new=_side_result(c,exp,entry,'CHALLENGER',current['output_schema'])
+                old=_side_result(c,exp,entry,'CHAMPION',current['output_schema'],targets)
+                new=_side_result(c,exp,entry,'CHALLENGER',current['output_schema'],targets)
                 recorded=saved.get(entry['case_id'],{})
                 if old!=recorded.get('champion') or new!=recorded.get('challenger'):
                     raise Conflict('evaluation execution or evidence changed')

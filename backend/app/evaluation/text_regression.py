@@ -138,6 +138,12 @@ def freeze_suite(db, task_id, request):
             if previous['payload'].get('request_sha256')!=request_hash:
                 raise Conflict('suite idempotency key already used')
             return previous['subject_id'],False
+        prior=c.execute(text('SELECT * FROM text_regression_suites WHERE task_id=:task ORDER BY version'),{'task':task_id}).mappings().all()
+        required=set()
+        for suite in prior:
+            required.update(x['case_id'] for x in verify_suite(c,task_id,suite)['cases'])
+        if not required.issubset(ids):
+            raise Conflict('new evaluation suite must retain all previously frozen cases')
         cases=[]
         for case_id in ids:
             row=one(c,'SELECT * FROM text_regression_cases WHERE case_id=CAST(:id AS uuid) AND task_id=:task',{'id':case_id,'task':task_id})
