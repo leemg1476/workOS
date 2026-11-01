@@ -66,7 +66,7 @@ def make_report(manifest):
     recommendations = [{'recommendation_id':f'REC-{category}', 'category':category, 'count':len(ids),
                         'record_ids':ids,'action':ACTIONS[category]} for category,ids in buckets.items() if ids]
     recommendations.sort(key=lambda x:(-x['count'],x['category']))
-    report = {'task_id':'TASK-003','data_mode':'DEMO DATA','model_mode':'MOCK','source_version':'voc-demo-v1',
+    report = {'task_id':'TASK-003','data_mode':'DEMO DATA','model_mode':'MOCK','source_version':manifest['source_version'],
             'method_version':manifest['method']['method_id'],'recommendations':recommendations[:3],
             'unclassified_ids':unknown,'source_review_status':manifest['source_review_status']}
     if manifest['task_version'] >= 3:
@@ -110,7 +110,7 @@ def verify_voc(manifest, report):
             and parsed.unclassified_ids == unclassified)
         checks['recommendation_templates'] = all(r.action == ACTIONS.get(r.category) for r in parsed.recommendations)
         checks['data_and_method_labels'] = (parsed.task_id == 'TASK-003' and parsed.data_mode == 'DEMO DATA'
-            and parsed.model_mode == 'MOCK' and parsed.source_version == 'voc-demo-v1'
+            and parsed.model_mode == 'MOCK' and parsed.source_version == manifest['source_version']
             and parsed.method_version == manifest['method']['method_id']
             and parsed.source_review_status == manifest['source_review_status'])
         checks['pii_patterns'] = all(not re.search(r'\b[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}\b|\b01[016789][- ]?\d{3,4}[- ]?\d{4}\b', r.action) for r in parsed.recommendations)

@@ -4,6 +4,7 @@ from sqlalchemy import text
 from app.domain.contracts import MarketBriefing, PolicyImpact, VocReport, VocReportWithHistory, VocReportWithSources
 from app.work.market import digest
 from app.work.voc import METHODS, fixture_records, fixture_cases, fixture_regression_cases
+from app.evaluation.poc_voc_fixtures import records as poc_records
 
 TASKS = [
     ('TASK-001', '일일 금융시장 리스크 브리핑', '시장 지표와 출처를 검증한 브리핑', 'CRON', '0 8 * * 1-5', None),
@@ -67,7 +68,7 @@ def seed(engine):
                 VALUES (:id,'classification_rules',CAST(:rules AS jsonb),:sha) ON CONFLICT DO NOTHING'''),
                 {'id':method_id,'rules':json.dumps(rules,ensure_ascii=False),'sha':digest(rules)})
         c.execute(text("INSERT INTO voc_method_state(task_id,active_method_id) VALUES ('TASK-003','champion-v1') ON CONFLICT DO NOTHING"))
-        records = fixture_records()
+        records = fixture_records() + poc_records('week1') + poc_records('week2')
         for row in records:
             c.execute(text('INSERT INTO voc_records(record_id,source_version,body) VALUES (:record_id,:source_version,:body) ON CONFLICT DO NOTHING'),row)
         cases = fixture_cases()

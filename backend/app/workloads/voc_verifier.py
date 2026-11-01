@@ -5,17 +5,18 @@ from app.integrations.sql_source import source_engine
 from app.work.market import digest
 from app.work.service import Conflict, one
 from app.work.voc import verify_voc, DOCUMENTS as VOC_DOCUMENTS, DOCUMENT_QUERY as VOC_DOCUMENT_QUERY, DOCUMENT_PARAMETERS as VOC_DOCUMENT_PARAMETERS, RECORD_QUERY as VOC_RECORD_QUERY
-from app.workloads.registry import Verifier, register_builtin_verifier
+from app.workloads.registry import Verifier, register_builtin_verifier, register_verifier, register_verifier_kind_resolver
 
-def previous_voc_report(c, artifact_id=None):
+def previous_voc_report(c, artifact_id=None, source_version=None):
     selection = 'AND a.artifact_id=:artifact' if artifact_id else ''
+    selection += " AND a.content->>'source_version'=:source" if source_version else ''
     row = one(c, '''SELECT a.artifact_id,a.artifact_version,a.schema_version,a.sha256,a.content,r.run_id,r.finished_at,
         w.work_id,w.task_version,e.evidence_id,e.verifier_version,ev.evaluation_id,ev.eval_suite_version FROM artifacts a JOIN runs r ON r.run_id=a.run_id
         JOIN work_items w ON w.work_id=r.work_id JOIN evidence e ON e.artifact_id=a.artifact_id
         JOIN evaluations ev ON ev.artifact_id=a.artifact_id AND ev.verdict='PASS'
         WHERE a.kind='voc_report' AND r.status='SUCCEEDED' AND e.verification_type='voc_deterministic'
         AND e.result->>'passed'='true' '''+selection+''' ORDER BY a.artifact_version DESC LIMIT 1''',
-              {'artifact':artifact_id} if artifact_id else {})
+              {'artifact':artifact_id,'source':source_version})
     if not row:
         return None
     return {'artifact_id':str(row['artifact_id']),'artifact_version':row['artifact_version'],'sha256':row['sha256'],
@@ -37,20 +38,22 @@ def verify(c, run, work, task, content, artifact_hash):
     result['checks']['manifest_hash'] = digest(manifest) == context['sha256']
     result['checks']['source_dependency_unchanged'] = (dict(source) if source else None) == manifest['source_dependency']
     result['checks']['execution_provenance'] = run['agent_version'] == manifest['method']['method_id'] and run['model_id'] == 'MOCK'
+    if work['input_snapshot'].get('source_version','voc-demo-v1') != 'voc-demo-v1':
+        result['checks']['poc_source_pinned'] = manifest['source_version']==work['input_snapshot'].get('source_version')
     if kind in ('voc_report_v2','voc_report_v3'):
         previous = manifest['previous_report']
         result['checks']['previous_artifact_verified'] = (previous is None or
             previous_voc_report(c,previous['artifact_id'])==previous)
     if kind=='voc_report_v3':
         with source_engine(c.engine).connect() as source_conn:
-            current_records = [dict(row) for row in source_conn.execute(text(VOC_RECORD_QUERY),{'version':'voc-demo-v1'}).mappings()]
+            current_records = [dict(row) for row in source_conn.execute(text(VOC_RECORD_QUERY),{'version':manifest['source_version']}).mappings()]
             current = source_conn.execute(text(VOC_DOCUMENT_QUERY),VOC_DOCUMENT_PARAMETERS).mappings().all()
         current = [{'id':f"{d['document_id']}@{d['version']}",'title':d['title'],'body':d['body'],'sha256':d['sha256']}
                    for d in current if f"{d['document_id']}@{d['version']}" in VOC_DOCUMENTS.values()]
         result['checks']['documents_source_current'] = current==manifest['authoritative_documents']
         result['checks']['records_source_current'] = current_records==manifest['records']
         result['checks']['source_query_contract'] = (manifest['record_query']==VOC_RECORD_QUERY
-            and manifest['record_parameters']=={'version':'voc-demo-v1'} and manifest['document_query']==VOC_DOCUMENT_QUERY
+            and manifest['record_parameters']=={'version':manifest['source_version']} and manifest['document_query']==VOC_DOCUMENT_QUERY
             and manifest['document_parameters']==VOC_DOCUMENT_PARAMETERS)
         if manifest['retrieval']['mode']=='OPENSEARCH':
             indexed,_ = retrieve_documents(list(VOC_DOCUMENTS.values()))
@@ -71,3 +74,5 @@ def verify(c, run, work, task, content, artifact_hash):
 register_builtin_verifier('voc_report_v1', Verifier('voc_report','1','voc-validator-v1','voc_deterministic','voc-run-suite-v1',verify))
 register_builtin_verifier('voc_report_v2', Verifier('voc_report','2','voc-validator-v2','voc_deterministic','voc-run-suite-v2',verify))
 register_builtin_verifier('voc_report_v3', Verifier('voc_report','3','voc-validator-v3','voc_deterministic','voc-run-suite-v3',verify))
+register_verifier('voc_poc_v1', Verifier('voc_report','3','voc-poc-validator-v1','voc_deterministic','voc-poc-run-suite-v1',verify))
+register_verifier_kind_resolver('voc_report_v3',lambda work: 'voc_poc_v1' if work['input_snapshot'].get('source_version','voc-demo-v1')!='voc-demo-v1' else 'voc_report_v3')

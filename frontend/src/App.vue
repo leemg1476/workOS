@@ -6,6 +6,7 @@ import TextRegression from './TextRegression.vue'
 import TextSourceEditor from './TextSourceEditor.vue'
 import TextContractEditor from './TextContractEditor.vue'
 import TextWorkLinks from './TextWorkLinks.vue'
+import VocEffortPoc from './VocEffortPoc.vue'
 const tasks = ref([]), error = ref(''), selected = ref(null), loading = ref(''), artifacts = ref([]), comparison = ref(null), health = ref(null), runContext = ref(null), runSteps = ref([])
 const taskQuery=ref('')
 const visibleTasks=computed(()=>{
@@ -65,6 +66,7 @@ onUnmounted(() => clearInterval(timer))
       <div class="notice"><b>DEMO DATA</b><span>시장·규정·VOC는 가상 자료입니다. TASK-001의 LIVE LLM은 해석만 실제 모델로 생성합니다. 규정 변경 후속 작업과 검토 이력을 확인할 수 있으며, VOC 점수는 데모 평가셋 결과입니다. 검색: {{ health?.search?.mode || '확인 중' }} · {{ health?.search?.status || '확인 중' }}.</span></div>
       <p v-if="error" class="error" role="alert">{{ error }}</p>
       <WorkDesignStudio ref="workStudio" :base="base" @registered="refresh" />
+      <VocEffortPoc :base="base" @open-work="openHistoryWork" @refresh="refresh" />
       <TextWorkLinks :base="base" :tasks="tasks" @open-work="openHistoryWork" />
       <RunHistory :tasks="tasks" :base="base" :proposals="proposals" @open-work="openHistoryWork" @open-improvements="openHistoryImprovements" />
       <div class="section-title"><div><span>01 / </span>업무 목록</div><small>ACTIVE DEFINITIONS</small></div>

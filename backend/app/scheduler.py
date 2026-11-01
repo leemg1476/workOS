@@ -7,6 +7,7 @@ from sqlalchemy import text
 from app.work.db import engine, migrate
 from app.work.seed import seed
 from app.work.service import Kernel, NotFound
+from app.domain.hashing import digest
 from app.work.notifications import client, dispatch
 from redis.exceptions import RedisError
 
@@ -23,14 +24,20 @@ def tick(db, now=None):
         for job in jobs:
             c.execute(text('''INSERT INTO job_schedule_cursors(job_id,next_due_at) VALUES (:job,:due)
                 ON CONFLICT(job_id) DO NOTHING'''), {'job': job['job_id'], 'due': next_due(job['schedule'], job['timezone'], now)})
-        due = c.execute(text('''SELECT j.*,s.next_due_at FROM job_definitions j JOIN job_schedule_cursors s USING(job_id)
+        due = c.execute(text('''SELECT j.*,s.next_due_at,p.snapshot AS trigger_preset,p.snapshot_sha256 AS preset_sha256
+            FROM job_definitions j JOIN job_schedule_cursors s USING(job_id) LEFT JOIN job_trigger_presets p USING(job_id)
             WHERE j.enabled AND j.trigger_type='CRON' AND s.next_due_at <= :now ORDER BY s.next_due_at LIMIT 100'''), {'now': now}).mappings().all()
     count = 0
     for job in due:
         fire = job['next_due_at'].astimezone(timezone.utc)
         key = f"cron:{job['job_id']}:{fire.isoformat()}"
+        preset=job['trigger_preset']
+        if preset is not None and (not isinstance(preset,dict) or 'scheduled_for' in preset or digest(preset)!=job['preset_sha256']):
+            print(f"Invalid trigger preset for job {job['job_id']}; retained for inspection",flush=True)
+            continue
+        snapshot={**(preset or {}),'scheduled_for':fire.isoformat()}
         try:
-            _, created = Kernel(db).trigger(job['job_id'], key, {'scheduled_for': fire.isoformat()}, expected_due=fire)
+            _, created = Kernel(db).trigger(job['job_id'], key, snapshot, expected_due=fire)
         except NotFound:
             continue  # The job was disabled after the due-job snapshot was read.
         with db.begin() as c:

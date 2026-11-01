@@ -20,6 +20,9 @@ from app.integrations.search import readiness, SearchUnavailable
 from app.work.designs import CreateDesign, EditDesign, DesignFeedback, generate, create as create_design, revise as revise_design, apply_feedback
 from app.work.register_design import RegisterDesign, ScheduleState, register as register_design, set_schedule
 from app.workloads.text_sources import UpdateTextSource, get_source, update_source
+from app.evaluation.poc_voc import BaselineRequest as PocBaselineRequest, AssistedRequest as PocAssistedRequest, ScheduleRequest as PocScheduleRequest, ScheduleState as PocScheduleState, save_baseline as save_poc_baseline, save_assisted as save_poc_assisted, list_measurements as list_poc_measurements, run_view as poc_run_view, create_schedule as create_poc_schedule, set_schedule as set_poc_schedule, list_schedules as list_poc_schedules
+from app.evaluation.poc_voc_fixtures import records as poc_records
+from typing import Literal
 from app.workloads.text_links import CreateLink, SetLink, create as create_text_link, set_enabled as set_text_link
 
 
@@ -143,7 +146,8 @@ def tasks():
           LEFT JOIN LATERAL (SELECT * FROM work_items wi WHERE wi.task_id=t.task_id AND wi.parent_work_id IS NULL
             AND NOT EXISTS (SELECT 1 FROM text_experiment_work ew WHERE ew.work_id=wi.work_id) ORDER BY wi.created_at DESC LIMIT 1) w ON true
           LEFT JOIN LATERAL (SELECT * FROM runs WHERE work_id=w.work_id ORDER BY attempt_no DESC LIMIT 1) r ON true
-          WHERE t.active ORDER BY t.task_id''')).mappings()]
+          WHERE t.active AND NOT EXISTS (SELECT 1 FROM job_trigger_presets preset WHERE preset.job_id=j.job_id AND preset.hidden_from_task_list)
+          ORDER BY t.task_id''')).mappings()]
         histories={task['task_id']:[] for task in tasks}
         if histories:
             history=c.execute(text('''WITH ranked AS (
@@ -327,6 +331,10 @@ def trigger(task_id: str, body: TriggerRequest):
         options = body.input_snapshot
         if options.get('dataset_version','v1') not in ('v1','v2') or options.get('model_mode','MOCK') not in ('MOCK','LIVE_LLM') or not isinstance(options.get('omit_document',False),bool):
             raise HTTPException(422, 'invalid demo dataset, model mode, or fault option')
+    if task_id == 'TASK-003':
+        from app.evaluation.poc_voc_fixtures import PERIODS
+        if body.input_snapshot.get('source_version','voc-demo-v1') not in ('voc-demo-v1',*PERIODS.values()):
+            raise HTTPException(422,'unsupported VOC demo source version')
     work, created = kernel.trigger(task_id+'-JOB', body.idempotency_key, body.input_snapshot)
     with engine.connect() as c:
         mode = c.execute(text('''SELECT t.acceptance_policy->>'kind' FROM work_items w JOIN task_definitions t
@@ -418,6 +426,49 @@ def voc_state():
         state = c.execute(text("SELECT * FROM voc_method_state WHERE task_id='TASK-003'")).mappings().one()
         source = c.execute(text("SELECT * FROM task_source_dependencies WHERE task_id='TASK-003' AND document_id='POLICY-VOC'")).mappings().first()
         return {'data_mode':'DEMO DATA','model_mode':'MOCK','method':dict(state),'source_dependency':dict(source) if source else None}
+
+
+@app.get('/api/poc-voc/inputs/{period}')
+def poc_voc_inputs(period: Literal['week1','week2']):
+    return {'period':period,'data_mode':'SYNTHETIC_FIXTURE','records':poc_records(period)}
+
+
+@app.get('/api/poc-voc/measurements')
+def poc_voc_measurements():
+    return list_poc_measurements(engine)
+
+
+@app.post('/api/poc-voc/baseline')
+def poc_voc_baseline(body: PocBaselineRequest):
+    measurement,created=save_poc_baseline(engine,body)
+    return {'measurement_id':measurement,'created':created}
+
+
+@app.post('/api/poc-voc/assisted')
+def poc_voc_assisted(body: PocAssistedRequest):
+    measurement,created=save_poc_assisted(engine,body)
+    return {'measurement_id':measurement,'created':created}
+
+
+@app.get('/api/poc-voc/runs/{run_id}')
+def poc_voc_run(run_id: UUID, period: Literal['week1','week2']):
+    return poc_run_view(engine,str(run_id),period)
+
+
+@app.get('/api/poc-voc/schedules')
+def poc_voc_schedules():
+    return list_poc_schedules(engine)
+
+
+@app.post('/api/poc-voc/schedules')
+def poc_voc_create_schedule(body: PocScheduleRequest):
+    schedule,created=create_poc_schedule(engine,body)
+    return {'schedule_id':schedule,'created':created}
+
+
+@app.post('/api/poc-voc/schedules/{schedule_id}/state')
+def poc_voc_schedule_state(schedule_id: UUID, body: PocScheduleState):
+    return {'changed':set_poc_schedule(engine,str(schedule_id),body)}
 
 
 @app.post('/api/feedback')
