@@ -102,6 +102,28 @@ def add_case(db, task_id, request):
         return case_id,True
 
 
+
+def _assert_case_source(c, task_id, row):
+    case=row['snapshot']
+    source=one(c,'''SELECT a.content,a.sha256,r.run_id,r.status AS run_status,w.task_id,w.task_version,
+            ctx.manifest,ctx.sha256 AS context_sha256,e.result AS review,e.input_refs AS review_refs,e.verifier_version AS review_verifier
+        FROM artifacts a JOIN runs r ON r.run_id=a.run_id JOIN work_items w ON w.work_id=r.work_id
+        JOIN run_contexts ctx ON ctx.run_id=r.run_id
+        JOIN evidence e ON e.artifact_id=a.artifact_id AND e.verification_type='human_work_review'
+        WHERE a.artifact_id=CAST(:artifact AS uuid) AND e.evidence_id=CAST(:review AS uuid)''',
+        {'artifact':case['source_artifact_id'],'review':case['review_evidence_id']})
+    if (not source or not isinstance(source['content'],dict) or not isinstance(source['manifest'],dict)
+        or not isinstance(source['review_refs'],dict) or not isinstance(source['review'],dict)
+        or source['task_id']!=task_id or source['task_version']!=case['base_task_version']
+        or str(source['run_id'])!=case['source_run_id'] or source['run_status']!='SUCCEEDED'
+        or source['review'].get('decision')!=case['review_decision']
+        or digest({'result':source['review'],'input_refs':source['review_refs'],'verifier_version':source['review_verifier']})!=case['review_evidence_sha256']
+        or source['review_refs'].get('artifact_sha256')!=case['source_artifact_sha256']
+        or source['sha256']!=case['source_artifact_sha256'] or digest(source['content'])!=source['sha256']
+        or source['context_sha256']!=case['source_context_sha256'] or digest(source['manifest'])!=source['context_sha256']):
+        raise Conflict('evaluation case source or review has changed')
+
+
 def freeze_suite(db, task_id, request):
     ids=sorted(str(x) for x in request.case_ids)
     if len(set(ids)) != len(ids):
@@ -123,24 +145,7 @@ def freeze_suite(db, task_id, request):
                 raise NotFound('evaluation case not found for task')
             if digest(row['snapshot'])!=row['snapshot_sha256']:
                 raise Conflict('evaluation case snapshot is corrupted')
-            case=row['snapshot']
-            source=one(c,'''SELECT a.content,a.sha256,r.run_id,r.status AS run_status,w.task_id,w.task_version,
-                    ctx.manifest,ctx.sha256 AS context_sha256,e.result AS review,e.input_refs AS review_refs,e.verifier_version AS review_verifier
-                FROM artifacts a JOIN runs r ON r.run_id=a.run_id JOIN work_items w ON w.work_id=r.work_id
-                JOIN run_contexts ctx ON ctx.run_id=r.run_id
-                JOIN evidence e ON e.artifact_id=a.artifact_id AND e.verification_type='human_work_review'
-                WHERE a.artifact_id=CAST(:artifact AS uuid) AND e.evidence_id=CAST(:review AS uuid)''',
-                {'artifact':case['source_artifact_id'],'review':case['review_evidence_id']})
-            if (not source or not isinstance(source['content'],dict) or not isinstance(source['manifest'],dict)
-                or not isinstance(source['review_refs'],dict) or not isinstance(source['review'],dict)
-                or source['task_id']!=task_id or source['task_version']!=case['base_task_version']
-                or str(source['run_id'])!=case['source_run_id'] or source['run_status']!='SUCCEEDED'
-                or source['review'].get('decision')!=case['review_decision']
-                or digest({'result':source['review'],'input_refs':source['review_refs'],'verifier_version':source['review_verifier']})!=case['review_evidence_sha256']
-                or source['review_refs'].get('artifact_sha256')!=case['source_artifact_sha256']
-                or source['sha256']!=case['source_artifact_sha256'] or digest(source['content'])!=source['sha256']
-                or source['context_sha256']!=case['source_context_sha256'] or digest(source['manifest'])!=source['context_sha256']):
-                raise Conflict('evaluation case source or review has changed')
+            _assert_case_source(c,task_id,row)
             cases.append({'case_id':case_id,'case_sha256':row['snapshot_sha256'],'case':row['snapshot']})
         version=one(c,'SELECT COALESCE(MAX(version),0)+1 AS version FROM text_regression_suites WHERE task_id=:task',{'task':task_id})['version']
         snapshot={'task_id':task_id,'version':version,'cases':cases,'scope':'USER_DEFINED_SUBSTRING_CHECKS_NOT_SEMANTIC'}
@@ -149,3 +154,22 @@ def freeze_suite(db, task_id, request):
             VALUES (:id,:task,:version,CAST(:snapshot AS jsonb),:sha)'''),{'id':suite_id,'task':task_id,'version':version,'snapshot':canonical(snapshot),'sha':suite_hash})
         kernel._event(c,'text_eval.suite_frozen',suite_id,{'request_sha256':request_hash,'snapshot_sha256':suite_hash,'task_id':task_id,'version':version},actor='user',key=key)
         return suite_id,True
+
+
+def verify_suite(c, task_id, suite):
+    if not suite or suite['task_id'] != task_id or digest(suite['snapshot']) != suite['snapshot_sha256']:
+        raise Conflict('evaluation suite snapshot missing or corrupted')
+    snapshot=suite['snapshot']
+    if snapshot.get('task_id') != task_id or snapshot.get('version') != suite['version'] or not snapshot.get('cases'):
+        raise Conflict('evaluation suite metadata is invalid')
+    seen=set()
+    for entry in snapshot['cases']:
+        case_id=entry['case_id']
+        if case_id in seen:
+            raise Conflict('duplicate evaluation case')
+        seen.add(case_id)
+        row=one(c,'SELECT * FROM text_regression_cases WHERE case_id=CAST(:id AS uuid) AND task_id=:task',{'id':case_id,'task':task_id})
+        if not row or row['snapshot_sha256']!=entry['case_sha256'] or digest(row['snapshot'])!=row['snapshot_sha256'] or row['snapshot']!=entry['case']:
+            raise Conflict('evaluation case has changed')
+        _assert_case_source(c,task_id,row)
+    return snapshot

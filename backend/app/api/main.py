@@ -11,6 +11,7 @@ from app.work.seed import seed
 from app.work.service import Kernel, Conflict, NotFound
 from app.evaluation.improvements import ImprovementService
 from app.evaluation.text_regression import TextCaseRequest, SuiteRequest, add_case, freeze_suite
+from app.evaluation.text_experiments import ExperimentRequest, FinalizeRequest, start as start_text_experiment, finish as finish_text_experiment
 from app.integrations.search import readiness, SearchUnavailable
 from app.work.designs import CreateDesign, EditDesign, DesignFeedback, generate, create as create_design, revise as revise_design, apply_feedback
 from app.work.register_design import RegisterDesign, ScheduleState, register as register_design, set_schedule
@@ -133,7 +134,8 @@ def tasks():
         tasks = [dict(r) for r in c.execute(text('''SELECT t.task_id,t.version,t.name,t.objective,t.acceptance_policy->>'kind' AS execution_kind,j.job_id,j.trigger_type,j.schedule,j.event_filter,j.enabled AS job_enabled,
           w.work_id,w.status,r.run_id,r.status AS run_status,r.error
           FROM task_definitions t JOIN job_definitions j ON j.task_id=t.task_id AND j.task_version=t.version
-          LEFT JOIN LATERAL (SELECT * FROM work_items WHERE task_id=t.task_id AND parent_work_id IS NULL ORDER BY created_at DESC LIMIT 1) w ON true
+          LEFT JOIN LATERAL (SELECT * FROM work_items wi WHERE wi.task_id=t.task_id AND wi.parent_work_id IS NULL
+            AND NOT EXISTS (SELECT 1 FROM text_experiment_work ew WHERE ew.work_id=wi.work_id) ORDER BY wi.created_at DESC LIMIT 1) w ON true
           LEFT JOIN LATERAL (SELECT * FROM runs WHERE work_id=w.work_id ORDER BY attempt_no DESC LIMIT 1) r ON true
           WHERE t.active ORDER BY t.task_id''')).mappings()]
         for task in tasks:
@@ -144,6 +146,7 @@ def tasks():
                 LEFT JOIN LATERAL (SELECT * FROM evaluations WHERE run_id=r.run_id ORDER BY created_at DESC LIMIT 1) e ON true
                 LEFT JOIN artifacts a ON a.artifact_id=e.artifact_id
                 WHERE w.task_id=:task_id AND w.parent_work_id IS NULL
+                  AND NOT EXISTS (SELECT 1 FROM text_experiment_work ew WHERE ew.work_id=w.work_id)
                 ORDER BY r.started_at DESC,r.run_id DESC LIMIT 5'''), {'task_id':task['task_id']}).mappings()
             task['recent_verifications'] = []
             for row in history:
@@ -195,6 +198,48 @@ def create_text_regression_suite(task_id: str, body: SuiteRequest):
     except ValueError as exc:
         raise HTTPException(422,str(exc)) from exc
     return {'suite_id':suite_id,'created':created}
+
+
+@app.get('/api/tasks/{task_id}/text-experiments')
+def text_experiments(task_id: str):
+    with engine.connect() as c:
+        experiments=[dict(row) for row in c.execute(text('''SELECT x.experiment_id,x.task_id,x.champion_version,x.design_id,
+            x.candidate_revision,x.suite_id,x.suite_sha256,x.status,x.created_at,r.result,r.result_sha256,r.verdict
+            FROM text_experiments x LEFT JOIN text_experiment_results r ON r.experiment_id=x.experiment_id
+            WHERE x.task_id=:task ORDER BY x.created_at DESC'''),{'task':task_id}).mappings()]
+        for exp in experiments:
+            exp['runs']=[dict(row) for row in c.execute(text('''SELECT m.case_id,m.side,m.work_id,w.status AS work_status,
+                r.run_id,r.status AS run_status,r.error FROM text_experiment_work m JOIN work_items w ON w.work_id=m.work_id
+                LEFT JOIN LATERAL (SELECT * FROM runs WHERE work_id=w.work_id ORDER BY attempt_no DESC LIMIT 1) r ON true
+                WHERE m.experiment_id=:id ORDER BY m.case_id,m.side'''),{'id':exp['experiment_id']}).mappings()]
+        return experiments
+
+
+@app.get('/api/tasks/{task_id}/text-experiment-context')
+def text_experiment_context(task_id: str):
+    with engine.connect() as c:
+        task=c.execute(text('''SELECT t.task_id,t.version,r.design_id,r.revision AS registered_revision,
+            t.output_schema->>'model_mode' AS model_mode,t.output_schema->'plan' AS plan
+            FROM task_definitions t JOIN registered_work_designs r ON r.task_id=t.task_id AND r.task_version=t.version
+            WHERE t.task_id=:task AND t.active AND t.acceptance_policy->>'kind'='provided_text_workflow_v1' '''),
+            {'task':task_id}).mappings().first()
+        if not task:
+            raise HTTPException(404,'active registered text task not found')
+        latest=c.execute(text('''SELECT revision,plan FROM work_design_revisions WHERE design_id=:id ORDER BY revision DESC LIMIT 1'''),
+                         {'id':task['design_id']}).mappings().one()
+        return {**dict(task),'latest_revision':latest['revision'],'latest_plan':latest['plan']}
+
+
+@app.post('/api/tasks/{task_id}/text-experiments')
+def create_text_experiment(task_id: str, body: ExperimentRequest):
+    experiment_id,created=start_text_experiment(engine,task_id,body)
+    return {'experiment_id':experiment_id,'created':created}
+
+
+@app.post('/api/text-experiments/{experiment_id}/finish')
+def finalize_text_experiment(experiment_id: UUID, body: FinalizeRequest):
+    changed=finish_text_experiment(engine,str(experiment_id),body)
+    return {'experiment_id':str(experiment_id),'changed':changed}
 
 
 @app.post('/api/tasks/{task_id}/schedule')
@@ -338,7 +383,9 @@ def task_runs(task_id: str):
             EXISTS(SELECT 1 FROM evidence review WHERE review.artifact_id=a.artifact_id AND review.verification_type='human_work_review' AND review.result->>'decision'='ACCEPT') AS human_accepted
             FROM runs r JOIN work_items w ON w.work_id=r.work_id
             LEFT JOIN artifacts a ON a.run_id=r.run_id LEFT JOIN evaluations e ON e.artifact_id=a.artifact_id
-            WHERE w.task_id=:task AND w.parent_work_id IS NULL ORDER BY r.started_at DESC LIMIT 100'''), {'task':task_id}).mappings()]
+            WHERE w.task_id=:task AND w.parent_work_id IS NULL
+              AND NOT EXISTS (SELECT 1 FROM text_experiment_work ew WHERE ew.work_id=w.work_id)
+            ORDER BY r.started_at DESC LIMIT 100'''), {'task':task_id}).mappings()]
 
 
 @app.get('/api/tasks/{task_id}/compare')

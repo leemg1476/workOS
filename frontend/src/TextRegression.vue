@@ -1,17 +1,30 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
+const emit=defineEmits(['edit-candidate'])
 const props=defineProps({base:{type:String,required:true},taskId:{type:String,required:true},artifact:{type:Object,required:true}})
-const cases=ref([]), suites=ref([]), selected=ref([]), busy=ref(false), message=ref(''), error=ref('')
+const cases=ref([]), suites=ref([]), selected=ref([]), busy=ref(false), message=ref(''), error=ref(''), context=ref(null), experiments=ref([]), suiteId=ref('')
+const chosenSuite=computed(()=>suites.value.find(s=>s.suite_id===suiteId.value))
+const candidateReady=computed(()=>context.value && context.value.latest_revision>context.value.registered_revision)
+const candidateProblem=computed(()=>{
+  if(!candidateReady.value) return ''
+  const old=context.value.plan, next=context.value.latest_plan
+  if(['name','objective','expected_result','evaluation_criteria'].some(k=>JSON.stringify(old[k])!==JSON.stringify(next[k]))) return '목표·기대 결과·평가 기준을 기존 구조와 같게 유지해 주세요.'
+  if(JSON.stringify(old.steps)===JSON.stringify(next.steps)) return '비교할 단계 변경이 없습니다.'
+  if(JSON.stringify(old.steps.map(x=>x.id).sort())!==JSON.stringify(next.steps.map(x=>x.id).sort())) return '동일 입력 비교를 위해 단계 ID를 유지해 주세요.'
+  return ''
+})
+let timer
 const step=ref(props.artifact.content.steps?.[0]?.step_id || ''), input=ref(''), expected=ref(''), feedback=ref(''), required=ref(''), forbidden=ref('')
 const lines = value => value.split('\n').map(x=>x.trim()).filter(Boolean)
 async function load() {
-  const [a,b]=await Promise.all([fetch(`${props.base}/tasks/${encodeURIComponent(props.taskId)}/regression-cases`),fetch(`${props.base}/tasks/${encodeURIComponent(props.taskId)}/regression-suites`)])
-  if(!a.ok || !b.ok) throw Error('평가 사례를 불러오지 못했습니다.')
-  cases.value=await a.json();suites.value=await b.json()
+  const [a,b,c,d]=await Promise.all([fetch(`${props.base}/tasks/${encodeURIComponent(props.taskId)}/regression-cases`),fetch(`${props.base}/tasks/${encodeURIComponent(props.taskId)}/regression-suites`),fetch(`${props.base}/tasks/${encodeURIComponent(props.taskId)}/text-experiment-context`),fetch(`${props.base}/tasks/${encodeURIComponent(props.taskId)}/text-experiments`)])
+  if(!a.ok || !b.ok || !c.ok || !d.ok) throw Error('평가 사례를 불러오지 못했습니다.')
+  cases.value=await a.json();suites.value=await b.json();context.value=await c.json();experiments.value=await d.json()
+  if(!suites.value.some(s=>s.suite_id===suiteId.value)) suiteId.value=suites.value[0]?.suite_id || ''
 }
 async function createCase() {
   busy.value=true;message.value='';error.value=''
-  try { const r=await fetch(`${props.base}/tasks/${encodeURIComponent(props.taskId)}/regression-cases`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({artifact_id:props.artifact.artifact_id,step_id:step.value,input_text:input.value,expected_behavior:expected.value,feedback:feedback.value,required_phrases:lines(required.value),forbidden_phrases:lines(forbidden.value),idempotency_key:crypto.randomUUID()})}); const d=await r.json(); if(!r.ok) throw Error(typeof d.detail==='string'?d.detail:'입력 내용을 확인하세요.'); await load();selected.value=[d.case_id];message.value='사람이 작성한 평가 사례를 저장했습니다. 아직 방법 비교는 실행하지 않았습니다.' }
+  try { const r=await fetch(`${props.base}/tasks/${encodeURIComponent(props.taskId)}/regression-cases`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({artifact_id:props.artifact.artifact_id,step_id:step.value,input_text:input.value,expected_behavior:expected.value,feedback:feedback.value,required_phrases:lines(required.value),forbidden_phrases:lines(forbidden.value),idempotency_key:crypto.randomUUID()})}); const d=await r.json(); if(!r.ok) throw Error(typeof d.detail==='string'?d.detail:'입력 내용을 확인하세요.'); await load();selected.value=[d.case_id];message.value='사람이 작성한 평가 사례를 저장했습니다. 평가셋을 고정하면 비교할 수 있습니다.' }
   catch(e){error.value=e.message}finally{busy.value=false}
 }
 async function freeze() {
@@ -19,7 +32,20 @@ async function freeze() {
   try {const r=await fetch(`${props.base}/tasks/${encodeURIComponent(props.taskId)}/regression-suites`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({case_ids:selected.value,idempotency_key:crypto.randomUUID()})});const d=await r.json();if(!r.ok)throw Error(typeof d.detail==='string'?d.detail:'평가셋 저장 실패');await load();message.value='선택한 사례를 고정 평가셋으로 저장했습니다. 자동 개선이나 승격은 수행되지 않았습니다.'}
   catch(e){error.value=e.message}finally{busy.value=false}
 }
-onMounted(()=>load().catch(e=>{error.value=e.message}))
+async function startExperiment() {
+  busy.value=true;message.value='';error.value=''
+  try {const r=await fetch(`${props.base}/tasks/${encodeURIComponent(props.taskId)}/text-experiments`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({suite_id:suiteId.value,candidate_revision:context.value.latest_revision,idempotency_key:crypto.randomUUID()})});const d=await r.json();if(!r.ok)throw Error(typeof d.detail==='string'?d.detail:'비교를 시작하지 못했습니다.');await load();message.value='동일한 평가 입력으로 기존 방법과 후보의 실행을 요청했습니다.'}catch(e){error.value=e.message}finally{busy.value=false}
+}
+async function finishExperiment(exp) {
+  busy.value=true;message.value='';error.value=''
+  try {const r=await fetch(`${props.base}/text-experiments/${exp.experiment_id}/finish`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({idempotency_key:crypto.randomUUID()})});const d=await r.json();if(!r.ok)throw Error(typeof d.detail==='string'?d.detail:'비교를 완료하지 못했습니다.');await load();message.value='고정 사례의 문구 검사 결과를 기록했습니다. 활성 업무는 변경되지 않았습니다.'}catch(e){error.value=e.message}finally{busy.value=false}
+}
+async function retryEvaluation(run) {
+  busy.value=true;error.value=''
+  try {const r=await fetch(`${props.base}/work/${run.work_id}/retry`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({idempotency_key:crypto.randomUUID()})});if(!r.ok)throw Error('평가 실행을 재시도하지 못했습니다.');await load()}catch(e){error.value=e.message}finally{busy.value=false}
+}
+onMounted(()=>{load().catch(e=>{error.value=e.message});timer=setInterval(()=>load().catch(()=>{}),5000)})
+onUnmounted(()=>clearInterval(timer))
 </script>
 <template>
   <section class="text-regression" aria-label="사람의 피드백을 평가 사례로 저장">
@@ -30,6 +56,7 @@ onMounted(()=>load().catch(e=>{error.value=e.message}))
     <p v-if="error" class="failure" role="alert">{{ error }}</p><p v-if="message" class="detail-note" role="status">{{ message }}</p>
     <div v-if="cases.length" class="text-cases"><h4>이 업무의 평가 사례 · {{ cases.length }}개</h4><label v-for="c in cases" :key="c.case_id" class="text-case"><input type="checkbox" v-model="selected" :value="c.case_id"><span><b>{{ c.snapshot.step_id }} · {{ c.snapshot.expected_behavior }}</b><small>입력: {{ c.snapshot.input_text }} · 필수: {{ c.snapshot.required_phrases.join(', ') || '없음' }} · 금지: {{ c.snapshot.forbidden_phrases.join(', ') || '없음' }}</small><small>검토 {{ c.snapshot.review_decision }} · {{ c.snapshot_sha256.slice(0,12) }}</small></span></label><button class="secondary" @click="freeze" :disabled="busy || !selected.length">선택한 {{ selected.length }}개 사례를 평가셋으로 고정</button></div>
     <div v-if="suites.length" class="text-suites"><h4>고정 평가셋</h4><p v-for="suite in suites" :key="suite.suite_id">v{{ suite.version }} · {{ suite.snapshot.cases.length }}개 사례 · SHA-256 {{ suite.snapshot_sha256.slice(0,16) }}</p></div>
-    <p>이 사례와 평가셋은 저장된 기록입니다. 기존 방법과 후보를 같은 입력에서 비교하고 결과를 반영하는 경로는 아직 연결되지 않았습니다.</p>
+    <div class="text-experiment" v-if="context"><h4>기존 구조와 후보 비교</h4><p>등록된 v{{ context.registered_revision }}을 기준으로 같은 초안의 최신 버전을 후보로 사용합니다. 후보는 단계 내용·연결만 바꿀 수 있으며 목표·기대 결과·평가 기준과 단계 ID는 유지해야 합니다.</p><button class="secondary" @click="emit('edit-candidate',context.design_id)">후보 초안 편집하기 ↑</button><p v-if="!candidateReady">같은 업무 초안을 수정하고 새 버전으로 저장하면 후보를 선택할 수 있습니다.</p><template v-else><p>기존 설계 v{{ context.registered_revision }} → 후보 설계 v{{ context.latest_revision }} · {{ context.model_mode }}</p><p v-if="candidateProblem" class="failure">{{ candidateProblem }}</p><label class="experiment-suite">고정 평가셋 <select v-model="suiteId"><option v-for="suite in suites" :key="suite.suite_id" :value="suite.suite_id">v{{ suite.version }} · {{ suite.snapshot.cases.length }}개 사례</option></select></label><p v-if="chosenSuite">기존과 후보에 각 사례를 실행합니다. 최대 {{ chosenSuite.snapshot.cases.length * 2 * context.plan.steps.length }}회 단계 호출 · {{ context.model_mode==='LIVE_LLM' ? '모델 서비스에 익명 입력과 업무 구조가 전송되며 비용이 발생할 수 있습니다.' : 'MOCK 결과이며 실제 개선의 근거가 되지 않습니다.' }}</p><button @click="startExperiment" :disabled="busy || !!candidateProblem || !suiteId || chosenSuite?.snapshot.cases.length>10">동일 사례로 비교 실행</button><p v-if="chosenSuite?.snapshot.cases.length>10">한 번에 최대 10개 사례까지 비교할 수 있습니다.</p></template></div>
+    <div v-for="exp in experiments" :key="exp.experiment_id" class="text-experiment"><h4>비교 · 후보 v{{ exp.candidate_revision }} · {{ exp.status }}</h4><p>평가셋 SHA-256 {{ exp.suite_sha256.slice(0,16) }} · 비교 결과가 활성 업무를 자동으로 변경하지 않습니다.</p><div v-for="run in exp.runs" :key="run.work_id" class="experiment-run"><b>{{ run.side }} · {{ String(run.case_id).slice(0,8) }}</b><span>{{ run.run_status || run.work_status }}<template v-if="run.error"> · {{ run.error }}</template></span><a v-if="run.run_id" :href="`${base}/runs/${run.run_id}/artifacts`" target="_blank" rel="noopener noreferrer">결과·근거 ↗</a><button v-if="run.work_status==='REWORK_REQUIRED' && exp.status==='RUNNING'" class="secondary" @click="retryEvaluation(run)" :disabled="busy">재시도</button></div><button v-if="exp.status==='RUNNING'" @click="finishExperiment(exp)" :disabled="busy || exp.runs.some(r=>['CREATED','READY','RUNNING','SUBMITTED','VERIFYING'].includes(r.work_status))">문구 검사 결과 확정</button><template v-if="exp.result"><div class="experiment-summary"><b>기존 {{ exp.result.champion_passed }} / {{ exp.result.case_count }}</b><b>후보 {{ exp.result.challenger_passed }} / {{ exp.result.case_count }}</b><b>개선 {{ exp.result.gains.length }} · 퇴행 {{ exp.result.regressions.length }} · {{ exp.verdict }}</b></div><p>문구 포함 여부만 비교했습니다. 의미적 정확성·실제 업무 품질은 평가하지 않았으며 가격은 계산하지 않았습니다. 활성 업무는 변경되지 않았습니다.</p><p>실행 무결성 {{ exp.result.gates.all_executions_valid ? '통과' : '실패' }} · 동일 실제 모델 {{ exp.result.gates.same_live_model ? '확인' : '미확인' }} · 퇴행 없음 {{ exp.result.gates.zero_regressions ? '통과' : '실패' }} · 개선 사례 {{ exp.result.gates.at_least_one_gain ? '있음' : '없음' }} · 모델 {{ exp.result.model_ids.join(', ') || '없음' }}</p><div v-for="item in exp.result.cases" :key="item.case_id" class="experiment-case"><b>사례 {{ item.case_id.slice(0,8) }} · {{ item.step_id }}</b><span>기대: {{ item.expected_behavior }}</span><span>기존 {{ item.champion.valid_execution ? (item.champion.checks_passed ? '통과' : '실패') : '실행 실패' }} · 후보 {{ item.challenger.valid_execution ? (item.challenger.checks_passed ? '통과' : '실패') : '실행 실패' }}</span><div class="comparison-head"><div><small>기존 결과</small><span style="white-space:pre-wrap">{{ item.champion.target_excerpt || '결과 없음' }}{{ item.champion.target_excerpt_truncated ? '…' : '' }}</span></div><div><small>후보 결과</small><span style="white-space:pre-wrap">{{ item.challenger.target_excerpt || '결과 없음' }}{{ item.challenger.target_excerpt_truncated ? '…' : '' }}</span></div></div><small>결과 원문은 실행 근거에서 확인할 수 있습니다.</small><small>기존 누락 {{ item.champion.missing_required.join(', ') || '없음' }} / 금지 발견 {{ item.champion.found_forbidden.join(', ') || '없음' }} · 후보 누락 {{ item.challenger.missing_required.join(', ') || '없음' }} / 금지 발견 {{ item.challenger.found_forbidden.join(', ') || '없음' }}</small><small>소요 ms 기존 {{ item.champion.elapsed_ms ?? '미기록' }} / 후보 {{ item.challenger.elapsed_ms ?? '미기록' }} · 입력/출력 토큰 기존 {{ item.champion.input_tokens ?? '미기록' }}/{{ item.champion.output_tokens ?? '미기록' }}, 후보 {{ item.challenger.input_tokens ?? '미기록' }}/{{ item.challenger.output_tokens ?? '미기록' }}</small></div></template></div>
   </section>
 </template>

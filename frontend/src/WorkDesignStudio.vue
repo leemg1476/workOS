@@ -7,6 +7,8 @@ const isDirty=computed(() => !!selected.value && JSON.stringify(selected.value.p
 const feedback=ref(''), revisions=ref([])
 const description=ref(''), mode=ref('LIVE_LLM'), designs=ref([]), selected=ref(null), error=ref(''), message=ref(''), busy=ref(false)
 async function refresh() { const r=await fetch(`${props.base}/work-designs`); if(!r.ok) throw Error(); designs.value=await r.json() }
+async function openDesign(id) { await refresh(); const d=designs.value.find(x=>x.design_id===id); if(!d) throw Error('업무 초안을 찾지 못했습니다.'); select(d) }
+defineExpose({openDesign})
 function select(d) { selected.value=JSON.parse(JSON.stringify(d)); savedPlan.value=JSON.stringify(selected.value.plan); registered.value=''; revisions.value=[]; error.value='';message.value=''; fetch(`${props.base}/work-designs/${d.design_id}/revisions`).then(r=>{ if(!r.ok) throw Error(); return r.json() }).then(data=>{ if(selected.value?.design_id===d.design_id) revisions.value=data }).catch(()=>{error.value='버전 이력을 불러오지 못했습니다.'}) }
 async function generate() {
   busy.value=true; error.value=''; message.value=''

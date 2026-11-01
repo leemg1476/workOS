@@ -1,6 +1,7 @@
 """Bounded, text-only workflows. Validation checks structure, not semantic truth."""
 import json
 import os
+import time
 from sqlalchemy import text
 from app.work.market import digest
 from app.workloads.registry import Verifier, register_verifier, register_kind_executor
@@ -23,6 +24,9 @@ def order_steps(plan):
 
 def execute(kernel, claim, contract):
     from app.work.designs import WorkPlan, validate_plan
+    from app.evaluation.text_runtime import effective_contract
+    with kernel.engine.connect() as c:
+        contract, evaluation = effective_contract(c,claim['work_id'],claim['task_id'],claim['task_version'],contract)
     validate_plan(WorkPlan.model_validate(contract['plan']))
     mode=contract['model_mode']
     key=os.getenv('openai_api_key') or os.getenv('OPENAI_API_KEY')
@@ -36,6 +40,8 @@ def execute(kernel, claim, contract):
               'run_id':str(run_id),'contract':contract,'input_snapshot':claim['input_snapshot'],
               'contract_sha256':digest(contract),'source_sha256':digest(contract['source_text']),
               'graph_version':KIND,'prompt_version':'provided-text-step-v1'}
+    if evaluation:
+        manifest['evaluation']=evaluation
     with kernel.engine.begin() as c:
         valid=c.execute(text("""UPDATE work_queue SET lease_until=now()+interval '60 seconds'
             WHERE run_id=:run AND status='CLAIMED' AND lease_until > now() RETURNING work_id"""),{'run':run_id}).first()
@@ -54,9 +60,10 @@ def execute(kernel, claim, contract):
             if not alive: raise ValueError('run lease expired')
             c.execute(text("INSERT INTO run_steps(run_id,graph_version,node_name,status) VALUES (:run,:graph,:node,'STARTED')"),{'run':run_id,'graph':KIND,'node':step_id})
         try:
+            started=time.monotonic()
             if mode=='MOCK':
                 value='MOCK: 모델 실행 없이 생성된 예시입니다. 실제 업무 결과가 아닙니다.'
-                model_id='MOCK'; response_id=None
+                model_id='MOCK'; response_id=None; input_tokens=0; output_tokens=0
             else:
                 from openai import OpenAI
                 response=OpenAI(api_key=key,timeout=35,max_retries=0).responses.create(
@@ -67,20 +74,28 @@ def execute(kernel, claim, contract):
                 if response.status!='completed' or not response.output_text.strip():
                     raise ValueError('model did not return a completed response')
                 value=response.output_text;model_id=response.model;response_id=response.id
-            outputs[step_id]={'step_id':step_id,'text':value,'model_id':model_id,'response_id':response_id}
+                input_tokens=response.usage.input_tokens if response.usage else None
+                output_tokens=response.usage.output_tokens if response.usage else None
+            outputs[step_id]={'step_id':step_id,'text':value,'model_id':model_id,'response_id':response_id,
+                              'elapsed_ms':round((time.monotonic()-started)*1000),'input_tokens':input_tokens,'output_tokens':output_tokens}
             with kernel.engine.begin() as c:
                 c.execute(text("INSERT INTO run_steps(run_id,graph_version,node_name,status) VALUES (:run,:graph,:node,'SUCCEEDED')"),{'run':run_id,'graph':KIND,'node':step_id})
         except Exception as exc:
             with kernel.engine.begin() as c:
                 c.execute(text("INSERT INTO run_steps(run_id,graph_version,node_name,status,error_type) VALUES (:run,:graph,:node,'FAILED',:error)"),{'run':run_id,'graph':KIND,'node':step_id,'error':type(exc).__name__})
             raise
-    return {'task_id':claim['task_id'],'data_mode':'USER_PROVIDED_TEXT','model_mode':mode,
+    result = {'task_id':claim['task_id'],'data_mode':'USER_PROVIDED_TEXT','model_mode':mode,
             'contract_sha256':digest(contract),'source_sha256':digest(contract['source_text']),
             'semantic_review':'NOT_PERFORMED','steps':[outputs[x] for x in order_steps(contract['plan'])]}
+    if evaluation:
+        result['evaluation']=evaluation
+    return result
 
 
 def verify(c,run,work,task,content,artifact_hash):
-    contract=task['output_schema']; expected=order_steps(contract['plan'])
+    from app.evaluation.text_runtime import effective_contract
+    contract,evaluation=effective_contract(c,work['work_id'],work['task_id'],work['task_version'],task['output_schema'])
+    expected=order_steps(contract['plan'])
     context=c.execute(text('SELECT manifest,sha256 FROM run_contexts WHERE run_id=:id'),{'id':run['run_id']}).mappings().first()
     steps=content.get('steps',[]) if isinstance(content,dict) else []
     step_log=c.execute(text("SELECT node_name FROM run_steps WHERE run_id=:run AND graph_version=:kind AND status='SUCCEEDED' ORDER BY step_id"),{'run':run['run_id'],'kind':KIND}).scalars().all()
@@ -90,8 +105,9 @@ def verify(c,run,work,task,content,artifact_hash):
             'steps_complete':isinstance(steps,list) and all(isinstance(x,dict) for x in steps) and [x.get('step_id') for x in steps]==expected and step_log==expected,
             'output_present':isinstance(steps,list) and all(isinstance(x,dict) and isinstance(x.get('text'),str) and bool(x['text'].strip()) for x in steps),
             'execution_mode':run['agent_version']==KIND and ((contract['model_mode']=='MOCK' and run['model_id']=='MOCK') or (contract['model_mode']=='LIVE_LLM' and run['model_id']!='MOCK'))}
+    checks['evaluation_scope'] = isinstance(content,dict) and content.get('evaluation')==evaluation and bool(context) and context['manifest'].get('evaluation')==evaluation
     return {'passed':all(checks.values()),'checks':checks,'semantic_review':'NOT_PERFORMED','requires_human_review':True}, {'task_id':work['task_id'],'task_version':work['task_version'],'artifact_sha256':artifact_hash,'contract_sha256':digest(contract),'source_sha256':digest(contract['source_text'])}
 
 
-register_verifier(KIND,Verifier('provided_text_report','1','provided-text-structure-v1','provided_text_structure','provided-text-suite-v1',verify))
+register_verifier(KIND,Verifier('provided_text_report','1','provided-text-structure-v2','provided_text_structure','provided-text-suite-v2',verify))
 register_kind_executor(KIND,execute)

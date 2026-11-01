@@ -1,5 +1,20 @@
 # Work OS 작업 상태
 
+## 2026-11-01 추가 진행 — 고정 사례 기반 업무 방식 비교
+
+상태: **부분 구현**. 사람이 고정한 같은 사례를 현재 업무 구조와 최신 후보 구조로 각각 재실행해 출력, 문구 검사, 실행 시간과 토큰을 비교한다. 후보의 목표·기대 결과·평가 기준을 그대로 유지하고 단계 ID도 같아야 한다. 후보는 자동 적용되지 않는다.
+
+- `backend/migrations/015_text_experiments.sql`, `backend/app/evaluation/text_experiments.py`, `text_runtime.py`, `text_regression.py`: 평가셋과 기존 계약·후보 계획의 해시를 고정하고 사례별 두 WorkItem을 생성한다. 실행 입력·모델·산출물·컨텍스트·구조 검증 근거를 재확인하고, 동일 LIVE 모델·실행 유효·퇴행 없음·1건 이상 개선을 모두 만족해야 문구 검사 PASS다. 최신 설계나 평가셋이 바뀌면 비교를 완료하지 않는다. 평가용 실행은 일반 실행 이력과 사람의 산출물 채택에서 제외한다.
+- `backend/app/workloads/text_workflow.py`, `backend/app/work/service.py`, `backend/app/api/main.py`: 단계별 경과 시간과 토큰 및 모델 응답 ID, 평가 범위를 기록하고 결과 조회·완료 API를 제공한다. 실패한 평가 실행은 비교 완료 전 재시도할 수 있다.
+- `frontend/src/TextRegression.vue`, `WorkDesignStudio.vue`, `App.vue`, `style.css`: 후보 편집, 평가 시작과 상태, 사례별 기존/후보 결과·검사·퇴행·실패 원인을 표시한다. 시작 전 LLM 호출과 입력 전송을 안내한다.
+- 전용 PostgreSQL·Redis에서 `python -m pytest -q tests`: **63 passed, warning 1건**. 이후 근거 재검증 등 보강한 최신 코드에 `python -m pytest -q tests/test_text_experiments.py tests/test_text_regression.py`: **12 passed, warning 1건**. `frontend`에서 `npm run build` 성공. 전체 63개는 마지막 보강 이전에 실행했다.
+- 격리된 DB에서 사용자 설정의 실제 `gpt-6-luna`로 고정 사례 1건을 양쪽 실행했다. 기존 1/1, 후보 1/1로 동점이며 결과는 **FAIL**이다. 실제 응답과 토큰·시간을 별도 테스트 UI에서 확인했다. 의미적 품질은 평가하지 않았다.
+- 기존 Compose의 API·worker·UI를 다시 빌드해 반영했다. 015 테이블 존재, API의 DB·OpenSearch 연결과 UI HTTP 200을 확인했다. API는 기본 데이터 모드를 MOCK으로 표시한다.
+
+한계: 현재 평가는 사용자가 적은 필수·금지 문구의 대소문자 무시 부분 문자열 검사이며 의미적 정확성이나 실질적 품질 향상을 보장하지 않는다. 사례는 실험당 최대 10건, 후보는 같은 단계 ID를 유지해야 한다. 금액은 계산하지 않는다. 평가 통과 후에도 같은 업무 버전에 대한 적용·기각·롤백은 아직 없다. 기존 세 데모의 업무별 커널 분리도 남았다. 015 down 마이그레이션은 실행하지 않았다.
+
+다음 세 단계: ① 최신 평가와 불변 근거를 다시 확인하는 명시적 적용·기각·롤백을 같은 Task의 버전과 기존 Job에 연결한다. ② 기존 세 업무의 검증·실행·후속 DAG를 커널 밖으로 이관한다. ③ 전 경로 E2E, 스케줄 연속성 및 장애 복구를 검증한다.
+
 ## 2026-11-01 추가 진행 — 사람 피드백을 고정 평가 사례로 기록
 
 상태: **부분 구현**. 텍스트 업무의 사람이 검토한 산출물에서 평가 사례를 만들고 선택한 사례를 불변 평가셋으로 고정할 수 있다. 기존 방법과 후보의 재실행·비교·승격은 아직 구현하지 않았다.

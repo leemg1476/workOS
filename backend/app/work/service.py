@@ -250,6 +250,10 @@ class Kernel:
                     raise Conflict('idempotency key already used')
                 return False
             work = self._work(c, work_id)
+            experiment = one(c,'''SELECT x.status FROM text_experiment_work m JOIN text_experiments x ON x.experiment_id=m.experiment_id
+                WHERE m.work_id=:id''',{'id':work_id})
+            if experiment and experiment['status'] != 'RUNNING':
+                raise Conflict('completed experiment work cannot be retried')
             if work['task_id'] == 'TASK-002' and work['parent_work_id'] is not None and work['input_snapshot'].get('step_no') not in (1,2,3):
                 raise Conflict('policy follow-up execution is not implemented')
             if work['status'] in ('STALE', 'BLOCKED', 'REWORK_REQUIRED'):
@@ -1155,6 +1159,8 @@ class Kernel:
             work = self._work(c,work_id)
             if work['status'] != 'WAITING_APPROVAL':
                 raise Conflict('work is not awaiting review')
+            if one(c,'SELECT 1 FROM text_experiment_work WHERE work_id=:id',{'id':work_id}):
+                raise Conflict('evaluation-only work cannot be accepted as a production result')
             candidate = one(c,'''SELECT a.*,r.status AS run_status,e.result AS verification FROM artifacts a
                 JOIN runs r ON r.run_id=a.run_id JOIN evidence e ON e.artifact_id=a.artifact_id
                 WHERE a.artifact_id=:artifact AND r.work_id=:work AND e.result->>'requires_human_review'='true'
