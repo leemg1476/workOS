@@ -1,5 +1,20 @@
 # Work OS 작업 상태
 
+## 2026-11-01 추가 진행 — 평가된 업무 방식의 명시적 결정
+
+상태: **부분 구현**. 고정 사례 비교에 통과한 후보를 사람이 이유를 적고 같은 Task의 다른 버전으로 적용하거나 기각하고, 적용한 버전을 이전 버전으로 되돌릴 수 있다. 동일 Job의 설정과 예약은 유지하며 이후 생성되는 WorkItem에 적용한다. 비교의 PASS는 문구 검사에 한정되며 의미 품질 향상을 보장하지 않는다.
+
+- `backend/migrations/016_text_decisions.sql`, `backend/app/evaluation/text_decisions.py`: 결정 및 사유를 불변으로 저장한다. 적용 시 최신 고정 사례와 설계, 당시 실행의 입력·결과·검증 근거를 다시 확인한다. 결정 세대 번호로 적용·롤백 전의 오래된 비교 재사용을 차단한다. 적용·롤백은 Task 활성 버전과 Job의 버전을 한 트랜잭션에서 변경한다.
+- `backend/app/evaluation/text_experiments.py`, `text_runtime.py`, `backend/app/work/register_design.py`, `work/service.py`: 평가 시작 시 현재 세대를 고정하고 결과 확정 때 확인한다. 비활성 설계 버전의 등록 우회를 막고 이전 버전의 미검토 실행 결과를 현재 버전에서 채택하지 않는다. 재평가를 거치면 롤백한 후보를 다시 적용할 수 있다.
+- `frontend/src/TextRegression.vue`, `style.css`: 사례별 비교와 함께 결정 이유, 적용·기각·롤백, 결정 이력을 표시한다. 직접 적용하기 전까지 활성 업무를 변경하지 않는다.
+- 전용 PostgreSQL·Redis에서 `python -m pytest -q tests/test_text_decisions.py tests/test_text_experiments.py tests/test_registered_work.py`: **18 passed, warning 1건**. `frontend`에서 `npm run build` 성공. 추가 재평가 테스트는 아래 후속 검증 결과를 참조한다.
+- 후속 검증: `python -m pytest -q tests` **71 passed, warning 1건**(마지막 등록 우회·재평가 검사 보강 전 실행), 최신 `python -m pytest -q tests/test_text_decisions.py` **6 passed, warning 1건**. 격리된 테스트 DB와 가짜 모델 응답으로 브라우저에서 비교 결과와 적용·롤백 이력을 확인했다. 해당 화면의 fixed-model은 테스트 대역이다.
+- 기존 Compose의 API·worker·UI를 재빌드하고 016 테이블, DB·OpenSearch 연결 및 실제 업무 화면의 기존 기록 표시를 확인했다. 테스트용 결정이나 사례는 사용자 DB에 생성하지 않았다.
+
+한계: 텍스트 전용 사용자 업무에서 같은 단계 ID를 가진 후보만 평가할 수 있고 기대 결과·평가 기준 변경은 후보 적용 경로로 처리하지 않는다. 업무 구조 변경은 자연어와 UI 편집으로 가능하지만, 평가 PASS는 사람이 지정한 문구 기준에서만 성립한다. 의미 판단과 데이터 소스 자동 연동은 없다. 이미 생성된 WorkItem은 당시 버전에 고정되며 비활성 버전의 결과는 현재 버전에서 채택할 수 없다. 기존 세 업무의 커널 분리는 아직 진행해야 한다. 016 down 마이그레이션은 실행하지 않았다.
+
+다음 세 단계: ① 기존 세 업무의 실행·검증·후속 DAG를 공통 커널 밖의 독립 모듈로 옮긴다. ② 평가 기준 변경과 새로운 단계 추가·삭제를 안전하게 다루는 고정 평가 및 사용자 확인 흐름을 설계·구현한다. ③ 전체 데모 E2E, 예약 연속성과 장애 복구를 검증한다.
+
 ## 2026-11-01 추가 진행 — 고정 사례 기반 업무 방식 비교
 
 상태: **부분 구현**. 사람이 고정한 같은 사례를 현재 업무 구조와 최신 후보 구조로 각각 재실행해 출력, 문구 검사, 실행 시간과 토큰을 비교한다. 후보의 목표·기대 결과·평가 기준을 그대로 유지하고 단계 ID도 같아야 한다. 후보는 자동 적용되지 않는다.

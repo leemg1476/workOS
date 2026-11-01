@@ -43,11 +43,13 @@ def register(engine, design_id, request):
         contract = {'design_id':str(design_id),'design_revision':request.revision,'plan':plan,
                     'source_text':request.source_text,'model_mode':request.model_mode,
                     'execution_kind':'provided_text_workflow_v1'}
-        existing = c.execute(text('''SELECT r.task_id,t.output_schema,j.schedule FROM registered_work_designs r
+        existing = c.execute(text('''SELECT r.task_id,r.task_version,t.output_schema,j.task_version AS current_version,j.schedule FROM registered_work_designs r
             JOIN task_definitions t ON t.task_id=r.task_id AND t.version=r.task_version
-            JOIN job_definitions j ON j.task_id=r.task_id AND j.task_version=r.task_version
+            JOIN job_definitions j ON j.task_id=r.task_id
             WHERE r.design_id=CAST(:id AS uuid) AND r.revision=:revision'''),{'id':design_id,'revision':request.revision}).mappings().first()
         if existing:
+            if existing['task_version'] != existing['current_version']:
+                raise Conflict('this design revision belongs to an inactive task version; use a new evaluation to apply it')
             if existing['output_schema'] != contract or (existing['schedule'] or '') != request.schedule:
                 raise Conflict('this revision is already registered with different execution settings')
             return {'task_id':existing['task_id'],'created':False}

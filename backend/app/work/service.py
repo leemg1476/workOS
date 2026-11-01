@@ -1161,6 +1161,9 @@ class Kernel:
                 raise Conflict('work is not awaiting review')
             if one(c,'SELECT 1 FROM text_experiment_work WHERE work_id=:id',{'id':work_id}):
                 raise Conflict('evaluation-only work cannot be accepted as a production result')
+            if decision == 'ACCEPT' and not one(c,'SELECT 1 FROM task_definitions WHERE task_id=:task AND version=:version AND active',
+                                               {'task':work['task_id'],'version':work['task_version']}):
+                raise Conflict('work was executed under an inactive task version')
             candidate = one(c,'''SELECT a.*,r.status AS run_status,e.result AS verification FROM artifacts a
                 JOIN runs r ON r.run_id=a.run_id JOIN evidence e ON e.artifact_id=a.artifact_id
                 WHERE a.artifact_id=:artifact AND r.work_id=:work AND e.result->>'requires_human_review'='true'

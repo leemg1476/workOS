@@ -6,13 +6,13 @@ from app.work.service import Conflict
 from app.evaluation.text_regression import verify_suite
 
 
-def effective_contract(c, work_id, task_id, task_version, base):
+def effective_contract(c, work_id, task_id, task_version, base, *, allow_evaluated=False):
     row=c.execute(text('''SELECT x.*,m.case_id,m.side,s.version AS suite_version,s.snapshot AS suite_snapshot,s.snapshot_sha256
         FROM text_experiment_work m JOIN text_experiments x ON x.experiment_id=m.experiment_id
         JOIN text_regression_suites s ON s.suite_id=x.suite_id WHERE m.work_id=CAST(:id AS uuid)'''),{'id':str(work_id)}).mappings().first()
     if row is None:
         return base, None
-    if (row['status']!='RUNNING' or row['task_id']!=task_id or row['champion_version']!=task_version
+    if (row['status'] not in (('RUNNING','EVALUATED') if allow_evaluated else ('RUNNING',)) or row['task_id']!=task_id or row['champion_version']!=task_version
         or digest(base)!=row['champion_contract_sha256'] or digest(row['candidate_plan'])!=row['candidate_plan_sha256']
         or row['suite_sha256']!=row['snapshot_sha256']):
         raise Conflict('experiment contract or work mapping changed')

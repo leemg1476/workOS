@@ -12,6 +12,7 @@ from app.work.service import Kernel, Conflict, NotFound
 from app.evaluation.improvements import ImprovementService
 from app.evaluation.text_regression import TextCaseRequest, SuiteRequest, add_case, freeze_suite
 from app.evaluation.text_experiments import ExperimentRequest, FinalizeRequest, start as start_text_experiment, finish as finish_text_experiment
+from app.evaluation.text_decisions import DecisionRequest, decide as decide_text_experiment
 from app.integrations.search import readiness, SearchUnavailable
 from app.work.designs import CreateDesign, EditDesign, DesignFeedback, generate, create as create_design, revise as revise_design, apply_feedback
 from app.work.register_design import RegisterDesign, ScheduleState, register as register_design, set_schedule
@@ -208,6 +209,8 @@ def text_experiments(task_id: str):
             FROM text_experiments x LEFT JOIN text_experiment_results r ON r.experiment_id=x.experiment_id
             WHERE x.task_id=:task ORDER BY x.created_at DESC'''),{'task':task_id}).mappings()]
         for exp in experiments:
+            exp['decisions']=[dict(row) for row in c.execute(text('''SELECT decision,note,from_version,to_version,generation,created_at
+                FROM text_experiment_decisions WHERE experiment_id=:id ORDER BY created_at,decision'''),{'id':exp['experiment_id']}).mappings()]
             exp['runs']=[dict(row) for row in c.execute(text('''SELECT m.case_id,m.side,m.work_id,w.status AS work_status,
                 r.run_id,r.status AS run_status,r.error FROM text_experiment_work m JOIN work_items w ON w.work_id=m.work_id
                 LEFT JOIN LATERAL (SELECT * FROM runs WHERE work_id=w.work_id ORDER BY attempt_no DESC LIMIT 1) r ON true
@@ -240,6 +243,11 @@ def create_text_experiment(task_id: str, body: ExperimentRequest):
 def finalize_text_experiment(experiment_id: UUID, body: FinalizeRequest):
     changed=finish_text_experiment(engine,str(experiment_id),body)
     return {'experiment_id':str(experiment_id),'changed':changed}
+
+
+@app.post('/api/text-experiments/{experiment_id}/decision')
+def text_experiment_decision(experiment_id: UUID, body: DecisionRequest):
+    return {'experiment_id':str(experiment_id),'changed':decide_text_experiment(engine,str(experiment_id),body)}
 
 
 @app.post('/api/tasks/{task_id}/schedule')

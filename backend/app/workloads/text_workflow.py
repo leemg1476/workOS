@@ -94,7 +94,7 @@ def execute(kernel, claim, contract):
 
 def verify(c,run,work,task,content,artifact_hash):
     from app.evaluation.text_runtime import effective_contract
-    contract,evaluation=effective_contract(c,work['work_id'],work['task_id'],work['task_version'],task['output_schema'])
+    contract,evaluation=effective_contract(c,work['work_id'],work['task_id'],work['task_version'],task['output_schema'],allow_evaluated=True)
     expected=order_steps(contract['plan'])
     context=c.execute(text('SELECT manifest,sha256 FROM run_contexts WHERE run_id=:id'),{'id':run['run_id']}).mappings().first()
     steps=content.get('steps',[]) if isinstance(content,dict) else []

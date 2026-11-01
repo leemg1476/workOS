@@ -78,6 +78,9 @@ def start(db,task_id,body):
             {'id':exp_id,'task':task_id,'version':champion['version'],'design':champion['design_id'],'revision':candidate['revision'],
              'suite':body.suite_id,'suite_hash':suite['snapshot_sha256'],'contract_hash':digest(champion['output_schema']),
              'plan':canonical(plan),'plan_hash':digest(plan)})
+        c.execute(text('INSERT INTO text_task_method_state(task_id) VALUES (:task) ON CONFLICT DO NOTHING'),{'task':task_id})
+        c.execute(text('''INSERT INTO text_experiment_generation(experiment_id,generation)
+            SELECT :id,generation FROM text_task_method_state WHERE task_id=:task'''),{'id':exp_id,'task':task_id})
         for entry in snapshot['cases']:
             for side in ('CHAMPION','CHALLENGER'):
                 work_id=uid();input_snapshot={'evaluation_experiment_id':exp_id,'case_id':entry['case_id'],'side':side}
@@ -174,8 +177,10 @@ def finish(db,experiment_id,body):
         if not exp: raise NotFound('experiment not found')
         if exp['status']!='RUNNING': raise Conflict('experiment already evaluated')
         champion=_active(c,exp['task_id']);suite,snapshot=_suite(c,exp['task_id'],exp['suite_id'])
+        generation=one(c,'''SELECT g.generation AS started,s.generation AS current FROM text_experiment_generation g
+            JOIN text_task_method_state s ON s.task_id=:task WHERE g.experiment_id=:id''',{'task':exp['task_id'],'id':experiment_id})
         latest_revision=one(c,'SELECT MAX(revision) AS revision FROM work_design_revisions WHERE design_id=:id',{'id':exp['design_id']})['revision']
-        if (champion['version']!=exp['champion_version'] or digest(champion['output_schema'])!=exp['champion_contract_sha256']
+        if (not generation or generation['started']!=generation['current'] or champion['version']!=exp['champion_version'] or digest(champion['output_schema'])!=exp['champion_contract_sha256']
             or suite['snapshot_sha256']!=exp['suite_sha256'] or digest(exp['candidate_plan'])!=exp['candidate_plan_sha256']
             or latest_revision!=exp['candidate_revision']):
             raise Conflict('champion, candidate or evaluation suite changed')
