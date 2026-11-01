@@ -18,6 +18,8 @@ class Verifier:
 executors = {}
 kind_executors = {}
 verifiers = {}
+verifier_kind_resolvers = {}
+acceptance_hooks = {}
 RESERVED_VERIFIERS = {'mock_receipt','market_briefing_v1','policy_impact_v1','voc_report_v1',
                       'voc_report_v2','voc_report_v3','policy_followup_verification_v1',
                       'policy_index_v1','policy_regression_v1'}
@@ -42,13 +44,32 @@ def register_builtin_verifier(kind, verifier):
     verifiers[kind] = verifier
 
 
+def register_verifier_kind_resolver(kind, resolver):
+    if kind in verifier_kind_resolvers:
+        raise ValueError('duplicate verifier kind resolver')
+    verifier_kind_resolvers[kind] = resolver
+
+
+def register_acceptance_hook(kind, hook):
+    if kind in acceptance_hooks:
+        raise ValueError('duplicate acceptance hook')
+    acceptance_hooks[kind] = hook
+
+
 def register_kind_executor(kind, execute):
     if kind in kind_executors:
         raise ValueError('duplicate workload executor kind')
     kind_executors[kind] = execute
 
 
+def load_builtins():
+    """Load the deployment's built-in workload registrations before extensions."""
+    for name in ('text_workflow','market_verifier','policy_verifiers','voc_verifier','policy_lifecycle','demo_execution'):
+        importlib.import_module('app.workloads.' + name)
+
+
 def load_configured():
     """Load deployment-selected trusted modules once in each API/worker process."""
+    load_builtins()
     for name in filter(None, (x.strip() for x in os.getenv('WORKOS_WORKLOAD_MODULES', '').split(','))):
         importlib.import_module(name)

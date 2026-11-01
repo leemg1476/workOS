@@ -3,15 +3,14 @@ import json
 from uuid import uuid4
 from sqlalchemy import text
 from sqlalchemy.exc import NoResultFound
-from app.domain.contracts import WorkStatus, TRANSITIONS, PolicyFollowupVerification, PolicyIndexReceipt, PolicyRegressionReport, PolicyReviewReport
-from pydantic import ValidationError
+from app.domain.contracts import WorkStatus, TRANSITIONS, PolicyReviewReport
 from app.integrations.artifact_store import store_json
 from app.work.market import build_manifest, digest, PROMPT_VERSION
-from app.work.policy import STEPS, build_policy_manifest, verify_policy
-from app.work.voc import verify_voc, DOCUMENTS as VOC_DOCUMENTS, DOCUMENT_QUERY as VOC_DOCUMENT_QUERY, DOCUMENT_PARAMETERS as VOC_DOCUMENT_PARAMETERS, RECORD_QUERY as VOC_RECORD_QUERY
+from app.work.policy import STEPS, build_policy_manifest
+from app.work.voc import DOCUMENTS as VOC_DOCUMENTS, DOCUMENT_QUERY as VOC_DOCUMENT_QUERY, DOCUMENT_PARAMETERS as VOC_DOCUMENT_PARAMETERS, RECORD_QUERY as VOC_RECORD_QUERY
 from app.integrations.search import retrieve_documents, demo_index_target, configuration as search_configuration
 from app.integrations.sql_source import source_engine, source_mode
-from app.evaluation.policy_regression import load_inputs as load_regression_inputs, make_report as make_regression_report
+from app.evaluation.policy_regression import load_inputs as load_regression_inputs
 
 
 class Conflict(Exception):
@@ -62,115 +61,32 @@ class Kernel:
         self._event(conn, 'work.transition', work_id, {'from': old.value, 'to': new.value}, cause=cause, prior=work['version'])
 
     def _schedule_policy_recheck(self, c, root_id, cause):
-        child = one(c, '''SELECT w.work_id,w.status FROM policy_followups f JOIN work_items w ON w.work_id=f.work_id
-            WHERE f.root_work_id=:root AND f.step_no=1''', {'root':root_id})
-        if not child or child['status'] not in ('BLOCKED','STALE'):
-            return False
-        cleared = one(c, '''UPDATE work_dependencies SET pinned_artifact_version=NULL
-            WHERE predecessor_id=:parent AND successor_id=:child AND pinned_artifact_version IS NOT NULL
-            RETURNING predecessor_id''', {'parent':root_id,'child':child['work_id']})
-        if cleared:
-            self._event(c,'dependency.unpinned',child['work_id'],{'predecessor_id':str(root_id)},cause=cause)
-        self._transition(c,child['work_id'],'READY',cause)
-        c.execute(text('''INSERT INTO work_queue(work_id,status) VALUES (:id,'PENDING') ON CONFLICT(work_id)
-            DO UPDATE SET status='PENDING',available_at=now(),run_id=NULL,lease_until=NULL,notified_at=NULL'''), {'id':child['work_id']})
-        return True
+        from app.workloads.policy_lifecycle import schedule_policy_recheck
+        return schedule_policy_recheck(self, c, root_id, cause)
 
     def _schedule_policy_index(self, c, root_id, cause):
-        child = one(c, '''SELECT child.work_id,child.status,previous.work_id AS predecessor
-            FROM policy_followups f JOIN work_items child ON child.work_id=f.work_id
-            JOIN work_dependencies d ON d.successor_id=child.work_id
-            JOIN work_items previous ON previous.work_id=d.predecessor_id AND previous.status='COMMITTED'
-            JOIN work_dependencies pd ON pd.successor_id=previous.work_id
-            JOIN work_items root ON root.work_id=pd.predecessor_id AND root.work_id=f.root_work_id AND root.status='COMMITTED'
-                AND pd.pinned_artifact_version=root.accepted_artifact_id
-            JOIN evidence e ON e.artifact_id=previous.accepted_artifact_id AND e.verification_type='policy_followup_recheck'
-            WHERE f.root_work_id=:root AND f.step_no=2 AND e.result->>'passed'='true' ''', {'root':root_id})
-        if not child or child['status'] not in ('BLOCKED','STALE'):
-            return False
-        cleared = one(c, '''UPDATE work_dependencies SET pinned_artifact_version=NULL
-            WHERE predecessor_id=:parent AND successor_id=:child AND pinned_artifact_version IS NOT NULL
-            RETURNING predecessor_id''', {'parent':child['predecessor'],'child':child['work_id']})
-        if cleared:
-            self._event(c,'dependency.unpinned',child['work_id'],{'predecessor_id':str(child['predecessor'])},cause=cause)
-        self._transition(c,child['work_id'],'READY',cause)
-        c.execute(text('''INSERT INTO work_queue(work_id,status) VALUES (:id,'PENDING') ON CONFLICT(work_id)
-            DO UPDATE SET status='PENDING',available_at=now(),run_id=NULL,lease_until=NULL,notified_at=NULL'''), {'id':child['work_id']})
-        return True
+        from app.workloads.policy_lifecycle import schedule_policy_index
+        return schedule_policy_index(self, c, root_id, cause)
 
     def _policy_regression_chain_current(self, c, work_id, allow_unpinned=False):
-        rows = c.execute(text('''WITH RECURSIVE chain AS (
-            SELECT d.predecessor_id,d.successor_id,d.pinned_artifact_version,1 AS depth
-                FROM work_dependencies d WHERE d.successor_id=:id
-            UNION ALL SELECT d.predecessor_id,d.successor_id,d.pinned_artifact_version,chain.depth+1
-                FROM work_dependencies d JOIN chain ON d.successor_id=chain.predecessor_id WHERE chain.depth<4)
-            SELECT chain.*,p.status,p.accepted_artifact_id FROM chain
-                JOIN work_items p ON p.work_id=chain.predecessor_id ORDER BY depth'''), {'id':work_id}).mappings().all()
-        return len(rows)==3 and all(row['status']=='COMMITTED' and row['accepted_artifact_id'] is not None
-            and ((allow_unpinned and row['depth']==1) or row['pinned_artifact_version']==row['accepted_artifact_id']) for row in rows)
+        from app.workloads.policy_verifiers import policy_regression_chain_current
+        return policy_regression_chain_current(c, work_id, allow_unpinned)
 
     def _schedule_policy_regression(self, c, root_id, cause, *, allow_rework=False):
-        child = one(c, '''SELECT w.work_id,w.status,d.predecessor_id FROM policy_followups f
-            JOIN work_items w ON w.work_id=f.work_id JOIN work_dependencies d ON d.successor_id=w.work_id
-            JOIN work_items p ON p.work_id=d.predecessor_id
-            JOIN evidence e ON e.artifact_id=p.accepted_artifact_id AND e.verification_type='policy_index_recheck'
-            WHERE f.root_work_id=:root AND f.step_no=3 AND e.result->>'passed'='true' ''', {'root':root_id})
-        allowed = ('BLOCKED','STALE','REWORK_REQUIRED') if allow_rework else ('BLOCKED','STALE')
-        if not child or child['status'] not in allowed or not self._policy_regression_chain_current(c,child['work_id'],True):
-            return False
-        cleared = one(c, '''UPDATE work_dependencies SET pinned_artifact_version=NULL
-            WHERE predecessor_id=:parent AND successor_id=:child AND pinned_artifact_version IS NOT NULL
-            RETURNING predecessor_id''', {'parent':child['predecessor_id'],'child':child['work_id']})
-        if cleared:
-            self._event(c,'dependency.unpinned',child['work_id'],{'predecessor_id':str(child['predecessor_id'])},cause=cause)
-        self._transition(c,child['work_id'],'READY',cause)
-        c.execute(text('''INSERT INTO work_queue(work_id,status) VALUES (:id,'PENDING') ON CONFLICT(work_id)
-            DO UPDATE SET status='PENDING',available_at=now(),run_id=NULL,lease_until=NULL,notified_at=NULL'''), {'id':child['work_id']})
-        return True
+        from app.workloads.policy_lifecycle import schedule_policy_regression
+        return schedule_policy_regression(self, c, root_id, cause, allow_rework=allow_rework)
 
     def _open_policy_review(self, c, root_id, cause):
-        row = one(c, '''SELECT w.work_id,w.status,p.work_id AS predecessor FROM policy_followups f
-            JOIN work_items w ON w.work_id=f.work_id JOIN work_dependencies d ON d.successor_id=w.work_id
-            JOIN work_items p ON p.work_id=d.predecessor_id AND p.status='COMMITTED'
-            JOIN evidence e ON e.artifact_id=p.accepted_artifact_id AND e.verification_type='policy_regression_check'
-            WHERE f.root_work_id=:root AND f.step_no=4 AND e.result->>'passed'='true' ''',{'root':root_id})
-        if not row or row['status']!='STALE' or not self._policy_regression_chain_current(c,row['predecessor']):
-            return False
-        self._transition(c,row['work_id'],'WAITING_APPROVAL',cause)
-        return True
+        from app.workloads.policy_lifecycle import open_policy_review
+        return open_policy_review(self, c, root_id, cause)
 
     def policy_method_changed(self, c, cause):
-        """Invalidate checks pinned to an old VOC method, preserving their history."""
-        rows = c.execute(text('''SELECT w.work_id,w.status,f.root_work_id FROM policy_followups f
-            JOIN work_items w ON w.work_id=f.work_id WHERE f.step_no=3 AND w.status IN ('COMMITTED','RUNNING')''')).mappings().all()
-        for row in rows:
-            if row['status']=='COMMITTED':
-                self._transition(c,row['work_id'],'STALE',cause)
-                self.stale_descendants(c,row['work_id'],cause)
-            else:
-                active = one(c,"SELECT run_id FROM runs WHERE work_id=:id AND status='RUNNING'",{'id':row['work_id']})
-                if active:
-                    c.execute(text("UPDATE runs SET status='FAILED',error='VOC method changed',finished_at=now() WHERE run_id=:id"),{'id':active['run_id']})
-                    c.execute(text("UPDATE work_queue SET status='DONE',lease_until=NULL WHERE work_id=:id"),{'id':row['work_id']})
-                    self._event(c,'run.failed',active['run_id'],{'reason':'VOC method changed'},cause=cause)
-                self._transition(c,row['work_id'],'REWORK_REQUIRED',cause)
-            self._schedule_policy_regression(c,row['root_work_id'],cause,allow_rework=True)
+        from app.workloads.policy_lifecycle import policy_method_changed
+        return policy_method_changed(self, c, cause)
 
     def recover_policy_followups(self):
-        """Schedule eligible older policy analyses left blocked before follow-up support existed."""
-        with self.engine.begin() as c:
-            self._lock(c)
-            roots = c.execute(text('''SELECT w.work_id,a.run_id FROM policy_change_events p
-                JOIN work_items w ON w.work_id=p.root_work_id AND w.status='COMMITTED'
-                JOIN artifacts a ON a.artifact_id=w.accepted_artifact_id
-                JOIN runs r ON r.run_id=a.run_id AND r.status='SUCCEEDED'
-                JOIN evidence e ON e.artifact_id=a.artifact_id AND e.verification_type='policy_deterministic'
-                WHERE e.result->>'passed'='true' ''')).mappings().all()
-            count = sum(self._schedule_policy_recheck(c,row['work_id'],str(row['run_id'])) for row in roots)
-            count += sum(self._schedule_policy_index(c,row['work_id'],str(row['run_id'])) for row in roots)
-            count += sum(self._schedule_policy_regression(c,row['work_id'],str(row['run_id'])) for row in roots)
-            count += sum(self._open_policy_review(c,row['work_id'],str(row['run_id'])) for row in roots)
-            return count
+        from app.workloads.policy_lifecycle import recover_policy_followups
+        return recover_policy_followups(self)
 
     def trigger(self, job_id, key, snapshot, *, expected_due=None):
         with self.engine.begin() as c:
@@ -754,21 +670,8 @@ class Kernel:
             return True
 
     def _previous_voc_report(self, c, artifact_id=None):
-        selection = 'AND a.artifact_id=:artifact' if artifact_id else ''
-        row = one(c, '''SELECT a.artifact_id,a.artifact_version,a.schema_version,a.sha256,a.content,r.run_id,r.finished_at,
-            w.work_id,w.task_version,e.evidence_id,e.verifier_version,ev.evaluation_id,ev.eval_suite_version FROM artifacts a JOIN runs r ON r.run_id=a.run_id
-            JOIN work_items w ON w.work_id=r.work_id JOIN evidence e ON e.artifact_id=a.artifact_id
-            JOIN evaluations ev ON ev.artifact_id=a.artifact_id AND ev.verdict='PASS'
-            WHERE a.kind='voc_report' AND r.status='SUCCEEDED' AND e.verification_type='voc_deterministic'
-            AND e.result->>'passed'='true' '''+selection+''' ORDER BY a.artifact_version DESC LIMIT 1''',
-                  {'artifact':artifact_id} if artifact_id else {})
-        if not row:
-            return None
-        return {'artifact_id':str(row['artifact_id']),'artifact_version':row['artifact_version'],'sha256':row['sha256'],
-                'schema_version':row['schema_version'],'content':row['content'],'run_id':str(row['run_id']),'work_id':str(row['work_id']),
-                'task_version':row['task_version'],'evidence_id':str(row['evidence_id']),'verifier_version':row['verifier_version'],
-                'evaluation_id':str(row['evaluation_id']),'evaluation_suite_version':row['eval_suite_version'],
-                'finished_at':row['finished_at'].isoformat()}
+        from app.workloads.voc_verifier import previous_voc_report
+        return previous_voc_report(c, artifact_id)
 
     def prepare_voc(self, run_id):
         with self.engine.begin() as c:
@@ -871,25 +774,18 @@ class Kernel:
             work = self._work(c, run['work_id'])
             task = one(c, 'SELECT * FROM task_definitions WHERE task_id=:id AND version=:v', {'id': work['task_id'], 'v': work['task_version']})
             kind = task['acceptance_policy'].get('kind')
-            if work['parent_work_id'] and work['task_id'] == 'TASK-002' and work['input_snapshot'].get('step_no') == 1:
-                kind = 'policy_followup_verification_v1'
-            elif work['parent_work_id'] and work['task_id'] == 'TASK-002' and work['input_snapshot'].get('step_no') == 2:
-                kind = 'policy_index_v1'
-            elif work['parent_work_id'] and work['task_id'] == 'TASK-002' and work['input_snapshot'].get('step_no') == 3:
-                kind = 'policy_regression_v1'
-            from app.workloads import text_workflow, market_verifier  # Register trusted built-in verifiers.
-            from app.workloads.registry import verifiers
+            from app.workloads.registry import load_builtins, verifiers, verifier_kind_resolvers, acceptance_hooks
+            load_builtins()
+            resolver = verifier_kind_resolvers.get(kind)
+            if resolver:
+                kind = resolver(dict(work))
             extension = verifiers.get(kind)
-            if extension is None and kind not in ('mock_receipt','market_briefing_v1','policy_impact_v1','voc_report_v1','voc_report_v2','voc_report_v3','policy_followup_verification_v1','policy_index_v1','policy_regression_v1'):
+            if extension is None and kind != 'mock_receipt':
                 raise Conflict('configured task validator is not implemented')
             artifact_id = uid()
-            artifact_kind = {'market_briefing_v1':'market_briefing','policy_impact_v1':'policy_impact','voc_report_v1':'voc_report','voc_report_v2':'voc_report','voc_report_v3':'voc_report',
-                             'policy_followup_verification_v1':'policy_followup_verification','policy_index_v1':'policy_index_receipt',
-                             'policy_regression_v1':'policy_regression_report'}.get(kind,'mock_receipt')
-            if extension:
-                artifact_kind = extension.artifact_kind
+            artifact_kind = extension.artifact_kind if extension else 'mock_receipt'
             artifact_hash = store_json(c, artifact_id, run_id, content, artifact_kind,
-                                       schema_version=extension.schema_version if extension else '3' if kind=='voc_report_v3' else '2' if kind=='voc_report_v2' else '1')
+                                       schema_version=extension.schema_version if extension else '1')
             self._transition(c, work['work_id'], 'SUBMITTED', run_id)
             self._transition(c, work['work_id'], 'VERIFYING', run_id)
             if extension:
@@ -900,191 +796,6 @@ class Kernel:
                 c.execute(text('''INSERT INTO evaluations(evaluation_id,run_id,artifact_id,eval_suite_version,metric_results,verdict)
                     VALUES (:id,:run,:artifact,:suite,CAST(:result AS jsonb),:verdict)'''),
                     {'id':uid(),'run':run_id,'artifact':artifact_id,'suite':extension.suite_version,
-                     'result':canonical(result),'verdict':'PASS' if result['passed'] else 'FAIL'})
-            elif kind == 'policy_impact_v1':
-                context = one(c, 'SELECT manifest,sha256 FROM run_contexts WHERE run_id=:id', {'id':run_id})
-                if not context:
-                    raise Conflict('policy context missing')
-                manifest = context['manifest']
-                result = verify_policy(manifest,content)
-                current = build_policy_manifest(c,run_id,run['work_id'])
-                result['checks']['manifest_hash'] = digest(manifest) == context['sha256']
-                result['checks']['graph_still_matches'] = current['followups'] == manifest['followups']
-                result['checks']['previous_version_search_current'] = current['indexed_previous_document'] == manifest['indexed_previous_document']
-                result['checks']['execution_provenance'] = run['agent_version'] == 'policy-deterministic-v1' and run['model_id'] == 'MOCK'
-                result['passed'] = all(result['checks'].values())
-                refs = {'task_id':'TASK-002','task_version':work['task_version'],'artifact_sha256':artifact_hash,
-                        'context_sha256':context['sha256'],'event_id':manifest['event_id'],'document_id':manifest['document_id'],
-                        'old_version':manifest['old_document']['version'],'new_version':manifest['new_document']['version']}
-                verifier,verification = 'policy-validator-v2','policy_deterministic'
-                c.execute(text('''INSERT INTO evaluations(evaluation_id,run_id,artifact_id,eval_suite_version,metric_results,verdict)
-                    VALUES (:id,:run,:artifact,'policy-suite-v2',CAST(:result AS jsonb),:verdict)'''),
-                    {'id':uid(),'run':run_id,'artifact':artifact_id,'result':canonical(result),'verdict':'PASS' if result['passed'] else 'FAIL'})
-            elif kind == 'policy_followup_verification_v1':
-                context = one(c, 'SELECT manifest,sha256 FROM run_contexts WHERE run_id=:id', {'id':run_id})
-                if not context:
-                    raise Conflict('follow-up context missing')
-                manifest = context['manifest']
-                parent = one(c, '''SELECT w.status,w.accepted_artifact_id,d.pinned_artifact_version FROM work_items w
-                    JOIN work_dependencies d ON d.predecessor_id=w.work_id
-                    WHERE w.work_id=:parent AND d.successor_id=:child''',
-                    {'parent':manifest['parent_work_id'],'child':work['work_id']})
-                original = verify_policy(manifest['parent_manifest'],manifest['parent_artifact'])
-                expected = {'task_id':'TASK-002','data_mode':'DEMO DATA','step_no':1,
-                    'parent_artifact_id':manifest['parent_artifact_id'],
-                    'parent_artifact_sha256':manifest['parent_artifact_sha256'],
-                    'parent_context_sha256':manifest['parent_context_sha256'],
-                    'verification':'DETERMINISTIC_RECHECK','semantic_review':'NOT_PERFORMED'}
-                try:
-                    PolicyFollowupVerification.model_validate(content)
-                    schema_valid = True
-                except ValidationError:
-                    schema_valid = False
-                checks = {'context_hash':digest(manifest)==context['sha256'],
-                    'parent_context_hash':digest(manifest['parent_manifest'])==manifest['parent_context_sha256'],
-                    'parent_artifact_hash':digest(manifest['parent_artifact'])==manifest['parent_artifact_sha256'],
-                    'parent_evidence_passed':manifest['parent_evidence'].get('passed') is True,
-                    'parent_recheck':original['passed'],
-                    'parent_current':bool(parent) and parent['status']=='COMMITTED'
-                        and str(parent['accepted_artifact_id'])==str(parent['pinned_artifact_version'])==manifest['parent_artifact_id'],
-                    'schema':schema_valid,'receipt_matches':content==expected,
-                    'execution_provenance':run['agent_version']=='policy-followup-verification-v1' and run['model_id']=='MOCK'}
-                result = {'passed':all(checks.values()),'checks':checks,'semantic_review':'NOT_PERFORMED'}
-                refs = {'task_id':'TASK-002','task_version':2,'artifact_sha256':artifact_hash,
-                        'context_sha256':context['sha256'],'parent_artifact_id':manifest['parent_artifact_id'],
-                        'parent_context_sha256':manifest['parent_context_sha256']}
-                verifier,verification = 'policy-followup-verifier-v1','policy_followup_recheck'
-                c.execute(text('''INSERT INTO evaluations(evaluation_id,run_id,artifact_id,eval_suite_version,metric_results,verdict)
-                    VALUES (:id,:run,:artifact,'policy-followup-suite-v1',CAST(:result AS jsonb),:verdict)'''),
-                    {'id':uid(),'run':run_id,'artifact':artifact_id,'result':canonical(result),'verdict':'PASS' if result['passed'] else 'FAIL'})
-            elif kind == 'policy_index_v1':
-                context = one(c,'SELECT manifest,sha256 FROM run_contexts WHERE run_id=:id',{'id':run_id})
-                if not context:
-                    raise Conflict('policy index context missing')
-                manifest = context['manifest']
-                doc = manifest['document']
-                doc_id = f"{doc['document_id']}@{doc['version']}"
-                expected_doc = {'id':doc_id,'title':doc['title'],'body':doc['body'],'sha256':doc['sha256']}
-                _,current_index = demo_index_target()
-                found,retrieval = retrieve_documents([doc_id]+[x['id'] for x in manifest['previous_indexed_document']])
-                current_doc = next((item for item in found if item['id']==doc_id),None)
-                old_docs = [item for item in found if item['id']!=doc_id]
-                source = one(c,'''SELECT title,clauses,sha256 FROM policy_documents
-                    WHERE document_id=:id AND version=:version''', {'id':doc['document_id'],'version':doc['version']})
-                predecessor = one(c,'''SELECT p.status,p.accepted_artifact_id,d.pinned_artifact_version,
-                    root.status AS root_status,root.accepted_artifact_id AS root_artifact_id,rd.pinned_artifact_version AS root_pin
-                    FROM work_items p JOIN work_dependencies d ON d.predecessor_id=p.work_id AND d.successor_id=:work
-                    JOIN work_items root ON root.work_id=:root
-                    JOIN work_dependencies rd ON rd.predecessor_id=root.work_id AND rd.successor_id=p.work_id
-                    WHERE p.work_id=:predecessor''',{'work':work['work_id'],'root':manifest['root_work_id'],
-                                                      'predecessor':manifest['predecessor_work_id']})
-                try:
-                    PolicyIndexReceipt.model_validate(content)
-                    schema_valid = True
-                except ValidationError:
-                    schema_valid = False
-                checks = {'schema':schema_valid,'context_hash':digest(manifest)==context['sha256'],
-                    'index_target':current_index==manifest['index']==retrieval['index'],
-                    'indexed_version_and_hash':current_doc==expected_doc,
-                    'previous_version_preserved':old_docs==manifest['previous_indexed_document'],
-                    'source_current':bool(source) and source['title']==doc['title'] and canonical(source['clauses'])==doc['body']
-                        and digest(source['clauses'])==source['sha256']==doc['sha256'],
-                    'predecessor_current':bool(predecessor) and predecessor['status']=='COMMITTED'
-                        and str(predecessor['accepted_artifact_id'])==str(predecessor['pinned_artifact_version'])==manifest['predecessor_artifact_id']
-                        and predecessor['root_status']=='COMMITTED'
-                        and str(predecessor['root_artifact_id'])==str(predecessor['root_pin'])==manifest['root_artifact_id'],
-                    'receipt_matches':content.get('task_id')=='TASK-002' and content.get('data_mode')=='DEMO DATA'
-                        and content.get('step_no')==2 and content.get('predecessor_artifact_id')==manifest['predecessor_artifact_id']
-                        and content.get('document_id')==doc['document_id'] and content.get('document_version')==doc['version']
-                        and content.get('document_sha256')==doc['sha256'] and content.get('index')==manifest['index'],
-                    'execution_provenance':run['agent_version']=='policy-index-v1' and run['model_id']=='MOCK'}
-                result = {'passed':all(checks.values()),'checks':checks,'retrieval':retrieval,'indexed_document':current_doc}
-                refs = {'task_id':'TASK-002','task_version':2,'artifact_sha256':artifact_hash,'context_sha256':context['sha256'],
-                        'predecessor_artifact_id':manifest['predecessor_artifact_id'],'document_id':doc_id,
-                        'document_sha256':doc['sha256'],'index':manifest['index'],'retrieval':retrieval}
-                verifier,verification = 'policy-index-verifier-v1','policy_index_recheck'
-                c.execute(text('''INSERT INTO evaluations(evaluation_id,run_id,artifact_id,eval_suite_version,metric_results,verdict)
-                    VALUES (:id,:run,:artifact,'policy-index-suite-v1',CAST(:result AS jsonb),:verdict)'''),
-                    {'id':uid(),'run':run_id,'artifact':artifact_id,'result':canonical(result),'verdict':'PASS' if result['passed'] else 'FAIL'})
-            elif kind == 'policy_regression_v1':
-                context = one(c,'SELECT manifest,sha256 FROM run_contexts WHERE run_id=:id',{'id':run_id})
-                if not context:
-                    raise Conflict('policy regression context missing')
-                manifest = context['manifest']
-                _,index = demo_index_target()
-                documents,retrieval = retrieve_documents([manifest['document']['id']])
-                current_inputs = load_regression_inputs(c)
-                expected = make_regression_report(manifest)
-                try:
-                    PolicyRegressionReport.model_validate(content)
-                    schema_valid = True
-                except ValidationError:
-                    schema_valid = False
-                checks = {'schema':schema_valid,'context_hash':digest(manifest)==context['sha256'],
-                    'index_current':index==manifest['retrieval']['index']==retrieval['index'] and documents==[manifest['document']],
-                    'inputs_current':current_inputs==manifest['evaluation_inputs'],
-                    'predecessor_current':self._policy_regression_chain_current(c,work['work_id']),
-                    'report_recomputed':content==expected,
-                    'zero_classification_regressions':all(not suite['regressions'] for suite in expected['suites']),
-                    'execution_provenance':run['agent_version']=='policy-regression-v1' and run['model_id']=='MOCK'}
-                result = {'passed':all(checks.values()),'checks':checks,'scope':expected['scope'],
-                          'suite_results':[{'suite_version':suite['suite_version'],'case_count':suite['case_count'],
-                            'baseline_correct':suite['baseline_correct'],'active_correct':suite['active_correct'],
-                            'regressions':suite['regressions']} for suite in expected['suites']]}
-                refs = {'task_id':'TASK-002','task_version':2,'artifact_sha256':artifact_hash,'context_sha256':context['sha256'],
-                        'predecessor_artifact_id':manifest['predecessor_artifact_id'],'document_id':manifest['document']['id'],
-                        'document_sha256':manifest['document']['sha256'],
-                        'suite_hashes':{s['suite_version']:s['sha256'] for s in manifest['evaluation_inputs']['suites']},
-                        'baseline_method_sha256':manifest['evaluation_inputs']['baseline']['sha256'],
-                        'active_method_sha256':manifest['evaluation_inputs']['active']['sha256'],
-                        'active_method_state_version':manifest['evaluation_inputs']['state']['version']}
-                verifier,verification = 'policy-regression-verifier-v1','policy_regression_check'
-                c.execute(text('''INSERT INTO evaluations(evaluation_id,run_id,artifact_id,eval_suite_version,metric_results,verdict)
-                    VALUES (:id,:run,:artifact,'policy-voc-regression-v1',CAST(:result AS jsonb),:verdict)'''),
-                    {'id':uid(),'run':run_id,'artifact':artifact_id,'result':canonical(result),'verdict':'PASS' if result['passed'] else 'FAIL'})
-            elif kind in ('voc_report_v1','voc_report_v2','voc_report_v3'):
-                context = one(c, 'SELECT manifest,sha256 FROM run_contexts WHERE run_id=:id', {'id':run_id})
-                if not context:
-                    raise Conflict('VOC context missing')
-                manifest = context['manifest']
-                result = verify_voc(manifest,content)
-                source = one(c, "SELECT * FROM task_source_dependencies WHERE task_id='TASK-003' AND document_id='POLICY-VOC'")
-                result['checks']['manifest_hash'] = digest(manifest) == context['sha256']
-                result['checks']['source_dependency_unchanged'] = (dict(source) if source else None) == manifest['source_dependency']
-                result['checks']['execution_provenance'] = run['agent_version'] == manifest['method']['method_id'] and run['model_id'] == 'MOCK'
-                if kind in ('voc_report_v2','voc_report_v3'):
-                    previous = manifest['previous_report']
-                    result['checks']['previous_artifact_verified'] = (previous is None or
-                        self._previous_voc_report(c,previous['artifact_id'])==previous)
-                if kind=='voc_report_v3':
-                    with source_engine(self.engine).connect() as source_conn:
-                        current_records = [dict(row) for row in source_conn.execute(text(VOC_RECORD_QUERY),{'version':'voc-demo-v1'}).mappings()]
-                        current = source_conn.execute(text(VOC_DOCUMENT_QUERY),VOC_DOCUMENT_PARAMETERS).mappings().all()
-                    current = [{'id':f"{d['document_id']}@{d['version']}",'title':d['title'],'body':d['body'],'sha256':d['sha256']}
-                               for d in current if f"{d['document_id']}@{d['version']}" in VOC_DOCUMENTS.values()]
-                    result['checks']['documents_source_current'] = current==manifest['authoritative_documents']
-                    result['checks']['records_source_current'] = current_records==manifest['records']
-                    result['checks']['source_query_contract'] = (manifest['record_query']==VOC_RECORD_QUERY
-                        and manifest['record_parameters']=={'version':'voc-demo-v1'} and manifest['document_query']==VOC_DOCUMENT_QUERY
-                        and manifest['document_parameters']==VOC_DOCUMENT_PARAMETERS)
-                    if manifest['retrieval']['mode']=='OPENSEARCH':
-                        indexed,_ = retrieve_documents(list(VOC_DOCUMENTS.values()))
-                        result['checks']['documents_search_current'] = indexed==manifest['documents']
-                result['passed'] = all(result['checks'].values())
-                refs = {'task_id':'TASK-003','task_version':work['task_version'],'artifact_sha256':artifact_hash,
-                        'context_sha256':context['sha256'],'source_version':manifest['source_version'],
-                        'records_sha256':manifest['records_sha256'],'method_version':manifest['method']['method_id']}
-                if kind in ('voc_report_v2','voc_report_v3'):
-                    refs['previous_artifact_id'] = manifest['previous_report']['artifact_id'] if manifest['previous_report'] else None
-                    refs['history_as_of'] = manifest['history_as_of']
-                    refs['comparison_basis'] = 'CATEGORY_ONLY_NOT_SEMANTIC'
-                if kind=='voc_report_v3':
-                    refs.update(document_ids=[d['id'] for d in manifest['documents']],retrieval=manifest['retrieval'],
-                                document_query=manifest['document_query'],document_parameters=manifest['document_parameters'])
-                verifier,verification = ('voc-validator-v3' if kind=='voc_report_v3' else 'voc-validator-v2' if kind=='voc_report_v2' else 'voc-validator-v1'),'voc_deterministic'
-                c.execute(text('''INSERT INTO evaluations(evaluation_id,run_id,artifact_id,eval_suite_version,metric_results,verdict)
-                    VALUES (:id,:run,:artifact,:suite,CAST(:result AS jsonb),:verdict)'''),
-                    {'id':uid(),'run':run_id,'artifact':artifact_id,'suite':'voc-run-suite-v3' if kind=='voc_report_v3' else 'voc-run-suite-v2' if kind=='voc_report_v2' else 'voc-run-suite-v1',
                      'result':canonical(result),'verdict':'PASS' if result['passed'] else 'FAIL'})
             else:
                 required = task['acceptance_policy'].get('required_fields', [])
@@ -1106,14 +817,9 @@ class Kernel:
                 self._transition(c, work['work_id'], 'COMMITTED', run_id)
                 if old and str(old) != artifact_id:
                     self.stale_descendants(c, work['work_id'], run_id)
-                if kind == 'policy_impact_v1' and work['parent_work_id'] is None:
-                    self._schedule_policy_recheck(c,work['work_id'],run_id)
-                elif kind == 'policy_followup_verification_v1':
-                    self._schedule_policy_index(c,work['parent_work_id'],run_id)
-                elif kind == 'policy_index_v1':
-                    self._schedule_policy_regression(c,work['parent_work_id'],run_id)
-                elif kind == 'policy_regression_v1':
-                    self._open_policy_review(c,work['parent_work_id'],run_id)
+                hook = acceptance_hooks.get(kind)
+                if hook:
+                    hook(self,c,dict(work),run_id)
             else:
                 self._transition(c, work['work_id'], 'REWORK_REQUIRED', run_id)
             c.execute(text('UPDATE runs SET status=:status,finished_at=now(),error=:error WHERE run_id=:id'), {'status': 'SUCCEEDED' if passed else 'VERIFICATION_FAILED', 'error': None if passed else canonical(result), 'id': run_id})

@@ -51,3 +51,41 @@ def test_unknown_validator_fails_closed(kernel):
     claim = kernel.claim()
     with pytest.raises(Conflict, match='validator is not implemented'):
         kernel.submit(claim['run_id'], {})
+
+
+def test_registered_workload_selects_verifier_and_acceptance_hook(kernel, monkeypatch):
+    from app.workloads import registry
+    importlib.import_module('app.workloads.example_total')
+    with engine.begin() as c:
+        c.execute(text('''INSERT INTO task_definitions VALUES ('EXTENSION-HOOK',1,'total','sum','{}','{}',
+            '{"kind":"extension_with_hook"}',true)'''))
+        c.execute(text("INSERT INTO job_definitions(job_id,task_id,task_version,trigger_type) VALUES ('EXTENSION-HOOK-JOB','EXTENSION-HOOK',1,'MANUAL')"))
+    monkeypatch.setitem(registry.verifier_kind_resolvers,'extension_with_hook',lambda work:'example_total_v1')
+    def on_accepted(kernel, c, work, run_id):
+        kernel._event(c,'extension.accepted',work['work_id'],{'run_id':str(run_id)})
+    monkeypatch.setitem(registry.acceptance_hooks,'example_total_v1',on_accepted)
+    work,_=kernel.trigger('EXTENSION-HOOK-JOB','extension-hook',{'numbers':[2,3]})
+    claim=kernel.claim()
+    assert kernel.submit(claim['run_id'],{'total':5})['passed']
+    with engine.connect() as c:
+        assert c.execute(text("SELECT count(*) FROM work_events WHERE event_type='extension.accepted' AND subject_id=:id"),{'id':str(work)}).scalar_one()==1
+    def failing_hook(kernel, c, work, run_id):
+        raise RuntimeError('follow-up failed')
+    monkeypatch.setitem(registry.acceptance_hooks,'example_total_v1',failing_hook)
+    work,_=kernel.trigger('EXTENSION-HOOK-JOB','extension-hook-failure',{'numbers':[2,3]})
+    claim=kernel.claim()
+    with pytest.raises(RuntimeError,match='follow-up failed'):
+        kernel.submit(claim['run_id'],{'total':5})
+    with engine.connect() as c:
+        status=c.execute(text('SELECT status,accepted_artifact_id FROM work_items WHERE work_id=:id'),{'id':work}).mappings().one()
+        assert status['status']=='RUNNING' and status['accepted_artifact_id'] is None
+        assert c.execute(text('SELECT count(*) FROM artifacts WHERE run_id=:id'),{'id':claim['run_id']}).scalar_one()==0
+
+
+def test_builtin_registrations_are_loaded_before_configured_extensions():
+    from app.workloads import registry
+    registry.load_configured()
+    with pytest.raises(ValueError, match='duplicate'):
+        registry.register_acceptance_hook('policy_impact_v1',lambda *args: None)
+    with pytest.raises(ValueError, match='duplicate'):
+        registry.register_verifier_kind_resolver('policy_impact_v1',lambda work:'example_total_v1')

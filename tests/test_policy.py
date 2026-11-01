@@ -123,13 +123,14 @@ def test_followup_cannot_commit_fabricated_recheck(kernel):
 
 
 def test_worker_recovers_preexisting_blocked_followup(kernel, monkeypatch):
+    from app.workloads import policy_lifecycle
     seed(engine)
     with TestClient(app) as client:
         root = client.post('/api/events/document.updated',json=event_body(client)).json()['work_id']
-        schedule = kernel._schedule_policy_recheck
-        monkeypatch.setattr(kernel,'_schedule_policy_recheck',lambda *args: False)
+        schedule = policy_lifecycle.schedule_policy_recheck
+        monkeypatch.setattr(policy_lifecycle,'schedule_policy_recheck',lambda *args: False)
         assert process_claim(kernel,kernel.claim())['passed']
-        monkeypatch.setattr(kernel,'_schedule_policy_recheck',schedule)
+        monkeypatch.setattr(policy_lifecycle,'schedule_policy_recheck',schedule)
         assert client.get(f'/api/policy-work/{root}').json()['followups'][0]['status'] == 'BLOCKED'
         assert kernel.recover_policy_followups() == 1
         assert kernel.recover_policy_followups() == 0

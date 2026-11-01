@@ -1,5 +1,18 @@
 # Work OS 작업 상태
 
+## 2026-11-01 추가 진행 — 정책·VOC 검증과 후속 예약의 업무 모듈화
+
+상태: **부분 구현**. 정책 변경 분석·하위 세 단계와 VOC 검증을 공통 `Kernel.submit`의 업무별 분기에서 `backend/app/workloads/policy_verifiers.py`, `voc_verifier.py`로 이전했다. Artifact 형식과 기존 검증기·평가셋 버전은 유지한다. 정책의 단계별 검증기 선택과 검증 통과 후 후속 작업 예약·기존 작업 복구도 등록된 `policy_lifecycle.py`가 처리한다.
+
+- `backend/app/workloads/registry.py`, `backend/app/work/service.py`: 업무별 검증기 선택과 채택 후 후속 처리를 등록할 수 있다. 기본 업무를 확장보다 먼저 로드하고 중복을 거부한다. 후속 처리 실패 시 Artifact·Evidence·Evaluation·채택 전이가 같은 트랜잭션에서 취소된다. 미등록 검증기는 거부한다.
+- `docs/WORKLOAD_EXTENSIONS.md`에 등록 서명·트랜잭션·신뢰 경계를 기록했다. 외부 요청에서 Python 모듈을 지정하지 않으며, 확장 코드는 별도 샌드박스가 아니다.
+- 전용 PostgreSQL·Redis와 테스트 검색 서비스에서 정책 검증 분리 후 관련 16개, 정책·VOC 검증 분리 후 관련 31개 테스트가 통과했다. 후처리 분리 후 `python -m pytest -x -q tests/test_policy.py tests/test_policy_index.py tests/test_policy_regression.py tests/test_voc_history.py tests/test_voc_sources.py tests/test_workload_extension.py`: **19 passed, warning 1건**. `python -m pytest -q tests/test_workload_extension.py`: **3 passed, warning 1건**. 전체 회귀는 처음 실행 중 테스트 장애 주입 위치가 옛 내부 메서드라 실패하여 중단했고, 실제 모듈 경계로 수정해 아래와 같이 재실행했다.
+- 후속 검증: `python -m pytest -q tests` **73 passed, warning 1건**. 이후 추가한 기본 등록 순서 검사와 변경을 포함해 `python -m pytest -q tests/test_workload_extension.py tests/test_policy.py` **9 passed, warning 1건**. 전체 73개는 마지막 기본 등록 순서 변경 전 실행했다. `docker compose -p workos-p0 up -d --build --no-deps api worker` 성공, API의 DB·OpenSearch 연결과 worker 실행 상태를 확인했다.
+
+한계: 정책 문서 이벤트·검토 처리와 데모 Run 컨텍스트 구성 등 업무별 서비스는 아직 커널 파일에 남아 있다. 업무 모듈이 실행되는 공통 프로세스는 신뢰 경계이며 별도 격리가 아니다. 사용자 텍스트 업무의 평가 기준 변경 및 단계 ID 변경도 여전히 제한된다. 스키마 마이그레이션은 없다.
+
+다음 세 단계: ① 정책 이벤트·검토와 세 데모의 Run 컨텍스트 구성 경계를 업무 모듈로 이전한다. ② 사람의 평가 기준·업무 구조 변경을 기존 평가를 약화하지 않고 평가할 수 있도록 확장한다. ③ 세 데모·사용자 업무의 전체 E2E와 스케줄·장애 복구를 검증한다.
+
 ## 2026-11-01 추가 진행 — 금융 검증기 분리
 
 - `backend/app/workloads/market_verifier.py`로 금융 브리핑의 계약·컨텍스트 해시·출처·검색 결과 검증을 옮기고 기존 등록형 검증 경계에서 호출한다. `market-validator-v3`와 `market-suite-v3`, Evidence 내용과 실패 시 미채택 동작을 유지한다. 기본 제공 검증 이름은 외부 업무 등록에서 덮어쓸 수 없다.
