@@ -17,6 +17,7 @@ services:
     environment:
       DATABASE_URL: postgresql+psycopg://workos:workos@postgres:5432/workos
       WORKOS_MODE: ${WORKOS_MODE:-MOCK}
+      WORKOS_WORKLOAD_MODULES: ${WORKOS_WORKLOAD_MODULES:-}
       WORKOS_SEARCH_MODE: OPENSEARCH
       OPENSEARCH_URL: http://opensearch:9200
       WORKOS_UI_ORIGIN: http://localhost:${WORKOS_UI_PORT:-5173}
@@ -33,6 +34,7 @@ services:
       DATABASE_URL: postgresql+psycopg://workos:workos@postgres:5432/workos
       REDIS_URL: redis://redis:6379/0
       WORKOS_MODE: ${WORKOS_MODE:-MOCK}
+      WORKOS_WORKLOAD_MODULES: ${WORKOS_WORKLOAD_MODULES:-}
       WORKOS_LLM_MODE: ${WORKOS_LLM_MODE:-MOCK}
       WORKOS_SEARCH_MODE: OPENSEARCH
       OPENSEARCH_URL: http://opensearch:9200

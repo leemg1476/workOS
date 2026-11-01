@@ -1,5 +1,16 @@
 # Work OS 작업 상태
 
+## 2026-11-01 추가 진행 — 신규 업무 실행·검증 확장 경로
+
+상태: **부분 구현**. 신규 업무 실행기와 독립 검증기를 신뢰된 배포 모듈로 등록하고 공통 커널에서 검증·발행하는 경로를 추가했다. 기존 세 데모의 업무별 분기와 정책 DAG는 여전히 커널·런타임에 남아 있어, 모든 종류의 신규 업무를 완전히 일반화한 것은 아니다.
+
+- `backend/app/workloads/registry.py`, `example_total.py`: 업무 ID/버전 실행기와 acceptance kind별 검증기 등록. 기존 업무/검증기 이름과 중복 등록을 거부하고, 명시적으로 구성된 신뢰 모듈만 API와 워커 시작 시 로드한다. 플러그인은 프로세스 내부 코드이며 샌드박스가 아니다.
+- `backend/app/work/service.py`, `worker.py`, `api/main.py`, `docker-compose.yml`: 새 확장 검증기는 기존 lease·트랜잭션·상태 전이를 통해 Artifact/Evidence/Evaluation을 기록한다. 미등록 검증기와 잘못된 검증기 반환을 거부하고, 검증 실패는 결과를 채택하지 않는다. 새 확장 실행기는 현재 Graph 체크포인트와 범용 DAG를 자동으로 제공하지 않는다.
+- `tests/test_workload_extension.py`에서 네 번째 예시 업무의 실행·검증·변조 거부와 미등록 검증기 거부를 확인하고 HTTP API로 실행·결과 조회도 확인했다. 설정·계약·한계는 `docs/WORKLOAD_EXTENSIONS.md` 참조.
+- 전용 PostgreSQL·Redis와 로컬 OpenSearch에서 전체 `python -m pytest -q tests`: **47 passed, warning 1건**. 그 후 HTTP API 확인을 추가한 최신 `python -m pytest -q tests/test_workload_extension.py`: **2 passed, warning 1건**. 검증용 DB는 별도 컨테이너였다.
+
+다음 세 단계: ① 기존 세 업무의 실행·검증·정책 후속 DAG를 확장 모듈로 분리하고 기존 데이터·동작을 유지한다. ② 신규 업무의 컨텍스트·체크포인트·의존성 DAG 및 검증기 버전 고정을 공통 계약으로 지원한다. ③ 복수의 서로 다른 신규 업무를 커널 수정 없이 별도 프로세스에서 등록·실행하는 E2E와 기존 세 데모 회귀를 검증한다.
+
 ## 2026-11-01 추가 진행 — 작업 결과 보고서
 
 현재 단계: **P0 커널과 P1 세 가지 가상 시연 경로 구현**, P2 실제 연계·운영 준비 미완료. 사용자 요청에 따라 `docs/WORK_REPORT.md`에 현재 구현과 세 시나리오, 코드·테스트 위치, 실제 실행된 검증, 시연 방법, 한계와 다음 작업을 정리했다. 보고서 기준 구현 커밋은 `2110c93`이다.

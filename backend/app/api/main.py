@@ -14,6 +14,8 @@ from app.integrations.search import readiness, SearchUnavailable
 
 @asynccontextmanager
 async def lifespan(app):
+    from app.workloads.registry import load_configured
+    load_configured()
     migrate()
     seed(engine)
     yield

@@ -1,0 +1,11 @@
+# 업무 확장 경로
+
+새 업무는 신뢰할 수 있는 Python 모듈에서 실행기와 독립 검증기를 등록할 수 있다. 예시는 [`example_total.py`](../backend/app/workloads/example_total.py)다. 기본적으로 로드하지 않는다.
+
+1. 업무별 실행 함수 `execute(claim)`와 별도 검증 함수 `verify(conn, run, work, task, content, artifact_hash)`를 작성한다. 검증기는 입력 스냅샷·원천·산출물을 직접 확인하고 `(result, refs)`를 반환한다. `result.passed`는 명시적인 불리언이어야 한다. 모델이 작성한 통과 주장만으로 검증해서는 안 된다.
+2. `register_executor(task_id, task_version, execute)`와 `register_verifier(kind, Verifier(...))`로 등록한다. 검증기에는 Artifact 종류·스키마 버전·검증기 버전·검증 종류·평가셋 버전을 지정한다. TaskDefinition의 `acceptance_policy.kind`는 등록한 kind와 일치해야 한다.
+3. 해당 TaskDefinition과 JobDefinition을 버전 고정하여 별도의 마이그레이션 또는 시드로 배포한다. 실행기 키와 계약 버전이 일치해야 한다.
+4. API와 워커 모두 같은 신뢰된 코드와 `WORKOS_WORKLOAD_MODULES` 설정을 사용해 배포한다. 쉼표로 구분한 Python 모듈을 프로세스 시작 때 불러온다. Compose는 이 변수를 두 프로세스에 전달한다. 예시: `WORKOS_WORKLOAD_MODULES=app.workloads.example_total`. 이 설정은 관리자 배포 설정이며 외부 요청이나 Task 데이터로부터 받지 않는다.
+5. 정상 결과와 조작·누락 결과, 실패 이력, 재시도와 출처·의존성 변경을 테스트한다. 예시는 [`test_workload_extension.py`](../tests/test_workload_extension.py)를 참고한다.
+
+커널은 유효한 lease를 확인하고 트랜잭션 안에서 검증기를 실행하며 Artifact·Evidence·Evaluation과 상태 전이를 기록한다. 미등록 검증기는 거부하고 검증 실패는 `REWORK_REQUIRED`로 기록한다. 기존 세 업무의 예약·DAG·검증 로직은 아직 기존 구현에 남아 있으며 이 경로로 이관하지 않았다. 확장 실행기는 현재 Graph 체크포인트·Run 컨텍스트·범용 후속 DAG를 자동 제공하지 않는다. 새로운 업무에 이 기능이 필요한 경우 별도 구현이 필요하다. 플러그인 코드는 프로세스 내부에서 실행되며 격리된 샌드박스가 아니므로 신뢰된 코드만 배포해야 한다.

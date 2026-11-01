@@ -8,10 +8,14 @@ from app.runtime.graph import GraphRunner
 from app.integrations.search import index_demo_policy
 from app.evaluation.policy_regression import make_report as make_policy_regression_report
 from redis.exceptions import RedisError
+from app.workloads.registry import executors
 
 
 def process_claim(kernel, claim):
     try:
+        executor = executors.get((claim['task_id'], claim['task_version']))
+        if executor is not None:
+            return kernel.submit(claim['run_id'], executor(claim))
         if claim['task_id'] == 'TASK-002' and claim['input_snapshot'].get('step_no') == 3:
             manifest = kernel.prepare_policy_regression(claim['run_id'])
             return kernel.submit(claim['run_id'],make_policy_regression_report(manifest))
@@ -63,6 +67,8 @@ def process_claim(kernel, claim):
 
 
 def main():
+    from app.workloads.registry import load_configured
+    load_configured()
     migrate()
     kernel = Kernel(engine)
     kernel.recover_policy_followups()

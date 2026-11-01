@@ -869,17 +869,30 @@ class Kernel:
                 kind = 'policy_index_v1'
             elif work['parent_work_id'] and work['task_id'] == 'TASK-002' and work['input_snapshot'].get('step_no') == 3:
                 kind = 'policy_regression_v1'
-            if kind not in ('mock_receipt','market_briefing_v1','policy_impact_v1','voc_report_v1','voc_report_v2','voc_report_v3','policy_followup_verification_v1','policy_index_v1','policy_regression_v1'):
+            from app.workloads.registry import verifiers
+            extension = verifiers.get(kind)
+            if extension is None and kind not in ('mock_receipt','market_briefing_v1','policy_impact_v1','voc_report_v1','voc_report_v2','voc_report_v3','policy_followup_verification_v1','policy_index_v1','policy_regression_v1'):
                 raise Conflict('configured task validator is not implemented')
             artifact_id = uid()
             artifact_kind = {'market_briefing_v1':'market_briefing','policy_impact_v1':'policy_impact','voc_report_v1':'voc_report','voc_report_v2':'voc_report','voc_report_v3':'voc_report',
                              'policy_followup_verification_v1':'policy_followup_verification','policy_index_v1':'policy_index_receipt',
                              'policy_regression_v1':'policy_regression_report'}.get(kind,'mock_receipt')
+            if extension:
+                artifact_kind = extension.artifact_kind
             artifact_hash = store_json(c, artifact_id, run_id, content, artifact_kind,
-                                       schema_version='3' if kind=='voc_report_v3' else '2' if kind=='voc_report_v2' else '1')
+                                       schema_version=extension.schema_version if extension else '3' if kind=='voc_report_v3' else '2' if kind=='voc_report_v2' else '1')
             self._transition(c, work['work_id'], 'SUBMITTED', run_id)
             self._transition(c, work['work_id'], 'VERIFYING', run_id)
-            if kind == 'market_briefing_v1':
+            if extension:
+                result, refs = extension.verify(c, dict(run), dict(work), dict(task), content, artifact_hash)
+                if not isinstance(result, dict) or type(result.get('passed')) is not bool or not isinstance(refs, dict):
+                    raise Conflict('invalid verifier result')
+                verifier, verification = extension.verifier_version, extension.verification_type
+                c.execute(text('''INSERT INTO evaluations(evaluation_id,run_id,artifact_id,eval_suite_version,metric_results,verdict)
+                    VALUES (:id,:run,:artifact,:suite,CAST(:result AS jsonb),:verdict)'''),
+                    {'id':uid(),'run':run_id,'artifact':artifact_id,'suite':extension.suite_version,
+                     'result':canonical(result),'verdict':'PASS' if result['passed'] else 'FAIL'})
+            elif kind == 'market_briefing_v1':
                 context = one(c, 'SELECT manifest,sha256 FROM run_contexts WHERE run_id=:id', {'id':run_id})
                 if not context:
                     raise Conflict('market context missing')
