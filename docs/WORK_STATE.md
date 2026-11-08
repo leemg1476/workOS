@@ -1,5 +1,96 @@
 # Work OS 작업 상태
 
+## 2026-11-08 — 사용자 승인하에 새10회 실험 완료·정지
+
+상태: **보고서10개·회차별 평가/검토·최종 비교 보고서 완료. 추가 실행 정지.** 사용자는 새 실험에서 준비한 계산/필수항목/인용과 근거를 확인한 후속 피드백을 적용하도록 명시적으로 승인했다. 기존42회 연구를 재개하거나 원래 Task에 지식을 적용하지 않았다.
+
+- 전용 DB `workos_tenround_20261108`, 새 Task `USER-545faf8c-091f-462f-a834-86c909606fd7`, 결과 `docs/experiments/household-tenround-20261108/REPORT.md`. 같은2025년9월·가상A/B·모델 gpt-6-luna·루브릭·작성 계약을 유지했다. 실제 추가 검색은 허용했다. 각 회차의 AI 평가 뒤 Codex가 원문을 읽고 선택한 피드백을 다음 회차에 적용했다. 이는 인간 전문가 평가나 무개입 학습 실험이 아니다.
+- `longitudinal_report.py`에 준비만 수행하는 옵션과 이전 Artifact 해시에 대응하는 operator review 장벽을 추가했다. `tenround_operator.py`는 사용자의 이번 승인 범위에서 초기10개 지식, 1회 뒤 새 원문 인용, 검토 파일의 교훈/필수항목/계산을 적용한다. 피드백을 자동으로 작성하거나 자동 선별하지 않는다. `summarize_tenround.py`, `render_tenround_report.py`로 DB 근거와 관찰 보고서/차트를 만들었다.
+- 실제 실행: `DATABASE_URL=.../workos_tenround_20261108`, `PYTHONPATH=backend`에서 `python -u -m app.evaluation.longitudinal_report --output docs/experiments/household-tenround-20261108 --rounds 10 --prepare-only --review-barrier`, 초기 bootstrap, 회차별 검토/적용 후 같은 명령의 `--prepare-only` 없는 실행을 반복했다. 최종 작성 Run12개(성공10·JSON 검증 실패1·실행 실패1), Work10개 모두 WAITING_APPROVAL, 큐10개 모두 DONE이다. 초기 실패2건을 별도 보존했다. AI 평가10개를 저장했으며 최종 상태는 `STOPPED_AFTER_COMPLETING_AUTHORIZED_TEN_ROUNDS`로 잠갔다.
+- 참고 점수: **62·83·85·86·84·90·80·89·86·90**, 평균83.5. 1회 부호 비평은 평가자의 독해 오류로 기각했고 점수 원본은 유지했다. 지식 지속(10→20), 선택형 행동·같은 기간 비교·이자 가정·산식·CPI 기준액42,000원 추가를 관측했다. 모든 초기 계산7개는 코드가 제공한 표에서 유지됐다. 모델의 산술 학습·전문가 동등 품질·단조 향상을 주장하지 않는다.
+- 개입과 오류도 공개했다. 누락되던 산식 피드백은8회부터 CHECKLIST로 전환했고10회에는 기준액 CALCULATION을 추가했다. Codex가6회 뒤 교훈에 쓴 잘못된 같은 단가 표현은 철회/교정했지만 이미 고정된7회 입력은 보존했다(7회 본문에는 오류가 전파되지 않음). 최종 표의 내부 행 이름 검토 교훈09는 숫자가 정확해도 편집 결함이며 원본 실험 보고서를 고쳐 숨기지 않았다.
+- 실제 확인: 새 스크립트4개 py_compile 성공, `python -m pytest -q --tb=short tests/test_task_knowledge.py -k stopped` **1 passed, 6 deselected, 1 warning**, git diff --check 성공. Matplotlib 차트를 열어 레이블/점수를 확인했다. 전체115개 테스트를 이번에 다시 실행하지 않았다. 최종 DB/파일 검사에서10개 Artifact 해시·동일 계약/입력·첫 교훈 지속·미승인 AI 의견 프롬프트 제외를 확인했다. 원래42개 Artifact의 내용 해시 모두 일치, 원래 Task 적용 지식0개를 확인했다. `final_checks.json`, `attempts.json`, 회차별 `report/grade/review_context/operator_review`에 근거를 남겼다.
+
+다음 세 단계: ① 이번 보고서의 내부 계산 행 이름과 반복 내용을 독자용 출력 검사 사례로 만든다. ② 교훈이 반복 누락될 때 실행 필수항목으로 전환하는 기준과 검토자 오류 회귀 사례를 설계한다. ③ 추가 평가를 요청받으면 다른 가구/무기억 대조/사람 평가를 사전 고정한 새 실험으로 수행한다. 이번10회와 기존42회 연구는 추가 실행하지 않는다.
+
+## 2026-11-08 — 중간평가 문제 수정: 지속 지식·원문 근거·결정론적 검사
+
+상태: **기능 수정·회귀·격리 LIVE 경로 확인 완료. 의미적 품질 향상은 아직 재평가하지 않았다.** 기존42회 연구의 STOPPED 상태와 원본 보고서·점수·기억은 보존했다. 연구의 추가 회차는 실행하지 않았다. 기존 미커밋 변경도 보존했다.
+
+- `024_task_knowledge.sql`, `work/knowledge.py`: 태스크/방법 버전/정확한 입력 해시에 묶인 불변 지식 후보와 APPLY/REJECT/RETIRE 이력, 계산·원문 직접 인용·체크리스트·교훈을 구현했다. 승인 지식은 최근 의견 창과 별도로 유지한다. 입력/근거 변경 시 제외하거나 영향을 받는 확정 Work와 종속 Work를 STALE로 만든다. 사람의 Apply도 사실의 진위를 보증하지 않는다.
+- `task_memory.py` v3, `text_workflow.py`: 원본 의견을 보존하면서 미승인 AI 의견을 작성 프롬프트에서 제외한다. 승인 지식과 같은 입력의 원문 발췌를 매 실행에 고정한다. 원천 검증 실패는 검사 가능한 실패 Run으로 남긴다. 고정 평가에는 운영 기억을 넣지 않는다.
+- `report_quality.py`: 승인 계산식을 제한된 Decimal AST로 실행하고 정답 표를 백엔드가 생성한다. 승인 필수항목의 누락·중복·잘못된 JSON은 검증 실패다. 본문 전체의 산술·의미·독해를 보증하지 않는다. prompt step v3, 일반 구조 검사 v5, 연결/결합 검사 v3를 기록한다.
+- `source_snapshots.py`, `report_feedback.py`, 연구 실행/감사 스크립트: 허용 도메인의 실제 HTML/plain 원문을 생성 후 읽어 불변 해시로 보존하고 평가자에게 전달한다. 실패/PDF는 UNAVAILABLE이다. AI 교훈은 후보로만 저장한다. STOPPED 연구는 모델 호출 전에 거부하며 변경 루브릭의 과거 연구 재사용도 차단한다. 다른 평가 모델을 설정할 수 있지만 점수는 여전히 참고 의견이다.
+- knowledge/decision/import-feedback/review-context API와 `TaskKnowledge.vue`를 연결했다. 출처·계산 미리보기, 종류/검색, 원래 보고서 이동, 사유를 요구하는 Apply/Reject/Retire를 제공한다. 실제 화면에서 후보56개·적용0개, 계산 미리보기와 사유 없는 적용 비활성화를 확인했다.
+
+실제로 실행한 검증:
+
+1. 전용 `workos_memory_check`에서 `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1`, `PYTHONPATH=backend`, `WORKOS_TEST_DATABASE_URL`을 설정한 `python -m pytest -x -q --tb=short tests`: **115 passed, 6 skipped, 1 warning, 194.35초**. 6개는 OpenSearch/Redis 통합 URL 미설정이다. 관련 좁은 검사24개도 통과했다. 새 `test_task_knowledge.py`의7개 검사는 승인 지속성, 입력/출처 변경, 실패 산출물, Decimal 안전성, 사설 주소 차단, 후보 수입 멱등성, 중단 연구 실행 차단을 포함한다.
+2. `npm --prefix frontend run build` 성공. 테스트 DB의 임시 `knowledge_migration_check` 스키마에서024 up/down/up 성공. 사용자 DB에 down을 실행하지 않았다.
+3. `tests/live_knowledge_probe.py`를 별도 `workos_knowledge_verify`와 합성 입력에서 실행했다. 실제 gpt-6-luna 작성 호출 **2회**가 승인 필수항목 구조와 백엔드 계산표50,800원 경로를 통과했다. 무관한 AI 의견12개 이후에도 승인 지식2개가 유지되고 미승인 의견은 실제 프롬프트에서 제외됐다. Apply는 이 테스트 DB에서만 모의했다. 의미적 향상 점수로 해석하지 않는다.
+4. preview 연구의 공식8월·9월 CPI 브리핑 **2개 실제 원문 읽기 성공**. 생성 당시 검색 원문이 아닌 오늘 추가한 사후 readback이며 기존 Artifact/평가를 수정하지 않는다. 기존 AI 의견45개를 PROPOSED로 수입하고 계산7·필수항목3·직접인용1의 새 후보11개를 준비했다. **총56개 모두 미적용**이며 실제 연구 Task 방법을 자동 승격하지 않았다.
+5. preview API18018·worker는 새 코드를 사용한다. UI5178에서 위 연구의 지식 검토 화면을 확인했다. 원래 Compose 데이터베이스는 수정하지 않았다. 상세 근거는 `docs/verification/task-knowledge-20261108/README.md` 참조.
+
+다음 세 단계: ① 사용자가 후보 근거를 검토해 필요한 항목만 명시적으로 Apply한다. ② 재평가 요청 시 새 실험으로 기준·고정 입력·대조군·평가 방법을 먼저 고정하고 짧은 검사를 한다(기존42회 연구는 재개하지 않는다). ③ 사람 평가와 보류 가구 사례로 의미·유용성 및 평가자 오판률을 검증한다.
+
+## 2026-11-08 — 사용자 요청으로 42회에서 중단·중간평가 완료
+
+상태: **반복 실험 중단, 중간평가 완료**. 사용자가 “여기까지 하고 중간평가”를 요청했다. 보고서 작성·자동평가·피드백은 **42회**까지 완료됐으며 실행 중이던 **43회 Run `6983eace-9061-4fdd-869c-fc1fe6e4786e`**는 사용자 중단 사유로 실패 이력을 남기고 큐를 DONE으로 처리했다. 50회차와 사후 블라인드 반복 채점·무기억 대조 보고서는 **미실행**이다. 재개 요청 전 실험을 자동으로 이어가지 않는다.
+
+해당 Task의 큐43건이 모두 DONE이고 실행 중 Run이0건임을 확인했다. 이후 일반 preview worker/scheduler만 복구해 앱의 정상 기능을 유지했다. 이는50회 반복 실행기의 재개가 아니며 해당 수동 Task에 새 Work를 자동 생성하지 않는다. API18018·UI5178에서 기존 기록을 조회할 수 있다.
+
+- 판정: **초반 산술 오류 수정·보고서 구체화는 관측했으나, 지속적인 지식 축적과 전문가 수준으로의 누적 발전은 입증하지 못했다.** 수행 중 AI 점수는 1회60, 10회83, 30회83, 42회85. 10회 묶음 평균은79.8 →79.8 →80.1 →79.4로 정체했다. 마지막2회 평균82.5는 표본이2개뿐이다.
+- `docs/experiments/household-20261107/INTERIM_REVIEW.md`에 네 원문 비교, 전체 추이, 의도와의 일치 여부, 평가자 오류·개입·한계·다음 수정 우선순위를 기록했다. `study.json`은 `STOPPED_AT_USER_REQUEST_FOR_INTERIM_REVIEW`와 완료42/중단43을 기록한다. `summary.json`, `COMPARISON.md`, `quality_curve.png`, `spot_audit.json`, 회차별 원문·피드백·원천/루브릭/Run/Artifact/기억 해시는 보존했다.
+- 42회차의 A50,800원/2.54%, B46,400원/2.32%, CPI 대비8,800원/4,400원, 소득 대비1.69%/1.55%, 이자 스트레스50,000원은 원문을 읽고 직접 산술 확인했다. 4주 지출 상한 X×0.95는 임의의 선택 가능한 예시로 표시됐다. 일상용 설명 보고서의 실용성은 나아졌으나 10·30회와 핵심 구성·방법의 큰 차이는 없다.
+- 동일 모델 채점의 오판과 근거 전달 부족이 확인돼 점수를 확정 품질로 표시하지 않는다. 모든 산출물은 사람 검토 전이며 자동 채택이나 방법 승격을 하지 않았다. 43회 사용자 중단은 모델 품질 실패에 포함하지 않는다. 기존 소프트웨어 회귀108 passed/6 skipped 및 관련27 passed와 의미적 품질 평가는 구분한다.
+
+다음 세 단계: ① 검증된 사실·계산법·교훈을 최근 의견3건과 별도로 지속 저장·검색하는 태스크 지식 계층을 설계한다. ② 피드백을 실행 체크리스트·고정 회귀 사례로 전환하고 방법 변경의 평가/적용 경로와 연결한다. ③ 실제 검색 근거를 평가자에게 전달하고 산술 검증·보정된 독립 평가·다른 가구 사례·대조 실험으로 개선 여부를 검증한다. 이번42회 실험은 추가 수행하지 않는다.
+
+## 2026-11-07 시작 — 50회 실제 보고서 품질평가 (실행 중)
+
+사용자가 요청한 1·10·30·50회 비교를 위해 등록 Task `USER-b884a865-8872-40f6-ba63-4883c541522c`를 만들었다. 주제는 **2025년 9월 우리 집 체감물가와 생활비 대응**이며, 보고기간은 2025-09-01~09-30으로 고정한다. 공식 2025-10-02 브리핑 수치와 A/B 가상 가구를 공통 입력으로 사용한다. 매회 실제 `gpt-6-luna`가 추가 웹 검색을 하고, 별도 요청의 AI 평가 의견과 이전 초안을 다음 회차의 기억에 사용한다. 실제 개인의 지출이나 현행 물가 보고서가 아니다.
+
+- 새 `integrations/report_research.py`와 `RegisterDesign.execution_options`로 태스크별 opt-in 검색, 허용 도메인, 출력·시간·도구 요청 예산을 고정한다. 원래 태스크는 기본 설정을 유지한다. 웹 응답의 호출·검색 URL·인용 메타데이터를 Artifact에 보존하며 독립적 사실 검증이라고 표시하지 않는다. 동적 웹 검색 태스크의 기존 고정 평가 replay는 거부한다.
+- `evaluation/report_feedback.py`, `/api/work/{id}/agent-feedback`: AI 의견을 사람 승인과 구별한 Evidence/Event로 남기며 공식 Work 상태와 accepted Artifact를 바꾸지 않는다. `task_memory.py`의 v2는 최근 미승인 초안 2개와 AI 의견도 구분해 재사용한다. 본문 발췌가 JSON 메타데이터에 밀려 잘리는 문제도 보완했다. 이는 무제한 장기 지식 축적의 구현이 아니다.
+- `evaluation/longitudinal_report.py`: 실제 등록·trigger·claim·Run·검증·기억 경로로 50회 수행하는 재개 가능한 실행기다. 기준/원천 해시를 고정하고 회차별 보고서·점수·피드백·검색·Run ID·Artifact 해시를 `docs/experiments/household-20261107/`에 저장한다. 점수는 8개 항목 고정 루브릭 100점이며 같은 모델의 별도 평가 요청이다. AI 점수는 인간 전문가 평가를 대체하지 않는다. 자동 채택·방법 승격은 하지 않는다.
+- `evaluation/summarize_report_study.py`: 완료된 회차만 집계하고 1·10·30·50 표와 그래프·출처 장부를 만든다. 없는 회차의 점수를 추정하지 않는다. `ReportText.vue`, `App.vue`, `TaskWorkspace.vue`는 검색 기록·클릭 가능한 본문 출처와 AI 평가 의견을 구분해 표시한다.
+- 전용 DB에서 관련 검사 **27 passed, warning 1건**, 새 전체 회귀 **108 passed, 6 skipped, warning 1건**. 6개는 검색/Redis 통합 URL 미설정이다. 프런트엔드 빌드 성공. 초기 Pydantic 도메인 정규식의 lookahead 미지원 오류와 테스트의 3단계 본문 반복 기대값을 수정한 후 실행했다.
+- 1회차는 **60점**, A 가구 증가액을 49,200원으로 잘못 썼다. Python Decimal 기준 50,800원임을 별도로 확인했다. 2회차 **77점**에서 산술이 수정됐고 3~8회차는 **87·85·86·81·86·70점**으로 흔들렸다. 반복 자체가 단조 향상을 보장하지 않는다는 중간 관찰이며 최종 결론은 50회 완료 후 기록한다.
+
+재개 명령: `DATABASE_URL`을 **보존 중인 `workos_memory_preview`**로 지정하고 `PYTHONPATH=backend`에서 `python -u -m app.evaluation.longitudinal_report --output docs/experiments/household-20261107 --rounds 50`. `.env.apikey`는 값 노출 없이 읽는다. 일반 preview worker/scheduler는 이 실험이 claim을 독점하도록 중지했다. API 18018과 UI 5178은 유지한다. 이미 생성한 동일 task·회차의 성공 산출물은 재생성하지 않고 이어서 평가한다. 사용자 본래 Compose DB에는 실험을 만들지 않았다.
+
+추가 중간 확인: 10회차 **83점**, 30회차 **83점**. 두 원문의 A/B 가중 계산·CPI 대비 차이·이자 스트레스가 Decimal 기준과 일치하는 것을 확인했다. 10회차가 추가한 2025년8월 통신료 감면 수치도 공식 원문과 대조했다. 1~10회 평균79.8, 11~20회79.8, 21~30회80.1로 지속 상승은 아직 보이지 않는다. 12·13회차의 평가 JSON 잘림 때문에 같은 보고서를 유지하고 평가 출력 상한만 2,400→4,000 tokens로 보완했다. 상세 변경은 실험 폴더 `PROTOCOL_NOTES.md`에 공개한다.
+
+평가자 오류도 별도 보존했다. 19·30회차 자동 피드백이 원문에 없는 ‘전년도 감면/낮은 기저’ 설명을 요구했다. 20회차는 ‘전년비2.5%, 전월비0.9% 하락’ 문장을 상승으로 오독한 과잉 경고였다. 원 점수/의견을 지우지 않고 Codex의 원문 교정 의견을 `work.agent_feedback`에 추가했으며 `spot_audit.json`에 기록했다. 이는 완전 무개입 자동 학습 실험이 아니다. 19회차 뒤 원문 교정은 실제 기억22회차에, 20회차 뒤 독해 교정은23회차에 들어갔으며 최근 의견3개 창 때문에 이후 제외됐다. 자동 경고를 확정 오류로 집계하지 않는다.
+
+최종 재검토는 `evaluation/audit_report_study.py`로 네 보고서를 순서를 가려 같은 설정에서 각3회 채점하고, 동일 계약·빈 기억·웹 검색 조건의 후행 대조 보고서3개도 생성한다. 대조군은 추가 등록 Task나 공식 Work 산출물이 아니라 별도 실험 응답이다. 동일 모델 평가와 동적 검색의 한계는 유지한다.
+
+다음 세 단계: ① 50회 실제 실행·피드백을 완료한다. ② 네 체크포인트와 대조 보고서의 원문·수치·출처 및 블라인드 재채점을 비교한다. ③ 실행 근거·판정의 한계·제품 의도와의 일치 여부를 사용자에게 보고하고 일반 worker/scheduler를 복구한다.
+
+## 2026-11-07 — 단일 실행 경로·태스크 기억·작업 재개로 방향 보정
+
+상태: **태스크 기억의 수직 경로 구현 및 회귀 검증 완료, 의미적 품질은 미평가**. 사용자 요청에 따라 첫 화면을 태스크별 목표·기억·진행·이어하기·결과 조회로 재정렬했다. 기존 세 데모와 검증/사용자 적용 불변식은 유지한다. 시작 전 존재하던 022 결합과 API·화면 등의 미커밋 변경은 보존했으며 해당 테스트의 검증기 버전 기대값만 새 v2로 맞췄다.
+
+- `backend/migrations/023_task_memory.sql`, `backend/app/work/task_memory.py`, `work/service.py`: 공통 claim 트랜잭션에서 같은 Task 버전의 채택 결과 2개·실패 3개·사용자 검토 3개를 제한된 크기로 구성하고 Run별 불변 스냅샷·해시·이벤트를 기록한다. 다른 태스크·다른 버전·STALE 결과와 평가 전용 결과는 채택 기억에서 제외한다. 원본 Work/Artifact/Evidence/Event를 요약으로 덮어쓰지 않는다.
+- `workloads/text_workflow.py`: 고정한 기억을 각 텍스트 단계의 실제 모델 요청과 컨텍스트에 포함한다. 과거 기억은 데이터이며 현재 원천의 사실이나 지시가 아니라고 구분한다. 고정 평가 Work는 양쪽에 같은 빈 기억을 사용해 운영 피드백과 평가 정답 누출을 막는다. prompt v2, 일반 구조 검증 v4, 연결/결합 검증 v2로 기록하며 023 이전 Run 재검사도 허용한다.
+- `worker.py`, `Kernel.fail`: 일시적 연결·rate limit·서버 오류만 같은 Work에서 총 3회까지 5초/10초 지연 후 새 Run으로 재시도한다. 실패 원문은 기록하지 않고 예외 종류만 남긴다. 검증 실패·사용자 보완 요청은 자동 통과나 무한 재시도를 하지 않는다. 기존 lease 복구도 유지한다.
+- `api/main.py`: `GET /api/tasks/{task_id}/memory`로 현재 기억·최근 작업·다음 조치를 조회한다. `GET /api/runs/{run_id}`는 실제 고정 기억을 별도로 공개해 이후 변경된 현재 기억과 구분한다. 마이그레이션 전 Run의 기억은 null이다.
+- `frontend/src/TaskWorkspace.vue`, `App.vue`: 첫 화면에 태스크 선택, 진행/확인 필요 수, 기억, 같은 Work 이어하기와 상태·근거 열기를 추가했다. 등록·연결 설정은 접고 후보 편집 때 다시 연다. `WorkDesignStudio.vue`, `TextSourceEditor.vue`에 LIVE 실행 시 과거 결과·실패·검토 의견도 모델로 전달됨을 명시했다. `init.md`, `README.md`, `docs/AGENT_TASK_MEMORY.md`를 현재 방향과 실제 구현 범위에 맞췄다.
+
+실제로 실행한 검증:
+
+1. Docker Desktop이 꺼져 있어 시작했다. 사용자 DB 대신 새 `workos-memory-check-pg`의 `workos_memory_check`에서 `WORKOS_TEST_DATABASE_URL`을 지정했다. 전역 pytest 플러그인 자동 로딩이 DB 접속 전 대기하여 해당 실행을 종료하고 `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1`로 실행했다. 처음에는 PostgreSQL NULL 파라미터 타입 추론 오류가 발생했고 양쪽 비교를 명시적 uuid cast로 수정했다.
+2. `python -m pytest -x -q --tb=short tests/test_task_memory.py tests/test_registered_work.py tests/test_kernel.py`: **17 passed, warning 1건**(마지막 자동 재시도 테스트 추가 전).
+3. 최종 Python 코드의 `python -m pytest -x -q --tb=short tests`: **106 passed, 6 skipped, warning 1건**. 6개는 OpenSearch/Redis URL 미설정으로 건너뛰었다. 기억 보완 의견의 모델 요청 전달은 테스트용 응답으로 확인했으며 실제 LIVE 호출이나 품질 검증으로 주장하지 않는다.
+4. `WORKOS_TEST_OPENSEARCH_URL=http://localhost:9200`, `WORKOS_TEST_REDIS_URL=redis://localhost:56383/13`을 추가한 `python -m pytest -x -q --tb=short tests/test_search.py tests/test_policy_index.py tests/test_policy_regression.py tests/test_voc_sources.py tests/test_redis.py`: **12 passed, warning 1건**. 고유 테스트 인덱스와 Redis 테스트 stream만 사용했다.
+5. `npm --prefix frontend run build` 성공, `git diff --check` 성공(기존 CRLF 변환 안내만 있음). 별도 임시 스키마에서 **023 up/down/up 성공**. down은 기억 이력을 삭제하므로 사용자 DB에서 실행하지 않았다.
+6. 격리 `workos_memory_preview`의 API 18018·UI 5178에서 가상 배송 업무의 보완 의견을 남기고, 화면의 `같은 작업 이어하기`를 눌렀다. 같은 Work `806cd4b2-7085-4974-81dc-b024de1453a8`에 두 번째 Run `09181c56-a423-4f00-94e1-8fd52c5eea19`이 생겨 `MOCK · WAITING_APPROVAL`, 검증 v4의 9/9 및 `task_memory=true`가 표시됐다. 원래 보완 의견이 기억에 포함됐으며 상태·근거 열기도 실제 Run 상세를 열었다. 이후 격리 preview worker도 실행했다. 사용자 DB에는 가상 업무를 만들지 않았다.
+7. 또 다른 격리 DB `workos_memory_e2e`, API 18019, 별도 worker 및 고유 검색 인덱스 `workos-test-memory-e2e-20261107`에서 `WORKOS_E2E_CONFIRM=disposable`, `WORKOS_E2E_BASE=http://127.0.0.1:18019/api`로 `python tests/e2e_stack.py`를 실행하여 **세 데모 E2E 모두 성공**했다. TASK-001 v1/v2 차이 30·출처 누락 실패 후 복구, TASK-002 멱등 이벤트·3개 후속 검사·사람 검토, TASK-003 이전 검증 추천 비교·18/24 대 24/24·적용/롤백·과적합 기각을 확인했다. 첫 E2E는 읽기 전용 원천 URL 누락으로 중단됐으며 격리 E2E DB만 초기화한 뒤 worker에 `WORKOS_SOURCE_DATABASE_URL`을 설정해 재실행했다. 이 점수는 기존 데모 규칙의 결과이고 새 기억의 성능 향상 수치가 아니다.
+
+한계/불변식: 공통 기억은 모든 claim에서 보존하지만 새 기억을 실제 모델 입력으로 사용하는 실행기는 사용자 텍스트 업무다. 세 데모는 기존 결정론적 계산·출처·이전 결과 비교를 유지한다. 의미적 정확성과 실제 품질 향상을 측정하지 않았고, 범용 도구 선택이나 기억에서 방법 변경안을 자동 생성·적용하는 기능은 없다. 방법 변경은 기존 고정 평가와 명시적 적용/기각·롤백을 사용한다. 같은 버전의 입력을 갱신해도 과거 기억은 남으며 현재 사실과 구분해야 한다.
+
+다음 세 단계: ① 실제 익명 업무의 고정 사례로 기억 사용 전후 의미적 품질·퇴행·비용을 비교한다. ② 반복되는 보완 의견을 근거 링크가 있는 방법 개선 후보로 생성하고 기존 평가/적용 경로로 연결한다. ③ 태스크 버전 변경 시 이전 기억의 재검토·이관 정책과 장기 운영의 보존/검색 범위를 검증한다.
+
 ## 2026-11-01 추가 진행 — 사람이 채택한 텍스트 업무의 후속 연결
 
 상태: **부분 구현**. 등록된 사용자 텍스트 업무 A의 결과를 사람이 채택하면, 사용자가 미리 설정한 연결에 따라 텍스트 업무 B의 Work가 자동 생성된다. 원천 Work·Artifact ID와 해시 및 연결 버전을 기록하고 실제 의존성을 연결하며, B는 원천 산출물 전체를 자신의 고정 사용자 입력과 함께 사용한다. 기존 결과를 연결 생성 시 소급 전달하지 않는다.

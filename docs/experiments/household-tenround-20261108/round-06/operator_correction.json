@@ -1,0 +1,9 @@
+{
+  "reason": "Codex가 작성한 교훈의 같은 단가 표현은 오류. 고정하는 것은 품목 구성·수량이며 가격은 변한다.",
+  "retired_entry": "1b5c3f3a-6102-4fa4-930c-5d145ab41941",
+  "corrected_entry": "4f7eb7e0-00a1-4f4a-8d9b-adbd00d90c6e",
+  "already_pinned_runs": [
+    "2aa31dc6-3ff0-44e8-ac9a-cbb25423af49"
+  ],
+  "scope": "OPERATOR_ERROR_DISCLOSED_NOT_ERASED"
+}

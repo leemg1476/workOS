@@ -118,10 +118,12 @@ class Kernel:
             c.execute(text("UPDATE work_queue SET status='CLAIMED',run_id=:run,lease_until=now()+(:seconds * interval '1 second') WHERE work_id=:work"), {'run': run_id, 'work': item['work_id'], 'seconds': lease_seconds})
             self._event(c, 'run.started', run_id, {'work_id': str(item['work_id']), 'attempt_no': attempt})
             work = self._work(c, item['work_id'])
+            from app.work.task_memory import pin
+            pin(self, c, run_id, work)
             return {'work_id': str(item['work_id']), 'run_id': run_id, 'attempt_no': attempt,
                     'task_id':work['task_id'], 'task_version':work['task_version'], 'input_snapshot':work['input_snapshot']}
 
-    def fail(self, run_id, reason):
+    def fail(self, run_id, reason, *, retry_delay_seconds=None, max_attempts=3):
         with self.engine.begin() as c:
             self._lock(c)
             run = one(c, "SELECT r.* FROM runs r JOIN work_queue q ON q.run_id=r.run_id WHERE r.run_id=:id AND r.status='RUNNING' AND q.status='CLAIMED' AND q.lease_until > now() FOR UPDATE OF r", {'id': run_id})
@@ -131,6 +133,13 @@ class Kernel:
             self._transition(c, run['work_id'], 'REWORK_REQUIRED', run_id)
             c.execute(text("UPDATE work_queue SET status='DONE',lease_until=NULL WHERE work_id=:id"), {'id': run['work_id']})
             self._event(c, 'run.failed', run_id, {'reason': reason})
+            if retry_delay_seconds is not None and run['attempt_no'] < max_attempts:
+                self._transition(c, run['work_id'], 'READY', run_id)
+                c.execute(text("""UPDATE work_queue SET status='PENDING',run_id=NULL,lease_until=NULL,
+                    notified_at=NULL,available_at=now()+(:delay * interval '1 second') WHERE work_id=:id"""),
+                    {'id':run['work_id'],'delay':max(0,retry_delay_seconds)})
+                self._event(c, 'run.retry_scheduled', run_id, {'work_id':str(run['work_id']),
+                    'attempt_no':run['attempt_no'],'max_attempts':max_attempts,'delay_seconds':max(0,retry_delay_seconds)})
 
     def retry(self, work_id, key):
         with self.engine.begin() as c:

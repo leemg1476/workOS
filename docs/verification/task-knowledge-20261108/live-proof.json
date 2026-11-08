@@ -1,0 +1,1075 @@
+{
+  "scope": "TWO_LIVE_WRITER_CALLS_ON_SYNTHETIC_DATA_NOT_SEMANTIC_QUALITY_IMPROVEMENT",
+  "approval_scope": "SIMULATED_USER_APPLY_IN_TEST_DATABASE_ONLY; REAL_STUDY_TASK_NOT_ACTIVATED",
+  "task_id": "USER-df5392e0-b593-4cdd-ae7a-f1bc1b1c0752",
+  "unrelated_ai_feedback_count": 12,
+  "expected_calculation_won": "50800.00",
+  "applied_knowledge_retained": true,
+  "unapproved_ai_opinions_excluded": true,
+  "results": [
+    {
+      "run": {
+        "run_id": "f5122a23-6c64-4ab6-b2a6-b8799bda6dd0",
+        "work_id": "8072ab2c-2c1a-4454-af82-85bafdbeb66b",
+        "attempt_no": 1,
+        "status": "SUCCEEDED",
+        "agent_version": "provided_text_workflow_v1",
+        "model_id": "gpt-6-luna",
+        "prompt_version": "provided-text-step-v3",
+        "started_at": "2026-11-07T15:49:39.528538+00:00",
+        "finished_at": "2026-11-07T15:49:47.507989+00:00",
+        "error": null,
+        "context": {
+          "manifest": {
+            "run_id": "f5122a23-6c64-4ab6-b2a6-b8799bda6dd0",
+            "task_id": "USER-df5392e0-b593-4cdd-ae7a-f1bc1b1c0752",
+            "contract": {
+              "plan": {
+                "name": "업무 초안",
+                "steps": [
+                  {
+                    "id": "report",
+                    "title": "보고서",
+                    "purpose": "가구 비교",
+                    "depends_on": []
+                  }
+                ],
+                "objective": "가계 보고서 검증",
+                "open_questions": [
+                  "필요한 입력과 데이터 출처는 무엇인가요?",
+                  "어떤 결과를 성공으로 볼 수 있나요?"
+                ],
+                "expected_result": "가구 비교 보고서",
+                "evaluation_criteria": [
+                  "계산과 출처 확인"
+                ]
+              },
+              "design_id": "be9b3abb-4770-40b8-be21-47b4ca4a780a",
+              "model_mode": "LIVE_LLM",
+              "source_text": "{\"food\": 800000, \"other\": 1200000, \"food_rate\": 3.2, \"other_rate\": 2.1}",
+              "execution_kind": "provided_text_workflow_v1",
+              "design_revision": 2,
+              "execution_options": {
+                "web_search": false,
+                "max_tool_calls": 2,
+                "allowed_domains": [],
+                "timeout_seconds": 150,
+                "max_output_tokens": 3500
+              }
+            },
+            "task_memory": {
+              "sha256": "c6fc36f17659335c9574fb0fdc9514232eeb7b7f7dd6e7e626c81733c9056c5b",
+              "manifest": {
+                "scope": "SAME_TASK_VERSION_HISTORY_NOT_CURRENT_SOURCE_FACTS",
+                "reviews": [],
+                "task_id": "USER-df5392e0-b593-4cdd-ae7a-f1bc1b1c0752",
+                "version": "task-memory-v3",
+                "failures": [],
+                "knowledge": {
+                  "active": [
+                    {
+                      "kind": "CALCULATION",
+                      "unit": "원",
+                      "scope": "DETERMINISTIC_DECIMAL_RESULT",
+                      "title": "가상 A 가계 월 증가액",
+                      "value": "50800.00",
+                      "sha256": "394085e16a3f52582f901d6e187af59b10ff18782be61feb454ed932b2327e88",
+                      "entry_id": "8f549358-3e8b-444c-bbc8-4d9dbf926172",
+                      "expression": {
+                        "op": "add",
+                        "args": [
+                          {
+                            "op": "multiply",
+                            "args": [
+                              {
+                                "path": "/food"
+                              },
+                              {
+                                "path": "/food_rate"
+                              },
+                              {
+                                "value": "0.01"
+                              }
+                            ]
+                          },
+                          {
+                            "op": "multiply",
+                            "args": [
+                              {
+                                "path": "/other"
+                              },
+                              {
+                                "path": "/other_rate"
+                              },
+                              {
+                                "value": "0.01"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "kind": "CHECKLIST",
+                      "scope": "USER_APPROVED_PROCEDURE_NOT_VERIFIED_FACT",
+                      "title": "가정과 실행 조건",
+                      "sha256": "9f81f27580e5961b99d489698dcf602353fd3e76c750b6a5e632b6f45230094a",
+                      "payload": {
+                        "heading": "결과 활용과 한계",
+                        "instruction": "가상 고정수량의 근사 계산임을 밝히고 독자가 확인할 생활비 항목을 설명한다."
+                      },
+                      "entry_id": "0e51549b-e255-4bf0-9404-7b8d1f26cb4c"
+                    }
+                  ],
+                  "sha256": "21daf779d0a05e2e977b1a944408ecd3736441617c4f9e40731abac0a25835fb",
+                  "version": "task-knowledge-v1",
+                  "excluded": []
+                },
+                "task_version": 1,
+                "draft_results": [],
+                "source_library": [],
+                "accepted_results": [],
+                "evaluation_isolated": false
+              }
+            },
+            "task_version": 1,
+            "graph_version": "provided_text_workflow_v1",
+            "prompt_memory": {
+              "sha256": "0407cf74b8c13b2eebb72bdafb70bb77fe9473c4cb43d246bf60da7a4c858ee5",
+              "manifest": {
+                "scope": "SAME_TASK_VERSION_HISTORY_NOT_CURRENT_SOURCE_FACTS",
+                "policy": "APPLIED_KNOWLEDGE_AND_HUMAN_FEEDBACK; AI_SUGGESTIONS_REQUIRE_REVIEW",
+                "reviews": [],
+                "task_id": "USER-df5392e0-b593-4cdd-ae7a-f1bc1b1c0752",
+                "version": "task-memory-v3",
+                "failures": [],
+                "knowledge": {
+                  "active": [
+                    {
+                      "kind": "CALCULATION",
+                      "unit": "원",
+                      "scope": "DETERMINISTIC_DECIMAL_RESULT",
+                      "title": "가상 A 가계 월 증가액",
+                      "value": "50800.00",
+                      "sha256": "394085e16a3f52582f901d6e187af59b10ff18782be61feb454ed932b2327e88",
+                      "entry_id": "8f549358-3e8b-444c-bbc8-4d9dbf926172",
+                      "expression": {
+                        "op": "add",
+                        "args": [
+                          {
+                            "op": "multiply",
+                            "args": [
+                              {
+                                "path": "/food"
+                              },
+                              {
+                                "path": "/food_rate"
+                              },
+                              {
+                                "value": "0.01"
+                              }
+                            ]
+                          },
+                          {
+                            "op": "multiply",
+                            "args": [
+                              {
+                                "path": "/other"
+                              },
+                              {
+                                "path": "/other_rate"
+                              },
+                              {
+                                "value": "0.01"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "kind": "CHECKLIST",
+                      "scope": "USER_APPROVED_PROCEDURE_NOT_VERIFIED_FACT",
+                      "title": "가정과 실행 조건",
+                      "sha256": "9f81f27580e5961b99d489698dcf602353fd3e76c750b6a5e632b6f45230094a",
+                      "payload": {
+                        "heading": "결과 활용과 한계",
+                        "instruction": "가상 고정수량의 근사 계산임을 밝히고 독자가 확인할 생활비 항목을 설명한다."
+                      },
+                      "entry_id": "0e51549b-e255-4bf0-9404-7b8d1f26cb4c"
+                    }
+                  ],
+                  "sha256": "21daf779d0a05e2e977b1a944408ecd3736441617c4f9e40731abac0a25835fb",
+                  "version": "task-knowledge-v1",
+                  "excluded": []
+                },
+                "task_version": 1,
+                "draft_results": [],
+                "source_library": [],
+                "accepted_results": [],
+                "evaluation_isolated": false,
+                "unapplied_ai_reviews_omitted": 0
+              }
+            },
+            "source_sha256": "cdb1115b4f6b279c7764f06a632886562004fb24a604f7ff507c3bccbc7fe905",
+            "input_snapshot": {},
+            "prompt_version": "provided-text-step-v3",
+            "source_version": 1,
+            "contract_sha256": "50b4b134a1d16f26e54ab75ac034e881d9a46ead680decf8c9c66529661ec02a"
+          },
+          "sha256": "305cb19c8b9bea7a1e038e047faaa1ae0d226ab728b9f7af673f58d984b6451b"
+        },
+        "steps": [
+          {
+            "graph_version": "provided_text_workflow_v1",
+            "node_name": "report",
+            "status": "STARTED",
+            "error_type": null,
+            "created_at": "2026-11-07T15:49:39.638430+00:00"
+          },
+          {
+            "graph_version": "provided_text_workflow_v1",
+            "node_name": "report",
+            "status": "SUCCEEDED",
+            "error_type": null,
+            "created_at": "2026-11-07T15:49:47.500661+00:00"
+          }
+        ],
+        "task_memory": {
+          "manifest": {
+            "scope": "SAME_TASK_VERSION_HISTORY_NOT_CURRENT_SOURCE_FACTS",
+            "reviews": [],
+            "task_id": "USER-df5392e0-b593-4cdd-ae7a-f1bc1b1c0752",
+            "version": "task-memory-v3",
+            "failures": [],
+            "knowledge": {
+              "active": [
+                {
+                  "kind": "CALCULATION",
+                  "unit": "원",
+                  "scope": "DETERMINISTIC_DECIMAL_RESULT",
+                  "title": "가상 A 가계 월 증가액",
+                  "value": "50800.00",
+                  "sha256": "394085e16a3f52582f901d6e187af59b10ff18782be61feb454ed932b2327e88",
+                  "entry_id": "8f549358-3e8b-444c-bbc8-4d9dbf926172",
+                  "expression": {
+                    "op": "add",
+                    "args": [
+                      {
+                        "op": "multiply",
+                        "args": [
+                          {
+                            "path": "/food"
+                          },
+                          {
+                            "path": "/food_rate"
+                          },
+                          {
+                            "value": "0.01"
+                          }
+                        ]
+                      },
+                      {
+                        "op": "multiply",
+                        "args": [
+                          {
+                            "path": "/other"
+                          },
+                          {
+                            "path": "/other_rate"
+                          },
+                          {
+                            "value": "0.01"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                {
+                  "kind": "CHECKLIST",
+                  "scope": "USER_APPROVED_PROCEDURE_NOT_VERIFIED_FACT",
+                  "title": "가정과 실행 조건",
+                  "sha256": "9f81f27580e5961b99d489698dcf602353fd3e76c750b6a5e632b6f45230094a",
+                  "payload": {
+                    "heading": "결과 활용과 한계",
+                    "instruction": "가상 고정수량의 근사 계산임을 밝히고 독자가 확인할 생활비 항목을 설명한다."
+                  },
+                  "entry_id": "0e51549b-e255-4bf0-9404-7b8d1f26cb4c"
+                }
+              ],
+              "sha256": "21daf779d0a05e2e977b1a944408ecd3736441617c4f9e40731abac0a25835fb",
+              "version": "task-knowledge-v1",
+              "excluded": []
+            },
+            "task_version": 1,
+            "draft_results": [],
+            "source_library": [],
+            "accepted_results": [],
+            "evaluation_isolated": false
+          },
+          "sha256": "c6fc36f17659335c9574fb0fdc9514232eeb7b7f7dd6e7e626c81733c9056c5b"
+        }
+      },
+      "artifact": {
+        "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff",
+        "run_id": "f5122a23-6c64-4ab6-b2a6-b8799bda6dd0",
+        "kind": "provided_text_report",
+        "uri": "postgres://artifacts/b7782457-4edf-4ce0-b8d6-d4b195eda6ff",
+        "content": {
+          "steps": [
+            {
+              "text": "제공된 자료에는 식비와 기타 지출, 각 항목의 증가율이 제시되어 있습니다. 이를 고정된 소비량에 적용한 가상 근사 계산이며, 결과는 자동으로 덧붙는 계산표를 참조하세요. 한 가구의 입력값만 있어 가구 간 실제 비교로 해석할 수는 없습니다.\n\n## 결과 활용과 한계\n\n### 결과 활용과 한계\n계산은 소비량이 변하지 않는다고 가정한 근사치입니다. 실제 생활비와 비교하려면 식비에 포함한 품목과 외식비 여부, 기타 지출에 포함한 항목, 그리고 적용한 증가율의 기준 기간과 적용 범위를 확인하세요. 소비량이나 지출 항목이 달라지면 실제 증감액도 계산표의 값과 다를 수 있습니다.\n\n## 계산 근거 · Python Decimal\n\n|항목|계산 결과|\n|---|---:|\n|가상 A 가계 월 증가액|50800.00 원|",
+              "step_id": "report",
+              "model_id": "gpt-6-luna",
+              "elapsed_ms": 7844,
+              "response_id": "resp_0fa9c41e6a854733016aef4896da9087d0a4a33b6f4c5e33da",
+              "input_tokens": 954,
+              "output_tokens": 409,
+              "structured_report": "{\"introduction\":\"제공된 자료에는 식비와 기타 지출, 각 항목의 증가율이 제시되어 있습니다. 이를 고정된 소비량에 적용한 가상 근사 계산이며, 결과는 자동으로 덧붙는 계산표를 참조하세요. 한 가구의 입력값만 있어 가구 간 실제 비교로 해석할 수는 없습니다.\",\"sections\":[{\"rule_id\":\"0e51549b-e255-4bf0-9404-7b8d1f26cb4c\",\"text\":\"### 결과 활용과 한계\\n계산은 소비량이 변하지 않는다고 가정한 근사치입니다. 실제 생활비와 비교하려면 식비에 포함한 품목과 외식비 여부, 기타 지출에 포함한 항목, 그리고 적용한 증가율의 기준 기간과 적용 범위를 확인하세요. 소비량이나 지출 항목이 달라지면 실제 증감액도 계산표의 값과 다를 수 있습니다.\"}]}"
+            }
+          ],
+          "task_id": "USER-df5392e0-b593-4cdd-ae7a-f1bc1b1c0752",
+          "data_mode": "USER_PROVIDED_TEXT",
+          "model_mode": "LIVE_LLM",
+          "source_sha256": "cdb1115b4f6b279c7764f06a632886562004fb24a604f7ff507c3bccbc7fe905",
+          "contract_sha256": "50b4b134a1d16f26e54ab75ac034e881d9a46ead680decf8c9c66529661ec02a",
+          "semantic_review": "NOT_PERFORMED"
+        },
+        "sha256": "712f63d3875bc11fa8fa7a1788313840d86163de5c08671b90c35ad9c08831f8",
+        "schema_version": "1",
+        "created_at": "2026-11-07T15:49:47.507989+00:00",
+        "artifact_version": null,
+        "evidence": [
+          {
+            "result": {
+              "checks": {
+                "task_memory": true,
+                "context_hash": true,
+                "input_hashes": true,
+                "execution_mode": true,
+                "output_present": true,
+                "source_version": true,
+                "steps_complete": true,
+                "task_and_labels": true,
+                "evaluation_scope": true,
+                "prompt_memory_policy": true,
+                "knowledge_policy_hash": true,
+                "source_snapshot_hashes": true,
+                "knowledge_source_quotes_current": true,
+                "persistent_checklist_and_calculations": true
+              },
+              "passed": true,
+              "semantic_review": "NOT_PERFORMED",
+              "requires_human_review": true
+            },
+            "created_at": "2026-11-07T15:49:47.507989+00:00",
+            "input_refs": {
+              "task_id": "USER-df5392e0-b593-4cdd-ae7a-f1bc1b1c0752",
+              "task_version": 1,
+              "source_sha256": "cdb1115b4f6b279c7764f06a632886562004fb24a604f7ff507c3bccbc7fe905",
+              "artifact_sha256": "712f63d3875bc11fa8fa7a1788313840d86163de5c08671b90c35ad9c08831f8",
+              "contract_sha256": "50b4b134a1d16f26e54ab75ac034e881d9a46ead680decf8c9c66529661ec02a"
+            },
+            "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff",
+            "evidence_id": "58349bfc-0549-4df3-98c6-93b46bcb6b03",
+            "verifier_version": "provided-text-structure-v5",
+            "verification_type": "provided_text_structure"
+          },
+          {
+            "result": {
+              "note": "검증되지 않은 평가 의견 0",
+              "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+              "metrics": {},
+              "work_id": "8072ab2c-2c1a-4454-af82-85bafdbeb66b",
+              "decision": "FEEDBACK",
+              "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff",
+              "rubric_version": "fixture-v1",
+              "evaluator_model": "synthetic-reviewer"
+            },
+            "created_at": "2026-11-07T15:49:47.545015+00:00",
+            "input_refs": {
+              "artifact_sha256": "712f63d3875bc11fa8fa7a1788313840d86163de5c08671b90c35ad9c08831f8"
+            },
+            "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff",
+            "evidence_id": "b622dc7d-ebf4-4051-8fe4-e8c4b6178e7a",
+            "verifier_version": "fixture-v1",
+            "verification_type": "automated_report_review"
+          },
+          {
+            "result": {
+              "note": "검증되지 않은 평가 의견 1",
+              "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+              "metrics": {},
+              "work_id": "8072ab2c-2c1a-4454-af82-85bafdbeb66b",
+              "decision": "FEEDBACK",
+              "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff",
+              "rubric_version": "fixture-v1",
+              "evaluator_model": "synthetic-reviewer"
+            },
+            "created_at": "2026-11-07T15:49:47.561662+00:00",
+            "input_refs": {
+              "artifact_sha256": "712f63d3875bc11fa8fa7a1788313840d86163de5c08671b90c35ad9c08831f8"
+            },
+            "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff",
+            "evidence_id": "7a6e8ac3-0668-425d-80b4-a90a1f29b0ba",
+            "verifier_version": "fixture-v1",
+            "verification_type": "automated_report_review"
+          },
+          {
+            "result": {
+              "note": "검증되지 않은 평가 의견 2",
+              "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+              "metrics": {},
+              "work_id": "8072ab2c-2c1a-4454-af82-85bafdbeb66b",
+              "decision": "FEEDBACK",
+              "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff",
+              "rubric_version": "fixture-v1",
+              "evaluator_model": "synthetic-reviewer"
+            },
+            "created_at": "2026-11-07T15:49:47.577884+00:00",
+            "input_refs": {
+              "artifact_sha256": "712f63d3875bc11fa8fa7a1788313840d86163de5c08671b90c35ad9c08831f8"
+            },
+            "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff",
+            "evidence_id": "8d704361-7604-4cf3-9bf6-516b2226f9b3",
+            "verifier_version": "fixture-v1",
+            "verification_type": "automated_report_review"
+          },
+          {
+            "result": {
+              "note": "검증되지 않은 평가 의견 3",
+              "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+              "metrics": {},
+              "work_id": "8072ab2c-2c1a-4454-af82-85bafdbeb66b",
+              "decision": "FEEDBACK",
+              "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff",
+              "rubric_version": "fixture-v1",
+              "evaluator_model": "synthetic-reviewer"
+            },
+            "created_at": "2026-11-07T15:49:47.595686+00:00",
+            "input_refs": {
+              "artifact_sha256": "712f63d3875bc11fa8fa7a1788313840d86163de5c08671b90c35ad9c08831f8"
+            },
+            "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff",
+            "evidence_id": "fd49ee24-132b-4847-9550-673c8338904d",
+            "verifier_version": "fixture-v1",
+            "verification_type": "automated_report_review"
+          },
+          {
+            "result": {
+              "note": "검증되지 않은 평가 의견 4",
+              "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+              "metrics": {},
+              "work_id": "8072ab2c-2c1a-4454-af82-85bafdbeb66b",
+              "decision": "FEEDBACK",
+              "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff",
+              "rubric_version": "fixture-v1",
+              "evaluator_model": "synthetic-reviewer"
+            },
+            "created_at": "2026-11-07T15:49:47.612563+00:00",
+            "input_refs": {
+              "artifact_sha256": "712f63d3875bc11fa8fa7a1788313840d86163de5c08671b90c35ad9c08831f8"
+            },
+            "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff",
+            "evidence_id": "06e34d18-9a5a-4a0c-bbf5-83088904aa69",
+            "verifier_version": "fixture-v1",
+            "verification_type": "automated_report_review"
+          },
+          {
+            "result": {
+              "note": "검증되지 않은 평가 의견 5",
+              "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+              "metrics": {},
+              "work_id": "8072ab2c-2c1a-4454-af82-85bafdbeb66b",
+              "decision": "FEEDBACK",
+              "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff",
+              "rubric_version": "fixture-v1",
+              "evaluator_model": "synthetic-reviewer"
+            },
+            "created_at": "2026-11-07T15:49:47.630153+00:00",
+            "input_refs": {
+              "artifact_sha256": "712f63d3875bc11fa8fa7a1788313840d86163de5c08671b90c35ad9c08831f8"
+            },
+            "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff",
+            "evidence_id": "f28310b5-eafc-44c5-850a-e1e748ce0fb0",
+            "verifier_version": "fixture-v1",
+            "verification_type": "automated_report_review"
+          },
+          {
+            "result": {
+              "note": "검증되지 않은 평가 의견 6",
+              "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+              "metrics": {},
+              "work_id": "8072ab2c-2c1a-4454-af82-85bafdbeb66b",
+              "decision": "FEEDBACK",
+              "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff",
+              "rubric_version": "fixture-v1",
+              "evaluator_model": "synthetic-reviewer"
+            },
+            "created_at": "2026-11-07T15:49:47.651335+00:00",
+            "input_refs": {
+              "artifact_sha256": "712f63d3875bc11fa8fa7a1788313840d86163de5c08671b90c35ad9c08831f8"
+            },
+            "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff",
+            "evidence_id": "74e6bca2-8fb8-4c0d-a6d1-383d2e79f86d",
+            "verifier_version": "fixture-v1",
+            "verification_type": "automated_report_review"
+          },
+          {
+            "result": {
+              "note": "검증되지 않은 평가 의견 7",
+              "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+              "metrics": {},
+              "work_id": "8072ab2c-2c1a-4454-af82-85bafdbeb66b",
+              "decision": "FEEDBACK",
+              "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff",
+              "rubric_version": "fixture-v1",
+              "evaluator_model": "synthetic-reviewer"
+            },
+            "created_at": "2026-11-07T15:49:47.667555+00:00",
+            "input_refs": {
+              "artifact_sha256": "712f63d3875bc11fa8fa7a1788313840d86163de5c08671b90c35ad9c08831f8"
+            },
+            "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff",
+            "evidence_id": "43adceea-e847-4381-8c12-595436bbc3fb",
+            "verifier_version": "fixture-v1",
+            "verification_type": "automated_report_review"
+          },
+          {
+            "result": {
+              "note": "검증되지 않은 평가 의견 8",
+              "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+              "metrics": {},
+              "work_id": "8072ab2c-2c1a-4454-af82-85bafdbeb66b",
+              "decision": "FEEDBACK",
+              "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff",
+              "rubric_version": "fixture-v1",
+              "evaluator_model": "synthetic-reviewer"
+            },
+            "created_at": "2026-11-07T15:49:47.682968+00:00",
+            "input_refs": {
+              "artifact_sha256": "712f63d3875bc11fa8fa7a1788313840d86163de5c08671b90c35ad9c08831f8"
+            },
+            "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff",
+            "evidence_id": "709cb20c-500c-408b-94db-865e4f279cd6",
+            "verifier_version": "fixture-v1",
+            "verification_type": "automated_report_review"
+          },
+          {
+            "result": {
+              "note": "검증되지 않은 평가 의견 9",
+              "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+              "metrics": {},
+              "work_id": "8072ab2c-2c1a-4454-af82-85bafdbeb66b",
+              "decision": "FEEDBACK",
+              "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff",
+              "rubric_version": "fixture-v1",
+              "evaluator_model": "synthetic-reviewer"
+            },
+            "created_at": "2026-11-07T15:49:47.698121+00:00",
+            "input_refs": {
+              "artifact_sha256": "712f63d3875bc11fa8fa7a1788313840d86163de5c08671b90c35ad9c08831f8"
+            },
+            "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff",
+            "evidence_id": "49cb28e4-399c-4505-9d58-24ec30c6c44a",
+            "verifier_version": "fixture-v1",
+            "verification_type": "automated_report_review"
+          },
+          {
+            "result": {
+              "note": "검증되지 않은 평가 의견 10",
+              "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+              "metrics": {},
+              "work_id": "8072ab2c-2c1a-4454-af82-85bafdbeb66b",
+              "decision": "FEEDBACK",
+              "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff",
+              "rubric_version": "fixture-v1",
+              "evaluator_model": "synthetic-reviewer"
+            },
+            "created_at": "2026-11-07T15:49:47.713538+00:00",
+            "input_refs": {
+              "artifact_sha256": "712f63d3875bc11fa8fa7a1788313840d86163de5c08671b90c35ad9c08831f8"
+            },
+            "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff",
+            "evidence_id": "3df5cfc4-33c2-4b7f-8de3-578c89687abc",
+            "verifier_version": "fixture-v1",
+            "verification_type": "automated_report_review"
+          },
+          {
+            "result": {
+              "note": "검증되지 않은 평가 의견 11",
+              "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+              "metrics": {},
+              "work_id": "8072ab2c-2c1a-4454-af82-85bafdbeb66b",
+              "decision": "FEEDBACK",
+              "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff",
+              "rubric_version": "fixture-v1",
+              "evaluator_model": "synthetic-reviewer"
+            },
+            "created_at": "2026-11-07T15:49:47.729986+00:00",
+            "input_refs": {
+              "artifact_sha256": "712f63d3875bc11fa8fa7a1788313840d86163de5c08671b90c35ad9c08831f8"
+            },
+            "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff",
+            "evidence_id": "5ea61aa1-bc62-4533-9797-2f07b401fa13",
+            "verifier_version": "fixture-v1",
+            "verification_type": "automated_report_review"
+          }
+        ]
+      }
+    },
+    {
+      "run": {
+        "run_id": "a82e0391-fe0f-475b-afa3-78026a6a0166",
+        "work_id": "dd29f621-3233-49d6-b7f7-0cd5fb025f60",
+        "attempt_no": 1,
+        "status": "SUCCEEDED",
+        "agent_version": "provided_text_workflow_v1",
+        "model_id": "gpt-6-luna",
+        "prompt_version": "provided-text-step-v3",
+        "started_at": "2026-11-07T15:49:47.766644+00:00",
+        "finished_at": "2026-11-07T15:49:53.770336+00:00",
+        "error": null,
+        "context": {
+          "manifest": {
+            "run_id": "a82e0391-fe0f-475b-afa3-78026a6a0166",
+            "task_id": "USER-df5392e0-b593-4cdd-ae7a-f1bc1b1c0752",
+            "contract": {
+              "plan": {
+                "name": "업무 초안",
+                "steps": [
+                  {
+                    "id": "report",
+                    "title": "보고서",
+                    "purpose": "가구 비교",
+                    "depends_on": []
+                  }
+                ],
+                "objective": "가계 보고서 검증",
+                "open_questions": [
+                  "필요한 입력과 데이터 출처는 무엇인가요?",
+                  "어떤 결과를 성공으로 볼 수 있나요?"
+                ],
+                "expected_result": "가구 비교 보고서",
+                "evaluation_criteria": [
+                  "계산과 출처 확인"
+                ]
+              },
+              "design_id": "be9b3abb-4770-40b8-be21-47b4ca4a780a",
+              "model_mode": "LIVE_LLM",
+              "source_text": "{\"food\": 800000, \"other\": 1200000, \"food_rate\": 3.2, \"other_rate\": 2.1}",
+              "execution_kind": "provided_text_workflow_v1",
+              "design_revision": 2,
+              "execution_options": {
+                "web_search": false,
+                "max_tool_calls": 2,
+                "allowed_domains": [],
+                "timeout_seconds": 150,
+                "max_output_tokens": 3500
+              }
+            },
+            "task_memory": {
+              "sha256": "2a606424d24166c325f512fee8fd62269e4a3b64e5fa42a13c1751aa130e8155",
+              "manifest": {
+                "scope": "SAME_TASK_VERSION_HISTORY_NOT_CURRENT_SOURCE_FACTS",
+                "reviews": [
+                  {
+                    "note": "검증되지 않은 평가 의견 11",
+                    "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+                    "work_id": "8072ab2c-2c1a-4454-af82-85bafdbeb66b",
+                    "decision": "FEEDBACK",
+                    "event_id": "e64f1fbb-6c39-4235-aa97-0a89e003f414",
+                    "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff"
+                  },
+                  {
+                    "note": "검증되지 않은 평가 의견 10",
+                    "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+                    "work_id": "8072ab2c-2c1a-4454-af82-85bafdbeb66b",
+                    "decision": "FEEDBACK",
+                    "event_id": "f7788780-d90e-4168-b4eb-adca11b5527c",
+                    "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff"
+                  },
+                  {
+                    "note": "검증되지 않은 평가 의견 9",
+                    "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+                    "work_id": "8072ab2c-2c1a-4454-af82-85bafdbeb66b",
+                    "decision": "FEEDBACK",
+                    "event_id": "fafc3fcd-2253-4c89-853b-a6d7d5571c41",
+                    "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff"
+                  }
+                ],
+                "task_id": "USER-df5392e0-b593-4cdd-ae7a-f1bc1b1c0752",
+                "version": "task-memory-v3",
+                "failures": [],
+                "knowledge": {
+                  "active": [
+                    {
+                      "kind": "CALCULATION",
+                      "unit": "원",
+                      "scope": "DETERMINISTIC_DECIMAL_RESULT",
+                      "title": "가상 A 가계 월 증가액",
+                      "value": "50800.00",
+                      "sha256": "394085e16a3f52582f901d6e187af59b10ff18782be61feb454ed932b2327e88",
+                      "entry_id": "8f549358-3e8b-444c-bbc8-4d9dbf926172",
+                      "expression": {
+                        "op": "add",
+                        "args": [
+                          {
+                            "op": "multiply",
+                            "args": [
+                              {
+                                "path": "/food"
+                              },
+                              {
+                                "path": "/food_rate"
+                              },
+                              {
+                                "value": "0.01"
+                              }
+                            ]
+                          },
+                          {
+                            "op": "multiply",
+                            "args": [
+                              {
+                                "path": "/other"
+                              },
+                              {
+                                "path": "/other_rate"
+                              },
+                              {
+                                "value": "0.01"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "kind": "CHECKLIST",
+                      "scope": "USER_APPROVED_PROCEDURE_NOT_VERIFIED_FACT",
+                      "title": "가정과 실행 조건",
+                      "sha256": "9f81f27580e5961b99d489698dcf602353fd3e76c750b6a5e632b6f45230094a",
+                      "payload": {
+                        "heading": "결과 활용과 한계",
+                        "instruction": "가상 고정수량의 근사 계산임을 밝히고 독자가 확인할 생활비 항목을 설명한다."
+                      },
+                      "entry_id": "0e51549b-e255-4bf0-9404-7b8d1f26cb4c"
+                    }
+                  ],
+                  "sha256": "21daf779d0a05e2e977b1a944408ecd3736441617c4f9e40731abac0a25835fb",
+                  "version": "task-knowledge-v1",
+                  "excluded": []
+                },
+                "task_version": 1,
+                "draft_results": [
+                  {
+                    "scope": "UNACCEPTED_DRAFT_NOT_VERIFIED_FACTS",
+                    "run_id": "f5122a23-6c64-4ab6-b2a6-b8799bda6dd0",
+                    "sha256": "712f63d3875bc11fa8fa7a1788313840d86163de5c08671b90c35ad9c08831f8",
+                    "excerpt": "제공된 자료에는 식비와 기타 지출, 각 항목의 증가율이 제시되어 있습니다. 이를 고정된 소비량에 적용한 가상 근사 계산이며, 결과는 자동으로 덧붙는 계산표를 참조하세요. 한 가구의 입력값만 있어 가구 간 실제 비교로 해석할 수는 없습니다.\n\n## 결과 활용과 한계\n\n### 결과 활용과 한계\n계산은 소비량이 변하지 않는다고 가정한 근사치입니다. 실제 생활비와 비교하려면 식비에 포함한 품목과 외식비 여부, 기타 지출에 포함한 항목, 그리고 적용한 증가율의 기준 기간과 적용 범위를 확인하세요. 소비량이나 지출 항목이 달라지면 실제 증감액도 계산표의 값과 다를 수 있습니다.\n\n## 계산 근거 · Python Decimal\n\n|항목|계산 결과|\n|---|---:|\n|가상 A 가계 월 증가액|50800.00 원|",
+                    "work_id": "8072ab2c-2c1a-4454-af82-85bafdbeb66b",
+                    "truncated": false,
+                    "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff"
+                  }
+                ],
+                "source_library": [],
+                "accepted_results": [],
+                "evaluation_isolated": false
+              }
+            },
+            "task_version": 1,
+            "graph_version": "provided_text_workflow_v1",
+            "prompt_memory": {
+              "sha256": "0fa1c6fc7c39dcfbdaf9d30815a87a2e8c22c1c1185040f83b75e67871ccd767",
+              "manifest": {
+                "scope": "SAME_TASK_VERSION_HISTORY_NOT_CURRENT_SOURCE_FACTS",
+                "policy": "APPLIED_KNOWLEDGE_AND_HUMAN_FEEDBACK; AI_SUGGESTIONS_REQUIRE_REVIEW",
+                "reviews": [],
+                "task_id": "USER-df5392e0-b593-4cdd-ae7a-f1bc1b1c0752",
+                "version": "task-memory-v3",
+                "failures": [],
+                "knowledge": {
+                  "active": [
+                    {
+                      "kind": "CALCULATION",
+                      "unit": "원",
+                      "scope": "DETERMINISTIC_DECIMAL_RESULT",
+                      "title": "가상 A 가계 월 증가액",
+                      "value": "50800.00",
+                      "sha256": "394085e16a3f52582f901d6e187af59b10ff18782be61feb454ed932b2327e88",
+                      "entry_id": "8f549358-3e8b-444c-bbc8-4d9dbf926172",
+                      "expression": {
+                        "op": "add",
+                        "args": [
+                          {
+                            "op": "multiply",
+                            "args": [
+                              {
+                                "path": "/food"
+                              },
+                              {
+                                "path": "/food_rate"
+                              },
+                              {
+                                "value": "0.01"
+                              }
+                            ]
+                          },
+                          {
+                            "op": "multiply",
+                            "args": [
+                              {
+                                "path": "/other"
+                              },
+                              {
+                                "path": "/other_rate"
+                              },
+                              {
+                                "value": "0.01"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "kind": "CHECKLIST",
+                      "scope": "USER_APPROVED_PROCEDURE_NOT_VERIFIED_FACT",
+                      "title": "가정과 실행 조건",
+                      "sha256": "9f81f27580e5961b99d489698dcf602353fd3e76c750b6a5e632b6f45230094a",
+                      "payload": {
+                        "heading": "결과 활용과 한계",
+                        "instruction": "가상 고정수량의 근사 계산임을 밝히고 독자가 확인할 생활비 항목을 설명한다."
+                      },
+                      "entry_id": "0e51549b-e255-4bf0-9404-7b8d1f26cb4c"
+                    }
+                  ],
+                  "sha256": "21daf779d0a05e2e977b1a944408ecd3736441617c4f9e40731abac0a25835fb",
+                  "version": "task-knowledge-v1",
+                  "excluded": []
+                },
+                "task_version": 1,
+                "draft_results": [
+                  {
+                    "scope": "UNACCEPTED_DRAFT_NOT_VERIFIED_FACTS",
+                    "run_id": "f5122a23-6c64-4ab6-b2a6-b8799bda6dd0",
+                    "sha256": "712f63d3875bc11fa8fa7a1788313840d86163de5c08671b90c35ad9c08831f8",
+                    "excerpt": "제공된 자료에는 식비와 기타 지출, 각 항목의 증가율이 제시되어 있습니다. 이를 고정된 소비량에 적용한 가상 근사 계산이며, 결과는 자동으로 덧붙는 계산표를 참조하세요. 한 가구의 입력값만 있어 가구 간 실제 비교로 해석할 수는 없습니다.\n\n## 결과 활용과 한계\n\n### 결과 활용과 한계\n계산은 소비량이 변하지 않는다고 가정한 근사치입니다. 실제 생활비와 비교하려면 식비에 포함한 품목과 외식비 여부, 기타 지출에 포함한 항목, 그리고 적용한 증가율의 기준 기간과 적용 범위를 확인하세요. 소비량이나 지출 항목이 달라지면 실제 증감액도 계산표의 값과 다를 수 있습니다.\n\n## 계산 근거 · Python Decimal\n\n|항목|계산 결과|\n|---|---:|\n|가상 A 가계 월 증가액|50800.00 원|",
+                    "work_id": "8072ab2c-2c1a-4454-af82-85bafdbeb66b",
+                    "truncated": false,
+                    "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff"
+                  }
+                ],
+                "source_library": [],
+                "accepted_results": [],
+                "evaluation_isolated": false,
+                "unapplied_ai_reviews_omitted": 3
+              }
+            },
+            "source_sha256": "cdb1115b4f6b279c7764f06a632886562004fb24a604f7ff507c3bccbc7fe905",
+            "input_snapshot": {},
+            "prompt_version": "provided-text-step-v3",
+            "source_version": 1,
+            "contract_sha256": "50b4b134a1d16f26e54ab75ac034e881d9a46ead680decf8c9c66529661ec02a"
+          },
+          "sha256": "07dab48abe39b8981a7c13e97dd24c431d15bf2b3a5cfbdb0663db2bdaebba77"
+        },
+        "steps": [
+          {
+            "graph_version": "provided_text_workflow_v1",
+            "node_name": "report",
+            "status": "STARTED",
+            "error_type": null,
+            "created_at": "2026-11-07T15:49:47.826535+00:00"
+          },
+          {
+            "graph_version": "provided_text_workflow_v1",
+            "node_name": "report",
+            "status": "SUCCEEDED",
+            "error_type": null,
+            "created_at": "2026-11-07T15:49:53.760588+00:00"
+          }
+        ],
+        "task_memory": {
+          "manifest": {
+            "scope": "SAME_TASK_VERSION_HISTORY_NOT_CURRENT_SOURCE_FACTS",
+            "reviews": [
+              {
+                "note": "검증되지 않은 평가 의견 11",
+                "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+                "work_id": "8072ab2c-2c1a-4454-af82-85bafdbeb66b",
+                "decision": "FEEDBACK",
+                "event_id": "e64f1fbb-6c39-4235-aa97-0a89e003f414",
+                "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff"
+              },
+              {
+                "note": "검증되지 않은 평가 의견 10",
+                "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+                "work_id": "8072ab2c-2c1a-4454-af82-85bafdbeb66b",
+                "decision": "FEEDBACK",
+                "event_id": "f7788780-d90e-4168-b4eb-adca11b5527c",
+                "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff"
+              },
+              {
+                "note": "검증되지 않은 평가 의견 9",
+                "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+                "work_id": "8072ab2c-2c1a-4454-af82-85bafdbeb66b",
+                "decision": "FEEDBACK",
+                "event_id": "fafc3fcd-2253-4c89-853b-a6d7d5571c41",
+                "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff"
+              }
+            ],
+            "task_id": "USER-df5392e0-b593-4cdd-ae7a-f1bc1b1c0752",
+            "version": "task-memory-v3",
+            "failures": [],
+            "knowledge": {
+              "active": [
+                {
+                  "kind": "CALCULATION",
+                  "unit": "원",
+                  "scope": "DETERMINISTIC_DECIMAL_RESULT",
+                  "title": "가상 A 가계 월 증가액",
+                  "value": "50800.00",
+                  "sha256": "394085e16a3f52582f901d6e187af59b10ff18782be61feb454ed932b2327e88",
+                  "entry_id": "8f549358-3e8b-444c-bbc8-4d9dbf926172",
+                  "expression": {
+                    "op": "add",
+                    "args": [
+                      {
+                        "op": "multiply",
+                        "args": [
+                          {
+                            "path": "/food"
+                          },
+                          {
+                            "path": "/food_rate"
+                          },
+                          {
+                            "value": "0.01"
+                          }
+                        ]
+                      },
+                      {
+                        "op": "multiply",
+                        "args": [
+                          {
+                            "path": "/other"
+                          },
+                          {
+                            "path": "/other_rate"
+                          },
+                          {
+                            "value": "0.01"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                {
+                  "kind": "CHECKLIST",
+                  "scope": "USER_APPROVED_PROCEDURE_NOT_VERIFIED_FACT",
+                  "title": "가정과 실행 조건",
+                  "sha256": "9f81f27580e5961b99d489698dcf602353fd3e76c750b6a5e632b6f45230094a",
+                  "payload": {
+                    "heading": "결과 활용과 한계",
+                    "instruction": "가상 고정수량의 근사 계산임을 밝히고 독자가 확인할 생활비 항목을 설명한다."
+                  },
+                  "entry_id": "0e51549b-e255-4bf0-9404-7b8d1f26cb4c"
+                }
+              ],
+              "sha256": "21daf779d0a05e2e977b1a944408ecd3736441617c4f9e40731abac0a25835fb",
+              "version": "task-knowledge-v1",
+              "excluded": []
+            },
+            "task_version": 1,
+            "draft_results": [
+              {
+                "scope": "UNACCEPTED_DRAFT_NOT_VERIFIED_FACTS",
+                "run_id": "f5122a23-6c64-4ab6-b2a6-b8799bda6dd0",
+                "sha256": "712f63d3875bc11fa8fa7a1788313840d86163de5c08671b90c35ad9c08831f8",
+                "excerpt": "제공된 자료에는 식비와 기타 지출, 각 항목의 증가율이 제시되어 있습니다. 이를 고정된 소비량에 적용한 가상 근사 계산이며, 결과는 자동으로 덧붙는 계산표를 참조하세요. 한 가구의 입력값만 있어 가구 간 실제 비교로 해석할 수는 없습니다.\n\n## 결과 활용과 한계\n\n### 결과 활용과 한계\n계산은 소비량이 변하지 않는다고 가정한 근사치입니다. 실제 생활비와 비교하려면 식비에 포함한 품목과 외식비 여부, 기타 지출에 포함한 항목, 그리고 적용한 증가율의 기준 기간과 적용 범위를 확인하세요. 소비량이나 지출 항목이 달라지면 실제 증감액도 계산표의 값과 다를 수 있습니다.\n\n## 계산 근거 · Python Decimal\n\n|항목|계산 결과|\n|---|---:|\n|가상 A 가계 월 증가액|50800.00 원|",
+                "work_id": "8072ab2c-2c1a-4454-af82-85bafdbeb66b",
+                "truncated": false,
+                "artifact_id": "b7782457-4edf-4ce0-b8d6-d4b195eda6ff"
+              }
+            ],
+            "source_library": [],
+            "accepted_results": [],
+            "evaluation_isolated": false
+          },
+          "sha256": "2a606424d24166c325f512fee8fd62269e4a3b64e5fa42a13c1751aa130e8155"
+        }
+      },
+      "artifact": {
+        "artifact_id": "e3a8b154-5da9-44c5-b91b-d9b3a4b89045",
+        "run_id": "a82e0391-fe0f-475b-afa3-78026a6a0166",
+        "kind": "provided_text_report",
+        "uri": "postgres://artifacts/e3a8b154-5da9-44c5-b91b-d9b3a4b89045",
+        "content": {
+          "steps": [
+            {
+              "text": "제공 자료에는 식비 800,000원과 기타 지출 1,200,000원, 각 항목의 증가율 3.2%와 2.1%가 제시되어 있습니다. 한 가구의 자료만 있어 가구 간 비교는 할 수 없습니다. 고정수량을 가정한 월 증가액은 계산표를 참조하세요.\n\n## 결과 활용과 한계\n\n이 값은 소비량이 변하지 않는다고 가정한 근사 계산입니다. 실제 생활비와 비교할 때는 식비에 포함된 품목과 외식비 여부, 기타 지출의 포함 항목, 증가율의 기준 기간과 적용 범위를 확인하세요. 소비량이나 지출 항목이 달라지면 실제 증감액도 계산표와 다를 수 있습니다.\n\n## 계산 근거 · Python Decimal\n\n|항목|계산 결과|\n|---|---:|\n|가상 A 가계 월 증가액|50800.00 원|",
+              "step_id": "report",
+              "model_id": "gpt-6-luna",
+              "elapsed_ms": 5922,
+              "response_id": "resp_042315ee6782b171016aef489cd45487d0a949c2e0339986ae",
+              "input_tokens": 1336,
+              "output_tokens": 520,
+              "structured_report": "{\"introduction\":\"제공 자료에는 식비 800,000원과 기타 지출 1,200,000원, 각 항목의 증가율 3.2%와 2.1%가 제시되어 있습니다. 한 가구의 자료만 있어 가구 간 비교는 할 수 없습니다. 고정수량을 가정한 월 증가액은 계산표를 참조하세요.\",\"sections\":[{\"rule_id\":\"0e51549b-e255-4bf0-9404-7b8d1f26cb4c\",\"text\":\"이 값은 소비량이 변하지 않는다고 가정한 근사 계산입니다. 실제 생활비와 비교할 때는 식비에 포함된 품목과 외식비 여부, 기타 지출의 포함 항목, 증가율의 기준 기간과 적용 범위를 확인하세요. 소비량이나 지출 항목이 달라지면 실제 증감액도 계산표와 다를 수 있습니다.\"}]}"
+            }
+          ],
+          "task_id": "USER-df5392e0-b593-4cdd-ae7a-f1bc1b1c0752",
+          "data_mode": "USER_PROVIDED_TEXT",
+          "model_mode": "LIVE_LLM",
+          "source_sha256": "cdb1115b4f6b279c7764f06a632886562004fb24a604f7ff507c3bccbc7fe905",
+          "contract_sha256": "50b4b134a1d16f26e54ab75ac034e881d9a46ead680decf8c9c66529661ec02a",
+          "semantic_review": "NOT_PERFORMED"
+        },
+        "sha256": "24b31f1cca54cf74f734b259bdcb0a8a2b393597c4a0fbcb280d36ea27e1d88f",
+        "schema_version": "1",
+        "created_at": "2026-11-07T15:49:53.770336+00:00",
+        "artifact_version": null,
+        "evidence": [
+          {
+            "result": {
+              "checks": {
+                "task_memory": true,
+                "context_hash": true,
+                "input_hashes": true,
+                "execution_mode": true,
+                "output_present": true,
+                "source_version": true,
+                "steps_complete": true,
+                "task_and_labels": true,
+                "evaluation_scope": true,
+                "prompt_memory_policy": true,
+                "knowledge_policy_hash": true,
+                "source_snapshot_hashes": true,
+                "knowledge_source_quotes_current": true,
+                "persistent_checklist_and_calculations": true
+              },
+              "passed": true,
+              "semantic_review": "NOT_PERFORMED",
+              "requires_human_review": true
+            },
+            "created_at": "2026-11-07T15:49:53.770336+00:00",
+            "input_refs": {
+              "task_id": "USER-df5392e0-b593-4cdd-ae7a-f1bc1b1c0752",
+              "task_version": 1,
+              "source_sha256": "cdb1115b4f6b279c7764f06a632886562004fb24a604f7ff507c3bccbc7fe905",
+              "artifact_sha256": "24b31f1cca54cf74f734b259bdcb0a8a2b393597c4a0fbcb280d36ea27e1d88f",
+              "contract_sha256": "50b4b134a1d16f26e54ab75ac034e881d9a46ead680decf8c9c66529661ec02a"
+            },
+            "artifact_id": "e3a8b154-5da9-44c5-b91b-d9b3a4b89045",
+            "evidence_id": "33c01572-a75e-435e-98e5-8431dd3083a9",
+            "verifier_version": "provided-text-structure-v5",
+            "verification_type": "provided_text_structure"
+          }
+        ]
+      }
+    }
+  ]
+}

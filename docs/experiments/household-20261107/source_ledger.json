@@ -1,0 +1,108 @@
+[
+  {
+    "first_cited_round": 1,
+    "source_identity": "korea.kr/article/156721918",
+    "urls": [
+      "https://www.korea.kr/news/policyNewsView.do?newsId=156721918"
+    ],
+    "scope": "NORMALIZED_CITATION_TARGET_NOT_FACT_CHECKED"
+  },
+  {
+    "first_cited_round": 2,
+    "source_identity": "mods.go.kr/board/5146/438999",
+    "urls": [
+      "https://www.kostat.go.kr/boardDownload.es?bid=5146&list_no=438999&seq=3&utm_source=openai"
+    ],
+    "scope": "NORMALIZED_CITATION_TARGET_NOT_FACT_CHECKED"
+  },
+  {
+    "first_cited_round": 4,
+    "source_identity": "mods.go.kr/board/213/438840",
+    "urls": [
+      "https://www.kostat.go.kr/boardDownload.es?bid=213&list_no=438840&seq=1"
+    ],
+    "scope": "NORMALIZED_CITATION_TARGET_NOT_FACT_CHECKED"
+  },
+  {
+    "first_cited_round": 5,
+    "source_identity": "korea.kr/article/156721800",
+    "urls": [
+      "https://www.korea.kr/news/policyNewsView.do?newsId=156721800"
+    ],
+    "scope": "NORMALIZED_CITATION_TARGET_NOT_FACT_CHECKED"
+  },
+  {
+    "first_cited_round": 5,
+    "source_identity": "mods.go.kr/board/5146/419135",
+    "urls": [
+      "https://www.kostat.go.kr/boardDownload.es?bid=5146&list_no=419135&seq=3"
+    ],
+    "scope": "NORMALIZED_CITATION_TARGET_NOT_FACT_CHECKED"
+  },
+  {
+    "first_cited_round": 7,
+    "source_identity": "mods.go.kr/index.es?sid=b7",
+    "urls": [
+      "https://mods.go.kr/index.es?sid=b7"
+    ],
+    "scope": "NORMALIZED_CITATION_TARGET_NOT_FACT_CHECKED"
+  },
+  {
+    "first_cited_round": 8,
+    "source_identity": "mods.go.kr/board/3213/161774",
+    "urls": [
+      "https://mods.go.kr/board.es?act=view&bid=3213&list_no=161774&mid=a10502010000&ref_bid=3203%2C3204%2C3205%2C3206%2C3207%2C3210%2C3211%2C11108%2C11114%2C3213%2C3215%2C3214%2C11862%2C11863%2C3216%2C3218%2C3219%2C3220%2C3208%2C3245%2C3222%2C3225%2C3226%2C3227%2C3228%2C3229%2C3230%2C3232%2C3233%2C3234%2C11416%2C12282%2C3236%2C3237%2C3238%2C3240%2C3241%2C11864%2C3243%2C3244%2C11404%2C11401%2C11403%2C11402%2C3246&tag="
+    ],
+    "scope": "NORMALIZED_CITATION_TARGET_NOT_FACT_CHECKED"
+  },
+  {
+    "first_cited_round": 10,
+    "source_identity": "mods.go.kr/menu/b70202030000",
+    "urls": [
+      "https://mods.go.kr/menu.es?mid=b70202030000"
+    ],
+    "scope": "NORMALIZED_CITATION_TARGET_NOT_FACT_CHECKED"
+  },
+  {
+    "first_cited_round": 12,
+    "source_identity": "mods.go.kr/menu/b70102030000",
+    "urls": [
+      "https://mods.go.kr/menu.es?mid=b70102030000"
+    ],
+    "scope": "NORMALIZED_CITATION_TARGET_NOT_FACT_CHECKED"
+  },
+  {
+    "first_cited_round": 23,
+    "source_identity": "mods.go.kr/board/5146/417617",
+    "urls": [
+      "https://mods.go.kr/boardDownload.es?bid=5146&list_no=417617&seq=2",
+      "https://mods.go.kr/boardDownload.es?bid=5146&list_no=417617&seq=2&utm_source=openai"
+    ],
+    "scope": "NORMALIZED_CITATION_TARGET_NOT_FACT_CHECKED"
+  },
+  {
+    "first_cited_round": 25,
+    "source_identity": "mods.go.kr/menu/b70101040000",
+    "urls": [
+      "https://mods.go.kr/menu.es?mid=b70101040000",
+      "https://www.mods.go.kr/menu.es?mid=b70101040000&utm_source=openai"
+    ],
+    "scope": "NORMALIZED_CITATION_TARGET_NOT_FACT_CHECKED"
+  },
+  {
+    "first_cited_round": 33,
+    "source_identity": "mods.go.kr/board/213/428549",
+    "urls": [
+      "https://mods.go.kr/board.es?act=view&bid=213&list_no=428549&mid=b70203010000&ref_bid=&tag="
+    ],
+    "scope": "NORMALIZED_CITATION_TARGET_NOT_FACT_CHECKED"
+  },
+  {
+    "first_cited_round": 34,
+    "source_identity": "mods.go.kr/menu/b70101050000",
+    "urls": [
+      "https://mods.go.kr/menu.es?mid=b70101050000"
+    ],
+    "scope": "NORMALIZED_CITATION_TARGET_NOT_FACT_CHECKED"
+  }
+]

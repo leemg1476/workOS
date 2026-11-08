@@ -1,0 +1,16 @@
+{
+  "entry_ids": [
+    "386db24e-f783-419a-ac19-f92646b10df3",
+    "335d2848-0c67-4569-aa01-d34f9574d2dc",
+    "5ba1df0d-f580-4cf9-811e-bad9e7dab8ce",
+    "5fcbaf0f-55b4-4ee3-8b52-c347f7210c9e",
+    "d74a2a16-48b0-4de9-ba1b-778e259b1dbd",
+    "444ab1c8-0355-4749-a173-30fada47d307",
+    "1595210b-fdb2-4728-98d3-5111989a82d2",
+    "82b79bd1-bd2b-4f76-ad91-284639d1c7a5",
+    "dd99bbbc-3d97-4498-a5e4-063c111d6c2b",
+    "1a3c7569-9992-41e0-b7f5-1afe89bf5491"
+  ],
+  "scope": "USER_AUTHORIZED_EXPERIMENT_ONLY",
+  "count": 10
+}

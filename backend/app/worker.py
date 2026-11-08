@@ -30,7 +30,10 @@ def process_claim(kernel, claim):
     except Exception as exc:
         # Do not persist provider messages or request data, which can contain credentials.
         try:
-            kernel.fail(claim['run_id'], f'workload execution failed: {type(exc).__name__}')
+            from openai import APIConnectionError, RateLimitError, InternalServerError
+            transient=isinstance(exc,(TimeoutError,ConnectionError,APIConnectionError,RateLimitError,InternalServerError))
+            kernel.fail(claim['run_id'], f'workload execution failed: {type(exc).__name__}',
+                        retry_delay_seconds=5*(2**min(2,claim['attempt_no']-1)) if transient else None)
         except Conflict:
             pass
 

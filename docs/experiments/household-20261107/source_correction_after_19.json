@@ -1,0 +1,8 @@
+{
+  "recorded_at": "2026-11-07T15:06:12.766223+00:00",
+  "work_id": "d7576fdc-0d0b-402a-9024-ed96bb5b3249",
+  "artifact_id": "84226dc4-161a-4590-a37f-4b791ea91c44",
+  "note": "원문 대조 교정 의견(사람 승인 아님): 이전 AI 평가의 전년도 감면 설명은 근거가 없습니다. 2025년 8월 공식 브리핑은 그 달 일부 통신사의 한 달 50% 감면과 휴대전화료 전년비 -21%를 설명했고, 2025년 9월 브리핑은 그 감면 종료를 설명합니다. 2024년에 같은 감면이 있었다고 새 사실을 만들지 마세요. 8월·9월 각각의 전년동월비와 월간 비교를 구분하세요. 같은 해의 일시적 가격 변화와 다음 달 환원이 각 월 상승률에 미친 영향으로 설명하고 지속적 압력은 단정하지 마세요. 근거 https://www.korea.kr/news/policyNewsView.do?newsId=156721800 와 https://www.korea.kr/news/policyNewsView.do?newsId=156721918 . 이 교정은 19회차 점수를 수정하거나 결과를 승인하지 않습니다.",
+  "scope": "CODEX_SOURCE_SPOT_REVIEW_NOT_HUMAN_APPROVAL",
+  "timing": "May affect round21 onward if round20 memory already pinned; inspect snapshots for exact first inclusion."
+}

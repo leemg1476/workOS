@@ -1,0 +1,49 @@
+{
+  "completed_reports": 10,
+  "writer_runs": 12,
+  "run_status": {
+    "FAILED": 1,
+    "VERIFICATION_FAILED": 1,
+    "SUCCEEDED": 10
+  },
+  "work_status": {
+    "WAITING_APPROVAL": 10
+  },
+  "queue": {
+    "DONE": 10
+  },
+  "active_knowledge": 20,
+  "retired": 1,
+  "same_source_and_contract": true,
+  "all_artifact_hashes_match": true,
+  "all_initial_calculation_values_present": true,
+  "oldest_lesson_present_through_round10": true,
+  "unapproved_ai_reviews_in_writer_prompt": 0,
+  "original_study_artifacts_unchanged": 42,
+  "original_task_applied_knowledge": 0,
+  "score_mean": 83.5,
+  "lengths": [
+    2117,
+    2269,
+    2144,
+    2337,
+    2538,
+    2495,
+    2514,
+    2672,
+    2927,
+    2264
+  ],
+  "scores": [
+    62.0,
+    83.0,
+    85.0,
+    86.0,
+    84.0,
+    90.0,
+    80.0,
+    89.0,
+    86.0,
+    90.0
+  ]
+}

@@ -39,7 +39,7 @@ def test_accepted_source_creates_pinned_downstream_and_invalidates_old_work(kern
         result=process_claim(kernel,run);assert result['passed'] and result['result']['requires_human_review']
         report=client.get('/api/runs/'+run['run_id']+'/artifacts').json()[0]['content']
         evidence=client.get('/api/runs/'+run['run_id']+'/artifacts').json()[0]['evidence']
-        assert any(e['verifier_version']=='provided-text-linked-structure-v1' for e in evidence)
+        assert any(e['verifier_version']=='provided-text-linked-structure-v3' for e in evidence)
         context=client.get('/api/runs/'+run['run_id']).json()['context']['manifest']['contract']
         assert report['data_mode']=='USER_AND_ACCEPTED_WORK'
         assert context['linked_source']['artifact_id']==artifact and context['linked_source']['work_id']==source_work

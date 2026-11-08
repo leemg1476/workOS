@@ -1,0 +1,15 @@
+{
+  "study_version": "longitudinal-report-v1",
+  "task_id": "USER-b884a865-8872-40f6-ba63-4883c541522c",
+  "design_id": "c5f37f78-e167-4605-81fe-b07cd1e995be",
+  "model": "gpt-6-luna",
+  "source_sha256": "30f087d95d84e2e741a53b1b6edea7e9eb863f35af15e274604bf107f1eb5a96",
+  "rubric_sha256": "33a3742bc886240488332a90346ee209b9d3de86822cffe75dbbd3dc83bb5125",
+  "started_at": "2026-11-07T14:50:27.974969+00:00",
+  "target_rounds": 50,
+  "design": "single adaptive sequence; writer uses web + bounded task memory; same-model isolated rubric reviewer; no human approval or method promotion",
+  "status": "STOPPED_AT_USER_REQUEST_FOR_INTERIM_REVIEW",
+  "stopped_at": "2026-11-07T15:23:16.011043+00:00",
+  "completed_rounds": 42,
+  "interrupted_round": 43
+}

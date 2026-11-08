@@ -1,0 +1,12 @@
+{
+  "reviewed": true,
+  "artifact_sha256": "805f8e32fd5b9607f7d0f3c5f87288ce8460f2773be868f1a1d55c58737742a3",
+  "changes": "CPI 일괄 비교액42000원이 결정론적 표에 추가됐다. 핵심 원문 링크를9월·8월 브리핑2개로 정리했다. 가구·이자·행동·산식·한계는 유지했다.",
+  "feedback_reflection": "9회 뒤의 검산한 비교액 피드백이 실제 표에 들어왔다. 기존 첫 회차 교훈과 초기 계산도 유지. 10회에서 중단하며 이번 비평을 적용한11회는 만들지 않는다.",
+  "regressions": "새 계산 행 제목이 검토 교훈09라는 내부 표식으로 노출됐다. 숫자는 정확하지만 독자용 이름으로 바꾸어야 한다. 통계는 여전히 긴 한 문단이며 간결성 문제는 남았다.",
+  "judge_audit": "중대오류 없음과 내부 표식 지적은 실제 원문과 부합한다. 원점수90을 보존하되 가독성3/5와 라벨 결함이 남아 최종 완성본이나 전문가 동등 품질로 판정하지 않는다.",
+  "new_source": "새로운 경제 자료의 발견보다 기존 직접 원문 선택과 검산한 기준액을 통합한 변화다.",
+  "lesson": null,
+  "applied_entry_ids": [],
+  "authorization": "USER_EXPLICIT_EXPERIMENT_ONLY_APPROVAL; CODEX_REVIEW_NOT_HUMAN_EXPERT"
+}

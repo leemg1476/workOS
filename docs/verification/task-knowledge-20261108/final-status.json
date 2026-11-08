@@ -1,0 +1,20 @@
+{
+  "checked_date_kst": "2026-11-08",
+  "database": "workos_memory_preview",
+  "task_id": "USER-b884a865-8872-40f6-ba63-4883c541522c",
+  "knowledge_api": {
+    "total": 56,
+    "applied": 0,
+    "invalid_previews": 0,
+    "types": {"CALCULATION": 7, "CHECKLIST": 3, "LESSON": 45, "SOURCE_EXCERPT": 1}
+  },
+  "study_status": "STOPPED_AT_USER_REQUEST_FOR_INTERIM_REVIEW",
+  "completed_rounds": 42,
+  "interrupted_round": 43,
+  "work_count": 43,
+  "run_count": 43,
+  "running_runs": 0,
+  "queue": {"DONE": 43},
+  "ui_http_status": 200,
+  "api_database": "connected"
+}

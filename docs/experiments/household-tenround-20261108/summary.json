@@ -1,0 +1,1532 @@
+{
+  "scope": "SINGLE_ADAPTIVE_SEQUENCE_WITH_CODEX_REVIEW_NOT_CAUSAL_QUALITY_PROOF",
+  "rounds": [
+    {
+      "round": 1,
+      "score": 62.0,
+      "ratings": {
+        "facts": 2,
+        "arithmetic": 4,
+        "explanation": 3,
+        "households": 4,
+        "actions": 3,
+        "readability": 3,
+        "sources": 3,
+        "uncertainty": 3
+      },
+      "judge_critical_errors": [
+        "보고서: “신선식품은 전년동월비 2.5%, 전월비 0.9% 하락한 반면”이라고 했습니다. 제공된 2025년 9월 관측값은 신선식품 전년동월비 -2.5%, 전월비 -0.9%입니다. 즉 전년동월비도 하락인데, 보고서에는 그 부호가 빠져 상승으로 읽힙니다."
+      ],
+      "operator_review": {
+        "reviewed": true,
+        "artifact_sha256": "fc3aa157162d48599222420ea177631861d2e3b828e233809251cc520c740948",
+        "changes": "첫 유효 보고서. 계산7개는 정확하지만 서론에 생활비 결론이 없고 제목이 중복된다. 행동은 기록·확인 위주이며 절감 목표 산식은 없다.",
+        "feedback_reflection": "초기 승인 계산7개와 필수항목3개를 모두 반영. 아직 이전 회차 피드백 없음.",
+        "regressions": "첫 시도 JSON 후행 문자로 검증 실패, 두 번째 미완료 ValueError, 세 번째 성공. 원래 실패 이력 보존.",
+        "judge_audit": "critical_errors의 신선식품 부호 누락 주장은 기각한다. 본문의 전년동월비 2.5%, 전월비 0.9% 하락에서 하락은 두 수치를 모두 수식한다. 공식 원문도 같은 표현이다. 점수62는 이 오독으로 낮아졌으나 원 점수를 보존한다. 해당 성공 Run의 추가 PDF는 원문 읽기 불가이며, 원문 독립 검증 완료 주장은 하지 않았다.",
+        "lesson": "신선식품은 전년비 2.5% 하락, 전월비 0.9% 하락처럼 방향을 각각 명시하되 과거 올바른 문장을 오류로 취급하지 않는다. 첫 문단에 A/B 생활비 차이와 이번 주 우선 행동을 연결하고, 임의의 절감 목표는 선택 가능한 예시·검증 방법과 함께 적는다. 서버 계산표는 마지막에 유지하되 독자에게 서버·내부구현을 설명하지 않는다. 반복 제목을 쓰지 않는다.",
+        "new_source": "평가 후 공식8월 원문 직접 인용을 새 Task에서 수집·적용하여 다음 회차에 제공한다.",
+        "applied_entry_ids": [
+          "f14ed6a9-7727-4e31-81d9-55d707a39841",
+          "1f3f8d85-9db0-4c21-97b9-cfe5fb71afa1"
+        ],
+        "authorization": "USER_EXPLICIT_EXPERIMENT_ONLY_APPROVAL; CODEX_REVIEW_NOT_HUMAN_EXPERT"
+      },
+      "chars": 2117,
+      "active_knowledge": 10,
+      "lessons": 0,
+      "active_entry_ids": [
+        "386db24e-f783-419a-ac19-f92646b10df3",
+        "335d2848-0c67-4569-aa01-d34f9574d2dc",
+        "5ba1df0d-f580-4cf9-811e-bad9e7dab8ce",
+        "5fcbaf0f-55b4-4ee3-8b52-c347f7210c9e",
+        "d74a2a16-48b0-4de9-ba1b-778e259b1dbd",
+        "444ab1c8-0355-4749-a173-30fada47d307",
+        "1595210b-fdb2-4728-98d3-5111989a82d2",
+        "82b79bd1-bd2b-4f76-ad91-284639d1c7a5",
+        "dd99bbbc-3d97-4498-a5e4-063c111d6c2b",
+        "1a3c7569-9992-41e0-b7f5-1afe89bf5491"
+      ],
+      "canonical_table_all_values": true,
+      "duplicate_heading": true,
+      "captured_sources_now": 1,
+      "readbacks_as_generated": [
+        {
+          "url": "https://kostat.go.kr/boardDownload.es?bid=5146&list_no=426919&seq=1",
+          "reason": "SOURCE_CONTENT_TYPE_UNSUPPORTED",
+          "status": "UNAVAILABLE"
+        }
+      ],
+      "source_sha256": "3e21ed51811111b073bbecb07e1a6bb0da17936ace5c8a57f5226ca147a2adad",
+      "contract_sha256": "098aab048d4d31da3c910e5c1b9cdb1b61f7ece86097263128e432d58f209858",
+      "prompt_memory_reviews": [],
+      "web_calls": 2,
+      "artifact_hash_matches": true,
+      "run_id": "411277dc-050c-422a-9ce3-4ded74935a4d",
+      "work_id": "11a4b31d-b836-481f-8a8f-0b78505381b9",
+      "artifact_id": "4a0a1485-72b4-4c13-8931-38395d5a1901",
+      "artifact_sha256": "fc3aa157162d48599222420ea177631861d2e3b828e233809251cc520c740948",
+      "memory_sha256": "7c0992bad5ed56aed690d814655e7f5f25cc96dc9421112c8b2d7328c5864150",
+      "evidence": [
+        {
+          "verification_type": "provided_text_structure",
+          "verifier_version": "provided-text-structure-v5",
+          "result": {
+            "checks": {
+              "task_memory": true,
+              "context_hash": true,
+              "input_hashes": true,
+              "execution_mode": true,
+              "output_present": true,
+              "source_version": true,
+              "steps_complete": true,
+              "task_and_labels": true,
+              "evaluation_scope": true,
+              "prompt_memory_policy": true,
+              "knowledge_policy_hash": true,
+              "source_snapshot_hashes": true,
+              "knowledge_source_quotes_current": true,
+              "persistent_checklist_and_calculations": true
+            },
+            "passed": true,
+            "semantic_review": "NOT_PERFORMED",
+            "requires_human_review": true
+          }
+        },
+        {
+          "verification_type": "automated_report_review",
+          "verifier_version": "household-report-rubric-v2",
+          "result": {
+            "note": "AI 평가 의견(사람 승인 아님). 이번 보완: 가장 중요한 수정은 신선식품 전년동월비의 마이너스 부호입니다. 이 오류는 식품 물가 설명의 핵심을 바꾸므로, 표와 문장에 모두 부호를 확인해 반영하세요. 통신비 감면 종료를 상승률 확대 요인으로 언급했지만, 전년비 상승률에 영향을 주는 일시적 기저 요인을 쉬운 문장으로 풀지는 않았습니다. 원인을 더 설명할 때는 제공된 공식 브리핑 범위를 넘는 인과관계를 덧붙이지 않는 편이 좋습니다. 가구별 결과는 “서버가 덧붙이는 계산표를 참조”라고만 하지 말고 본문 가까이에 금액을 짧게 보여 주면 비교가 쉬워집니다. 행동 제안은 점검 절차가 갖춰져 있지만, 독자가 선택할 수 있는 소액의 조정 목표나 목표를 정하는 방법까지 제시하면 더 실용적입니다. 통\n누적 유지 교훈: 신선식품 전년비 -2.5%, 전월비 -0.9%의 부호를 문장과 표에서 모두 확인한다. / 통신비 감면 종료의 영향은 공식 브리핑 설명 범위에서만 서술한다. / 가상 고정 바구니 계산 결과를 본문에서도 금액으로 바로 보여 준다. / 고정 수량 지수 적용은 대체효과와 실제 소비 변화가 반영되지 않는 근사임을 밝힌다. / 행동 제안에 실행 조건과 점검 방법을 두되 절감액을 보장하지 않는다.",
+            "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+            "metrics": {
+              "score": 62.0,
+              "ratings": {
+                "facts": 2,
+                "actions": 3,
+                "sources": 3,
+                "arithmetic": 4,
+                "households": 4,
+                "explanation": 3,
+                "readability": 3,
+                "uncertainty": 3
+              },
+              "critical_errors": [
+                "보고서: “신선식품은 전년동월비 2.5%, 전월비 0.9% 하락한 반면”이라고 했습니다. 제공된 2025년 9월 관측값은 신선식품 전년동월비 -2.5%, 전월비 -0.9%입니다. 즉 전년동월비도 하락인데, 보고서에는 그 부호가 빠져 상승으로 읽힙니다."
+              ],
+              "review_relation": "SAME_MODEL",
+              "review_response_id": "resp_01fa06cc78ce608a016aefc494b32487d09e55f8a6741edaed",
+              "review_context_sha256": "d6335c8bac87ee2de3e80d9a64a95de8d70d5b0abb34c87b542610b216a2828e"
+            },
+            "work_id": "11a4b31d-b836-481f-8a8f-0b78505381b9",
+            "decision": "FEEDBACK",
+            "artifact_id": "4a0a1485-72b4-4c13-8931-38395d5a1901",
+            "rubric_version": "household-report-rubric-v2",
+            "evaluator_model": "gpt-6-luna",
+            "knowledge_to_retain": [
+              "신선식품 전년비 -2.5%, 전월비 -0.9%의 부호를 문장과 표에서 모두 확인한다.",
+              "통신비 감면 종료의 영향은 공식 브리핑 설명 범위에서만 서술한다.",
+              "가상 고정 바구니 계산 결과를 본문에서도 금액으로 바로 보여 준다.",
+              "고정 수량 지수 적용은 대체효과와 실제 소비 변화가 반영되지 않는 근사임을 밝힌다.",
+              "행동 제안에 실행 조건과 점검 방법을 두되 절감액을 보장하지 않는다."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "score": 83.0,
+      "ratings": {
+        "facts": 5,
+        "arithmetic": 5,
+        "explanation": 4,
+        "households": 4,
+        "actions": 3,
+        "readability": 3,
+        "sources": 4,
+        "uncertainty": 4
+      },
+      "judge_critical_errors": [],
+      "operator_review": {
+        "reviewed": true,
+        "artifact_sha256": "97e5b8522ad453251aa703149925a958f4f905dad5dcbaa55130b7fa77936844",
+        "changes": "서론에 통신 청구서·식품 지출 점검 우선순위가 생겼다. 8월 공식 브리핑이 추가돼 한 달 감면 종료 설명의 근거가 보강됐다.",
+        "feedback_reflection": "첫 문단 행동은 반영. 반복 제목 제거, 방향 각각 명시, 선택형 절감 목표는 미반영. 초기 계산7개는 유지.",
+        "regressions": "가구의 구체적 지출80/120·40/160만원이 본문에서 사라져 계산표를 이해하는 연결이 약해졌다. 동일 제목 ##/### 반복과 자동으로 덧붙는 표 표현 지속.",
+        "judge_audit": "신선식품 문장 구조가 1회와 같은데 facts가2→5로 변했고 critical은1→0이다. 점수21점 상승 전체를 실제 개선으로 해석하면 안 된다. 이번 중대오류 없음 판정은 원문과 부합한다.",
+        "new_source": "8월 공식 원문 인용·URL이 작성 입력과 본문에 들어왔다.",
+        "lesson": "각 CHECKLIST 본문은 제목 없이 문단부터 시작한다. 자동 생성·서버라는 말을 쓰지 말고 아래 계산표라고만 안내한다. 가구별 식품/비식품 기준지출을 간단히 복원하고 실제 생활비 변화와 구별한다. 이번 주 행동에는 조정 가능한 선택지출 X원을 먼저 확인하고 예시로 다음4주 상한 X×0.95를 선택할 수 있다고 제시하되, 5%는 임의 목표이고 필수지출 제외·절감 보장 아님을 밝힌다.",
+        "applied_entry_ids": [
+          "18aedb37-bb80-4622-aedb-bdbad8111be0"
+        ],
+        "authorization": "USER_EXPLICIT_EXPERIMENT_ONLY_APPROVAL; CODEX_REVIEW_NOT_HUMAN_EXPERT"
+      },
+      "chars": 2269,
+      "active_knowledge": 12,
+      "lessons": 1,
+      "active_entry_ids": [
+        "386db24e-f783-419a-ac19-f92646b10df3",
+        "335d2848-0c67-4569-aa01-d34f9574d2dc",
+        "5ba1df0d-f580-4cf9-811e-bad9e7dab8ce",
+        "5fcbaf0f-55b4-4ee3-8b52-c347f7210c9e",
+        "d74a2a16-48b0-4de9-ba1b-778e259b1dbd",
+        "444ab1c8-0355-4749-a173-30fada47d307",
+        "1595210b-fdb2-4728-98d3-5111989a82d2",
+        "82b79bd1-bd2b-4f76-ad91-284639d1c7a5",
+        "dd99bbbc-3d97-4498-a5e4-063c111d6c2b",
+        "1a3c7569-9992-41e0-b7f5-1afe89bf5491",
+        "f14ed6a9-7727-4e31-81d9-55d707a39841",
+        "1f3f8d85-9db0-4c21-97b9-cfe5fb71afa1"
+      ],
+      "canonical_table_all_values": true,
+      "duplicate_heading": true,
+      "captured_sources_now": 2,
+      "readbacks_as_generated": [
+        {
+          "url": "https://www.korea.kr/news/policyNewsView.do?newsId=156721918",
+          "status": "CAPTURED",
+          "captured_at": "2026-11-08T00:39:46.849170+00:00",
+          "snapshot_id": "d3aaf93f-8486-4697-9e9f-158dae029bc7",
+          "text_sha256": "90487a9eb11a70644b78af76b8697d59c7214528cf879679970fb64a894f8916"
+        },
+        {
+          "url": "https://www.korea.kr/news/policyNewsView.do?newsId=156721800",
+          "status": "CAPTURED",
+          "captured_at": "2026-11-08T00:39:47.307507+00:00",
+          "snapshot_id": "f29b3a7e-acb1-4bc9-ba5c-b3b71d571929",
+          "text_sha256": "05c47f651cbbadaf3116748db9444e796b5ac2b3a9f0276b41492a0aa2abdfdd"
+        }
+      ],
+      "source_sha256": "3e21ed51811111b073bbecb07e1a6bb0da17936ace5c8a57f5226ca147a2adad",
+      "contract_sha256": "098aab048d4d31da3c910e5c1b9cdb1b61f7ece86097263128e432d58f209858",
+      "prompt_memory_reviews": [],
+      "web_calls": 1,
+      "artifact_hash_matches": true,
+      "run_id": "f641c9b0-17f0-4046-b85b-ef2d4fce1496",
+      "work_id": "32078f6f-1c36-48e5-b4ac-5b30843f406a",
+      "artifact_id": "314c7918-d577-4d32-b69d-64b1b3b04bce",
+      "artifact_sha256": "97e5b8522ad453251aa703149925a958f4f905dad5dcbaa55130b7fa77936844",
+      "memory_sha256": "36552ec085b30da99715f39b8ec58093ce4a10050a9a3c3a5639d77b8d361984",
+      "evidence": [
+        {
+          "verification_type": "provided_text_structure",
+          "verifier_version": "provided-text-structure-v5",
+          "result": {
+            "checks": {
+              "task_memory": true,
+              "context_hash": true,
+              "input_hashes": true,
+              "execution_mode": true,
+              "output_present": true,
+              "source_version": true,
+              "steps_complete": true,
+              "task_and_labels": true,
+              "evaluation_scope": true,
+              "prompt_memory_policy": true,
+              "knowledge_policy_hash": true,
+              "source_snapshot_hashes": true,
+              "knowledge_source_quotes_current": true,
+              "persistent_checklist_and_calculations": true
+            },
+            "passed": true,
+            "semantic_review": "NOT_PERFORMED",
+            "requires_human_review": true
+          }
+        },
+        {
+          "verification_type": "automated_report_review",
+          "verifier_version": "household-report-rubric-v2",
+          "result": {
+            "note": "AI 평가 의견(사람 승인 아님). 이번 보완: 핵심 통계와 계산은 정확하고, 가상 사례 및 대출 스트레스의 범위도 대체로 잘 표시했습니다. 다만 각 절에 같은 이름의 ##·### 제목이 연이어 반복되어 있으므로 한 단계의 제목만 남기면 읽기 쉬워집니다. ‘자동으로 덧붙는 계산표’라는 표현은 내부 생성 방식처럼 들리니 표가 본문에 있다는 점을 직접 안내하는 편이 자연스럽습니다. 행동 제안은 기록·확인·재점검이 구체적이지만, 독자가 바로 적용할 수 있는 선택형 절감 목표나 목표를 정하는 방법은 부족합니다. 예를 들어 실제 지출을 확인한 뒤 조정 가능한 항목 하나를 정하고, 다음 결제일에 전후 금액을 비교하도록 제안하면 실용성이 높아집니다. 가중 계산은 같은 품목 구성과 수량을 유지한 단\n누적 유지 교훈: 전월비·전년비·%p를 구분하고 대상월 수치로 설명한다. / 신선식품과 식품 전체·가공식품의 흐름을 따로 비교한다. / 가상 고정 바구니 계산과 실제 가계 관측치를 구별한다. / 가중 증가액·상승률과 CPI 일괄 적용 차이를 함께 제시한다. / 통신비 감면 종료의 영향은 공식 브리핑 설명 범위에서 서술한다. / 대출 이자 스트레스는 소비물가와 별도의 현금흐름으로 표시한다. / 행동에는 실행 시점·선택 조건·후속 점검 방법을 포함한다. / 중복 제목과 내부 생성 과정을 연상시키는 표현을 줄인다.",
+            "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+            "metrics": {
+              "score": 83.0,
+              "ratings": {
+                "facts": 5,
+                "actions": 3,
+                "sources": 4,
+                "arithmetic": 5,
+                "households": 4,
+                "explanation": 4,
+                "readability": 3,
+                "uncertainty": 4
+              },
+              "critical_errors": [],
+              "review_relation": "SAME_MODEL",
+              "review_response_id": "resp_0d508019ed46955c016aefc4d3fe9887d092d80606a3aa5e44",
+              "review_context_sha256": "18cdc344736385c08b5d0514ad213fba49996fb65805ebcadccf87db5a14ff6c"
+            },
+            "work_id": "32078f6f-1c36-48e5-b4ac-5b30843f406a",
+            "decision": "FEEDBACK",
+            "artifact_id": "314c7918-d577-4d32-b69d-64b1b3b04bce",
+            "rubric_version": "household-report-rubric-v2",
+            "evaluator_model": "gpt-6-luna",
+            "knowledge_to_retain": [
+              "전월비·전년비·%p를 구분하고 대상월 수치로 설명한다.",
+              "신선식품과 식품 전체·가공식품의 흐름을 따로 비교한다.",
+              "가상 고정 바구니 계산과 실제 가계 관측치를 구별한다.",
+              "가중 증가액·상승률과 CPI 일괄 적용 차이를 함께 제시한다.",
+              "통신비 감면 종료의 영향은 공식 브리핑 설명 범위에서 서술한다.",
+              "대출 이자 스트레스는 소비물가와 별도의 현금흐름으로 표시한다.",
+              "행동에는 실행 시점·선택 조건·후속 점검 방법을 포함한다.",
+              "중복 제목과 내부 생성 과정을 연상시키는 표현을 줄인다."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "score": 85.0,
+      "ratings": {
+        "facts": 5,
+        "arithmetic": 5,
+        "explanation": 3,
+        "households": 4,
+        "actions": 4,
+        "readability": 4,
+        "sources": 4,
+        "uncertainty": 4
+      },
+      "judge_critical_errors": [],
+      "operator_review": {
+        "reviewed": true,
+        "artifact_sha256": "d3ef90923425bb53d74c64edbbeb32f7adbe64d9ac867ed5f8f45a96acd5dd77",
+        "changes": "중복 소제목 제거. 서버 표현을 아래 계산표로 교체. A80/120만원·B40/160만원과 소득300만원 복원. X×0.95 선택형 목표와 임의5%·보장 아님을 처음 명시.",
+        "feedback_reflection": "2회 뒤의 편집·가구 입력·선택 목표 교훈을 대부분 반영했다. 신선식품 문장에는 각각 하락을 넣었으나 방향을 수치마다 반복하지는 않음.",
+        "regressions": "달 지출을 X로 잡아 다음4주와 비교하면 기간 길이가 다를 수 있다. 새 방법론 PDF는 읽기 불가여서 핵심 개선 근거로 인정하지 않는다.",
+        "judge_audit": "중대오류 없음. 설명3/5는 8월→9월 요금 흐름 연결이 약하다는 관찰과 부합한다. 일시적 기저라는 용어 대신 같은해 한시 할인·종료를 직접 설명하는 것이 안전하다.",
+        "new_source": "새 방법론 PDF 링크는 미확인. 핵심통계는 기존9월 공식 원문 유지.",
+        "lesson": "통신요금 원인은 2025년8월 일부 통신사의 한 달50% 감면으로 요금·상승률이 낮아졌다가 9월 감면이 끝났다는 시간 순서로 짧게 설명한다. 이를 지난해 할인이나 전반적·지속적 물가 악화의 증거로 바꾸지 말고, 0.4%p 전부를 한 요인에 귀속하지 않는다. A는 더 높은 식품 상승률이 적용되는 지출비중이 커 가상 증가액이 B보다 크다고 계산표를 해석한다.",
+        "applied_entry_ids": [
+          "bceab937-0a7a-4b73-bfe6-2e4d53cd813a"
+        ],
+        "authorization": "USER_EXPLICIT_EXPERIMENT_ONLY_APPROVAL; CODEX_REVIEW_NOT_HUMAN_EXPERT"
+      },
+      "chars": 2144,
+      "active_knowledge": 13,
+      "lessons": 2,
+      "active_entry_ids": [
+        "386db24e-f783-419a-ac19-f92646b10df3",
+        "335d2848-0c67-4569-aa01-d34f9574d2dc",
+        "5ba1df0d-f580-4cf9-811e-bad9e7dab8ce",
+        "5fcbaf0f-55b4-4ee3-8b52-c347f7210c9e",
+        "d74a2a16-48b0-4de9-ba1b-778e259b1dbd",
+        "444ab1c8-0355-4749-a173-30fada47d307",
+        "1595210b-fdb2-4728-98d3-5111989a82d2",
+        "82b79bd1-bd2b-4f76-ad91-284639d1c7a5",
+        "dd99bbbc-3d97-4498-a5e4-063c111d6c2b",
+        "1a3c7569-9992-41e0-b7f5-1afe89bf5491",
+        "f14ed6a9-7727-4e31-81d9-55d707a39841",
+        "1f3f8d85-9db0-4c21-97b9-cfe5fb71afa1",
+        "18aedb37-bb80-4622-aedb-bdbad8111be0"
+      ],
+      "canonical_table_all_values": true,
+      "duplicate_heading": false,
+      "captured_sources_now": 1,
+      "readbacks_as_generated": [
+        {
+          "url": "https://www.korea.kr/news/policyNewsView.do?newsId=156721918",
+          "status": "CAPTURED",
+          "captured_at": "2026-11-08T00:40:50.049407+00:00",
+          "snapshot_id": "b68b5904-3837-45db-884f-a7680ff4f088",
+          "text_sha256": "f8b8d7dda03779dc2fcb94ee1580971fb985ba773d0b4def1666cbd24794ad2e"
+        },
+        {
+          "url": "https://www.kostat.go.kr/boardDownload.es?bid=5146&list_no=417616&seq=3",
+          "reason": "SOURCE_CONTENT_TYPE_UNSUPPORTED",
+          "status": "UNAVAILABLE"
+        }
+      ],
+      "source_sha256": "3e21ed51811111b073bbecb07e1a6bb0da17936ace5c8a57f5226ca147a2adad",
+      "contract_sha256": "098aab048d4d31da3c910e5c1b9cdb1b61f7ece86097263128e432d58f209858",
+      "prompt_memory_reviews": [],
+      "web_calls": 1,
+      "artifact_hash_matches": true,
+      "run_id": "79919fe7-cbb1-4f2b-94fc-1d1511850839",
+      "work_id": "5438e91e-3ebb-490e-b165-41511f2e149b",
+      "artifact_id": "058fbd02-6f49-4958-b1c9-49d25e6dd6a2",
+      "artifact_sha256": "d3ef90923425bb53d74c64edbbeb32f7adbe64d9ac867ed5f8f45a96acd5dd77",
+      "memory_sha256": "5d7df414b944b0c43958215b91c47614821516a1a8de5d5e5585e632187f9ddc",
+      "evidence": [
+        {
+          "verification_type": "provided_text_structure",
+          "verifier_version": "provided-text-structure-v5",
+          "result": {
+            "checks": {
+              "task_memory": true,
+              "context_hash": true,
+              "input_hashes": true,
+              "execution_mode": true,
+              "output_present": true,
+              "source_version": true,
+              "steps_complete": true,
+              "task_and_labels": true,
+              "evaluation_scope": true,
+              "prompt_memory_policy": true,
+              "knowledge_policy_hash": true,
+              "source_snapshot_hashes": true,
+              "knowledge_source_quotes_current": true,
+              "persistent_checklist_and_calculations": true
+            },
+            "passed": true,
+            "semantic_review": "NOT_PERFORMED",
+            "requires_human_review": true
+          }
+        },
+        {
+          "verification_type": "automated_report_review",
+          "verifier_version": "household-report-rubric-v2",
+          "result": {
+            "note": "AI 평가 의견(사람 승인 아님). 이번 보완: 정확하고 실용적인 보고서입니다. 설명 부분에서는 8월의 한시 감면이 당시 전년비를 낮춘 뒤 9월 감면 종료로 상승률이 되돌아온 흐름을 한 문장 더 풀어주면 ‘일시적 기저’의 의미가 선명해집니다. 가구 비교도 A와 B의 월 지출 증가액 차이가 식품 비중 차이에서 비롯된다는 점을 본문에서 직접 요약하면 계산표 해석이 쉬워집니다. 행동 제안은 선택지출 기록 외에 통신요금제·할인 조건을 어떤 기준으로 비교할지 한 가지 확인 항목을 더 제시할 수 있습니다. 출처 링크는 중복을 줄이고, 자료명과 대상 시점을 핵심 수치 가까이에 한 번씩 배치하면 더 깔끔합니다. 방법론 링크는 제공된 증거에서 원문 확인이 되지 않았으므로, 그 설명에 의존한다면 확인 \n누적 유지 교훈: 통신비 감면의 종료가 8월과 9월 상승률에 미친 시간 흐름을 짧게 설명한다. / A·B의 증가액 차이를 식품 지출 비중과 연결해 본문에서 해석한다. / 가상 고정 바구니 계산과 실제 가계의 지출 변화를 계속 구분한다. / 선택지출 목표는 임의의 예시임을 밝히고 다음 점검 시점을 둔다. / 출처 링크 중복을 줄이고 핵심 수치 옆에 자료명·대상 시점을 둔다.",
+            "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+            "metrics": {
+              "score": 85.0,
+              "ratings": {
+                "facts": 5,
+                "actions": 4,
+                "sources": 4,
+                "arithmetic": 5,
+                "households": 4,
+                "explanation": 3,
+                "readability": 4,
+                "uncertainty": 4
+              },
+              "critical_errors": [],
+              "review_relation": "SAME_MODEL",
+              "review_response_id": "resp_050a04139d6f6f8e016aefc512e68c87d08d17f402aac3524e",
+              "review_context_sha256": "711f23fba22add703a619215b80923fa332d9ff98e941b34304f02351fff842f"
+            },
+            "work_id": "5438e91e-3ebb-490e-b165-41511f2e149b",
+            "decision": "FEEDBACK",
+            "artifact_id": "058fbd02-6f49-4958-b1c9-49d25e6dd6a2",
+            "rubric_version": "household-report-rubric-v2",
+            "evaluator_model": "gpt-6-luna",
+            "knowledge_to_retain": [
+              "통신비 감면의 종료가 8월과 9월 상승률에 미친 시간 흐름을 짧게 설명한다.",
+              "A·B의 증가액 차이를 식품 지출 비중과 연결해 본문에서 해석한다.",
+              "가상 고정 바구니 계산과 실제 가계의 지출 변화를 계속 구분한다.",
+              "선택지출 목표는 임의의 예시임을 밝히고 다음 점검 시점을 둔다.",
+              "출처 링크 중복을 줄이고 핵심 수치 옆에 자료명·대상 시점을 둔다."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "score": 86.0,
+      "ratings": {
+        "facts": 5,
+        "arithmetic": 4,
+        "explanation": 4,
+        "households": 5,
+        "actions": 4,
+        "readability": 4,
+        "sources": 4,
+        "uncertainty": 4
+      },
+      "judge_critical_errors": [],
+      "operator_review": {
+        "reviewed": true,
+        "artifact_sha256": "d13c09b09bbda5026c7e45e447d47c6709a47dfe19a357c54b055d261852efda",
+        "changes": "A는 식품 비중이 높아 상대적으로 높은 상승률이 더 반영된다는 해석이 생겼다. 읽기 가능한 가중치 개편 자료를 추가 검색했다.",
+        "feedback_reflection": "가구 차이의 원인 연결은 반영. 8월 한 달 감면→9월 종료의 시간순 설명은 여전히 축약돼 있음. 계산·선택 목표·중복 제목 제거는 유지.",
+        "regressions": "선택지출 X의 기간이 불명확하고 이자표에는 원금·금리·제외범위가 없어 독자가 재현하기 어렵다.",
+        "judge_audit": "중대오류 없음은 수치·원문과 일치. 원금과 금리 조건을 함께 적자는 의견 채택. 방법론 URL의 호스트 차이는 공식 도메인 이동 가능성도 있어 출처 조작으로 취급하지 않는다.",
+        "new_source": "가중치 개편 공식 자료를 확보했으나 가구 예시의 핵심 판단은 기존 입력에서 이미 도출된다. 새 문서 수만으로 품질 상승을 인정하지 않음.",
+        "lesson": "목표 비교는 같은 길이의 기간으로 맞춘다. 직전4주 선택지출 X와 다음4주 상한 X×0.95를 비교하고, 구매량·단가·일회성 지출을 나눠 확인한다. 대출 시나리오에는 원금1억2천만원, 연4.0%→4.5%, 금리차0.5%p, 단순 월이자 차이=원금×0.005÷12라는 가정과 원금상환·세금·수수료 제외를 적는다. 실제금리 전망이나 대환 권고로 확대하지 않는다.",
+        "applied_entry_ids": [
+          "a32b142e-b960-490c-8255-cefe54261fa0"
+        ],
+        "authorization": "USER_EXPLICIT_EXPERIMENT_ONLY_APPROVAL; CODEX_REVIEW_NOT_HUMAN_EXPERT"
+      },
+      "chars": 2337,
+      "active_knowledge": 14,
+      "lessons": 3,
+      "active_entry_ids": [
+        "386db24e-f783-419a-ac19-f92646b10df3",
+        "335d2848-0c67-4569-aa01-d34f9574d2dc",
+        "5ba1df0d-f580-4cf9-811e-bad9e7dab8ce",
+        "5fcbaf0f-55b4-4ee3-8b52-c347f7210c9e",
+        "d74a2a16-48b0-4de9-ba1b-778e259b1dbd",
+        "444ab1c8-0355-4749-a173-30fada47d307",
+        "1595210b-fdb2-4728-98d3-5111989a82d2",
+        "82b79bd1-bd2b-4f76-ad91-284639d1c7a5",
+        "dd99bbbc-3d97-4498-a5e4-063c111d6c2b",
+        "1a3c7569-9992-41e0-b7f5-1afe89bf5491",
+        "f14ed6a9-7727-4e31-81d9-55d707a39841",
+        "1f3f8d85-9db0-4c21-97b9-cfe5fb71afa1",
+        "18aedb37-bb80-4622-aedb-bdbad8111be0",
+        "bceab937-0a7a-4b73-bfe6-2e4d53cd813a"
+      ],
+      "canonical_table_all_values": true,
+      "duplicate_heading": false,
+      "captured_sources_now": 3,
+      "readbacks_as_generated": [
+        {
+          "url": "https://m.korea.kr/briefing/policyBriefingView.do?newsId=156721918",
+          "status": "CAPTURED",
+          "captured_at": "2026-11-08T00:42:24.494403+00:00",
+          "snapshot_id": "c9688b6b-0650-45dc-9028-0d804d4c3db6",
+          "text_sha256": "a7a6ac1ceca3cfabc3296396a35fb94f4d1ba958f69366c0bd4d42b98a9c9a0c"
+        },
+        {
+          "url": "https://mods.go.kr/board.es?act=view&bid=213&list_no=428549&mid=a10301040100&nPage=1&ref_bid=&tag=",
+          "status": "CAPTURED",
+          "captured_at": "2026-11-08T00:42:25.563261+00:00",
+          "snapshot_id": "2678ec05-647f-4c28-92cd-297c8cb5b2ed",
+          "text_sha256": "b997bdbb57705f62f4f25298461383e9cb58ca158ebae8fcd43eae440650ee50"
+        },
+        {
+          "url": "https://www.korea.kr/news/policyNewsView.do?newsId=156721918",
+          "status": "CAPTURED",
+          "captured_at": "2026-11-08T00:42:26.111986+00:00",
+          "snapshot_id": "5d06ca25-7796-4a60-a7c2-10096f039a35",
+          "text_sha256": "f8b8d7dda03779dc2fcb94ee1580971fb985ba773d0b4def1666cbd24794ad2e"
+        }
+      ],
+      "source_sha256": "3e21ed51811111b073bbecb07e1a6bb0da17936ace5c8a57f5226ca147a2adad",
+      "contract_sha256": "098aab048d4d31da3c910e5c1b9cdb1b61f7ece86097263128e432d58f209858",
+      "prompt_memory_reviews": [],
+      "web_calls": 2,
+      "artifact_hash_matches": true,
+      "run_id": "8a61b389-7a0d-4384-a892-1c025bdb9597",
+      "work_id": "da6a02fe-7a24-4720-b661-ae905fd4ef2f",
+      "artifact_id": "a2ede0d7-f1f9-48f5-8176-4d16efe79ff5",
+      "artifact_sha256": "d13c09b09bbda5026c7e45e447d47c6709a47dfe19a357c54b055d261852efda",
+      "memory_sha256": "e3e65778221fea3ddc65e90eac6e4fd3af636175036853a0d5a3377460e6ec2c",
+      "evidence": [
+        {
+          "verification_type": "provided_text_structure",
+          "verifier_version": "provided-text-structure-v5",
+          "result": {
+            "checks": {
+              "task_memory": true,
+              "context_hash": true,
+              "input_hashes": true,
+              "execution_mode": true,
+              "output_present": true,
+              "source_version": true,
+              "steps_complete": true,
+              "task_and_labels": true,
+              "evaluation_scope": true,
+              "prompt_memory_policy": true,
+              "knowledge_policy_hash": true,
+              "source_snapshot_hashes": true,
+              "knowledge_source_quotes_current": true,
+              "persistent_checklist_and_calculations": true
+            },
+            "passed": true,
+            "semantic_review": "NOT_PERFORMED",
+            "requires_human_review": true
+          }
+        },
+        {
+          "verification_type": "automated_report_review",
+          "verifier_version": "household-report-rubric-v2",
+          "result": {
+            "note": "AI 평가 의견(사람 승인 아님). 이번 보완: 전반적으로 정확하고 실용적인 보고서입니다. 특히 첫 문단에서 행동 방향을 제시하고, 통계 수치와 가상 계산을 분리한 점이 좋습니다. 더 완결성을 높이려면 통신비 상승 원인을 8월 일부 통신사의 한 달 요금 감면으로 낮아졌던 비교 기준이 9월 종료되며 반등한 흐름으로 짧게 설명하되, 이를 물가 전반의 지속적 악화로 확대 해석하지 않으면 좋겠습니다. 이자 스트레스 5만 원은 계산 결과가 맞지만, 원금 1억2천만 원과 금리 4.0%에서 4.5%로의 가정도 표에 함께 적으면 독자가 재계산하기 쉽습니다. 가중치 개편 자료 링크는 본문에 제시된 주소와 수집 스냅샷의 주소가 다르므로, 접근 가능한 공식 링크 하나로 통일하는 편이 검증에 유리합니다. \n누적 유지 교훈: 통신비는 8월 감면 종료의 비교 기준 효과로 설명하고 지속적 악화로 일반화하지 않기 / 이자 스트레스 결과에는 원금과 금리 가정도 함께 표시해 재계산 가능하게 하기 / 가상 고정 바구니 결과와 실제 가계 지출 변화를 계속 구분하기 / 신선식품 하락과 식품 전체·가공식품 상승을 서로 다른 지표로 설명하기 / 공식 자료 링크는 수집·확인한 주소와 일치하는 주소로 통일하기",
+            "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+            "metrics": {
+              "score": 86.0,
+              "ratings": {
+                "facts": 5,
+                "actions": 4,
+                "sources": 4,
+                "arithmetic": 4,
+                "households": 5,
+                "explanation": 4,
+                "readability": 4,
+                "uncertainty": 4
+              },
+              "critical_errors": [],
+              "review_relation": "SAME_MODEL",
+              "review_response_id": "resp_093f190eee979768016aefc572d0c487d0a77fdf136a14f49e",
+              "review_context_sha256": "eabc323b093c11476c824dd1562d2a6855e983de1f76e76e8df812fb5d4127d0"
+            },
+            "work_id": "da6a02fe-7a24-4720-b661-ae905fd4ef2f",
+            "decision": "FEEDBACK",
+            "artifact_id": "a2ede0d7-f1f9-48f5-8176-4d16efe79ff5",
+            "rubric_version": "household-report-rubric-v2",
+            "evaluator_model": "gpt-6-luna",
+            "knowledge_to_retain": [
+              "통신비는 8월 감면 종료의 비교 기준 효과로 설명하고 지속적 악화로 일반화하지 않기",
+              "이자 스트레스 결과에는 원금과 금리 가정도 함께 표시해 재계산 가능하게 하기",
+              "가상 고정 바구니 결과와 실제 가계 지출 변화를 계속 구분하기",
+              "신선식품 하락과 식품 전체·가공식품 상승을 서로 다른 지표로 설명하기",
+              "공식 자료 링크는 수집·확인한 주소와 일치하는 주소로 통일하기"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "round": 5,
+      "score": 84.0,
+      "ratings": {
+        "facts": 5,
+        "arithmetic": 4,
+        "explanation": 4,
+        "households": 4,
+        "actions": 4,
+        "readability": 4,
+        "sources": 4,
+        "uncertainty": 4
+      },
+      "judge_critical_errors": [],
+      "operator_review": {
+        "reviewed": true,
+        "artifact_sha256": "b873ae99b12ef2b2029ce3dabd8db586cfbe7cebb151859c5765b2159fcae314",
+        "changes": "8월 한 달50% 감면→9월 종료를 설명하고 지속적 악화로 일반화하지 않았다. 대출 원금·금리·제외항목을 복원. 직전4주/다음4주 비교, 구매량·단가·일회성 지출 구분이 추가됐다.",
+        "feedback_reflection": "3회 뒤 시간흐름 교훈은 한 회차 늦게 반영. 4회 뒤의 동일기간·이자 조건은 반영. 가구 차이도 서론으로 올라왔다.",
+        "regressions": "자료가 늘며 본문이 길어졌다. 목표예시를 절감 목표가 아니라고 부르는 표현은 부정확하다. 산술표는 정확하나 CPI 대비 차이의 기준금액·산식은 아직 드러나지 않는다.",
+        "judge_audit": "중대오류 없음. 이자 조건과 시간흐름이 개선됐는데 총점86→84, households5→4로 내려갔다. 단일 평가 변동과 실제 개선을 구분해야 한다. 산식 보강 제안은 타당하나 새 계산지식을 추가할 활성 예산이 제한되므로 계산표의 값은 유지하고 설명에서 산식만 안내한다.",
+        "new_source": "8월·9월 핵심 원문은 확인되지만 세부 가중치 링크 내용은 미확인으로 유지.",
+        "lesson": "행동은 조건에 따라 나눈다. 청구서에서 할인 종료가 확인되면 정상요금 복귀와 실제 사용량 변화를 구분해 비교하고, 식품은 같은 품목의 단가와 구매량을 따로 기록한다. 조정 대상은 이용 빈도 낮고 대체 가능한 선택지출 하나부터 고른다. X×0.95는 선택 가능한 임의 목표의 예시이며 통계에서 도출한 처방·절감 보장이 아니다. 고정 월세·필수지출을 지수만 보고 일률 변경하지 않는다.",
+        "applied_entry_ids": [
+          "0083b8de-8a33-4770-af57-07e7558dbce1"
+        ],
+        "authorization": "USER_EXPLICIT_EXPERIMENT_ONLY_APPROVAL; CODEX_REVIEW_NOT_HUMAN_EXPERT"
+      },
+      "chars": 2538,
+      "active_knowledge": 15,
+      "lessons": 4,
+      "active_entry_ids": [
+        "386db24e-f783-419a-ac19-f92646b10df3",
+        "335d2848-0c67-4569-aa01-d34f9574d2dc",
+        "5ba1df0d-f580-4cf9-811e-bad9e7dab8ce",
+        "5fcbaf0f-55b4-4ee3-8b52-c347f7210c9e",
+        "d74a2a16-48b0-4de9-ba1b-778e259b1dbd",
+        "444ab1c8-0355-4749-a173-30fada47d307",
+        "1595210b-fdb2-4728-98d3-5111989a82d2",
+        "82b79bd1-bd2b-4f76-ad91-284639d1c7a5",
+        "dd99bbbc-3d97-4498-a5e4-063c111d6c2b",
+        "1a3c7569-9992-41e0-b7f5-1afe89bf5491",
+        "f14ed6a9-7727-4e31-81d9-55d707a39841",
+        "1f3f8d85-9db0-4c21-97b9-cfe5fb71afa1",
+        "18aedb37-bb80-4622-aedb-bdbad8111be0",
+        "bceab937-0a7a-4b73-bfe6-2e4d53cd813a",
+        "a32b142e-b960-490c-8255-cefe54261fa0"
+      ],
+      "canonical_table_all_values": true,
+      "duplicate_heading": false,
+      "captured_sources_now": 3,
+      "readbacks_as_generated": [
+        {
+          "url": "https://www.korea.kr/news/policyNewsView.do?newsId=156721918",
+          "status": "CAPTURED",
+          "captured_at": "2026-11-08T00:43:37.293663+00:00",
+          "snapshot_id": "ae0e5148-284f-471a-8167-9d2981315224",
+          "text_sha256": "f8b8d7dda03779dc2fcb94ee1580971fb985ba773d0b4def1666cbd24794ad2e"
+        },
+        {
+          "url": "https://www.korea.kr/news/policyNewsView.do?newsId=156721800",
+          "status": "CAPTURED",
+          "captured_at": "2026-11-08T00:43:37.746107+00:00",
+          "snapshot_id": "37e17894-523d-4406-8cbd-b6af6ffbf255",
+          "text_sha256": "c6bfc6b1d35c98d7f953ada7a7e94c1e597035d0d4282e9e752e55e4a8b91645"
+        },
+        {
+          "url": "https://mods.go.kr/cpi/",
+          "status": "CAPTURED",
+          "captured_at": "2026-11-08T00:43:37.967630+00:00",
+          "snapshot_id": "00b29307-45cd-4038-98c2-1418ac5aec61",
+          "text_sha256": "04d0d6d01c53797714752134abc725517e31bdc15fdfb01ed2d95bc570671512"
+        }
+      ],
+      "source_sha256": "3e21ed51811111b073bbecb07e1a6bb0da17936ace5c8a57f5226ca147a2adad",
+      "contract_sha256": "098aab048d4d31da3c910e5c1b9cdb1b61f7ece86097263128e432d58f209858",
+      "prompt_memory_reviews": [],
+      "web_calls": 2,
+      "artifact_hash_matches": true,
+      "run_id": "c96970b9-8369-48ff-8058-4d2175798c8c",
+      "work_id": "ad801497-1956-4ca0-b82b-04f3ae83812d",
+      "artifact_id": "42298827-0c12-48d7-bb9c-1349d243e344",
+      "artifact_sha256": "b873ae99b12ef2b2029ce3dabd8db586cfbe7cebb151859c5765b2159fcae314",
+      "memory_sha256": "3e253249189b28b16eb7a127725e6f0783178b2b89a91013ae5757148c733e75",
+      "evidence": [
+        {
+          "verification_type": "provided_text_structure",
+          "verifier_version": "provided-text-structure-v5",
+          "result": {
+            "checks": {
+              "task_memory": true,
+              "context_hash": true,
+              "input_hashes": true,
+              "execution_mode": true,
+              "output_present": true,
+              "source_version": true,
+              "steps_complete": true,
+              "task_and_labels": true,
+              "evaluation_scope": true,
+              "prompt_memory_policy": true,
+              "knowledge_policy_hash": true,
+              "source_snapshot_hashes": true,
+              "knowledge_source_quotes_current": true,
+              "persistent_checklist_and_calculations": true
+            },
+            "passed": true,
+            "semantic_review": "NOT_PERFORMED",
+            "requires_human_review": true
+          }
+        },
+        {
+          "verification_type": "automated_report_review",
+          "verifier_version": "household-report-rubric-v2",
+          "result": {
+            "note": "AI 평가 의견(사람 승인 아님). 이번 보완: 계산 결과는 제공된 가정과 일치합니다. 가중 상승률은 A 2.54%, B 2.32%이고 월 지출 증가액은 각각 50,800원과 46,400원이며, CPI 2.1% 일괄 적용보다 각각 8,800원·4,400원 더 큽니다. 다만 계산표에 식품·비식품별 증가액과 산식을 덧붙이면 독자가 결과를 더 쉽게 재검산할 수 있습니다. 특히 ‘CPI 일괄 적용과 차이’는 비교 기준이 되는 CPI 적용액도 함께 표시하면 의미가 더 분명합니다. 핵심 통계의 원문 링크는 적절합니다. 가중치 자료 링크는 보고서에 제시되어 있으나 이번 평가 자료의 스냅샷에서 해당 세부 페이지 본문은 확인되지 않았으므로, 그 자료의 내용은 미확인입니다.\n누적 유지 교훈: 전년비와 전월비, 상승률과 %포인트 차이를 분리해 쓴다. / 신선식품 하락을 식품 전체나 개인 장바구니 하락으로 확대하지 않는다. / 통신요금 감면 종료는 브리핑의 설명 범위 안에서만 서술한다. / 가상 고정 바구니와 실제 가구 지출을 명확히 구분한다. / A·B 입력 지출과 품목 상승률을 함께 보여 주고 원화 결과를 재검산한다. / 금리 스트레스는 CPI 계산과 분리하고 가정·제외 항목을 적는다. / 행동 목표는 선택 가능한 예시로 제시하고 절감 보장을 피한다. / 확인되지 않은 출처 내용은 오류가 아니라 미확인으로 표시한다.",
+            "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+            "metrics": {
+              "score": 84.0,
+              "ratings": {
+                "facts": 5,
+                "actions": 4,
+                "sources": 4,
+                "arithmetic": 4,
+                "households": 4,
+                "explanation": 4,
+                "readability": 4,
+                "uncertainty": 4
+              },
+              "critical_errors": [],
+              "review_relation": "SAME_MODEL",
+              "review_response_id": "resp_0ed2e9782fdf2f2f016aefc5baabb887d09b7a3a8fbd706a8d",
+              "review_context_sha256": "be038ee1dbc466699f842872fc3da0fc19c87c11cc375a276bf56ca84ed62038"
+            },
+            "work_id": "ad801497-1956-4ca0-b82b-04f3ae83812d",
+            "decision": "FEEDBACK",
+            "artifact_id": "42298827-0c12-48d7-bb9c-1349d243e344",
+            "rubric_version": "household-report-rubric-v2",
+            "evaluator_model": "gpt-6-luna",
+            "knowledge_to_retain": [
+              "전년비와 전월비, 상승률과 %포인트 차이를 분리해 쓴다.",
+              "신선식품 하락을 식품 전체나 개인 장바구니 하락으로 확대하지 않는다.",
+              "통신요금 감면 종료는 브리핑의 설명 범위 안에서만 서술한다.",
+              "가상 고정 바구니와 실제 가구 지출을 명확히 구분한다.",
+              "A·B 입력 지출과 품목 상승률을 함께 보여 주고 원화 결과를 재검산한다.",
+              "금리 스트레스는 CPI 계산과 분리하고 가정·제외 항목을 적는다.",
+              "행동 목표는 선택 가능한 예시로 제시하고 절감 보장을 피한다.",
+              "확인되지 않은 출처 내용은 오류가 아니라 미확인으로 표시한다."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "round": 6,
+      "score": 90.0,
+      "ratings": {
+        "facts": 5,
+        "arithmetic": 5,
+        "explanation": 4,
+        "households": 5,
+        "actions": 4,
+        "readability": 4,
+        "sources": 4,
+        "uncertainty": 4
+      },
+      "judge_critical_errors": [],
+      "operator_review": {
+        "reviewed": true,
+        "artifact_sha256": "94a6d3391653ece6b9aba9aa191aadcea4443aced4de7cf69aef2bb294653e2d",
+        "changes": "청구서의 할인 종료·정상요금·사용량 변화를 분리하고, 같은 식품의 단가와 수량을 따로 기록하도록 했다. 이용 빈도 낮고 대체 가능한 선택지출부터 고르는 조건과 고정 월세 과잉 조정 금지가 추가됐다.",
+        "feedback_reflection": "5회 뒤 조건별 행동 교훈이 반영됐다. 4회 뒤 이자 가정은 유지됐으나 월 차이 산식은 여전히 생략.",
+        "regressions": "내용을 축적하며 같은 청구서 지침이 앞뒤에 반복된다. CPI 차이 표의 양수 의미·기준 산식은 여전히 암묵적이다.",
+        "judge_audit": "중대오류 없음. 총점90으로 올랐지만 근거가 기존의 정확한 계산표와 명확해진 행동인 점을 구분한다. 추가 원인 예시는 공식 근거 범위에서만 허용한다.",
+        "new_source": "개인 체감과 CPI 가중치 차이를 설명하는 공식 웹 안내를 검색. 새 원자료 수치나 새 가구 분석은 없음.",
+        "lesson": "계산표 직전에는 연산 구조를 간단히 안내한다: 가구 증가액=식품 기준지출×3.2%+비식품 기준지출×2.1%, CPI 일괄 비교액=전체 기준지출×2.1%, 차이가 양수면 가구 바구니 증가액이 그 비교액보다 크다는 뜻이다. 이자 차이는 원금×0.005÷12이다. 결과값은 승인된 계산표를 사용하며 다시 산출하지 않는다. 같은 단가·같은 수량 가정과 실제 대체구매·계약 차이 때문에 개인 예측이 아님을 표 가까이 밝힌다.",
+        "applied_entry_ids": [
+          "1b5c3f3a-6102-4fa4-930c-5d145ab41941"
+        ],
+        "authorization": "USER_EXPLICIT_EXPERIMENT_ONLY_APPROVAL; CODEX_REVIEW_NOT_HUMAN_EXPERT"
+      },
+      "chars": 2495,
+      "active_knowledge": 16,
+      "lessons": 5,
+      "active_entry_ids": [
+        "386db24e-f783-419a-ac19-f92646b10df3",
+        "335d2848-0c67-4569-aa01-d34f9574d2dc",
+        "5ba1df0d-f580-4cf9-811e-bad9e7dab8ce",
+        "5fcbaf0f-55b4-4ee3-8b52-c347f7210c9e",
+        "d74a2a16-48b0-4de9-ba1b-778e259b1dbd",
+        "444ab1c8-0355-4749-a173-30fada47d307",
+        "1595210b-fdb2-4728-98d3-5111989a82d2",
+        "82b79bd1-bd2b-4f76-ad91-284639d1c7a5",
+        "dd99bbbc-3d97-4498-a5e4-063c111d6c2b",
+        "1a3c7569-9992-41e0-b7f5-1afe89bf5491",
+        "f14ed6a9-7727-4e31-81d9-55d707a39841",
+        "1f3f8d85-9db0-4c21-97b9-cfe5fb71afa1",
+        "18aedb37-bb80-4622-aedb-bdbad8111be0",
+        "bceab937-0a7a-4b73-bfe6-2e4d53cd813a",
+        "a32b142e-b960-490c-8255-cefe54261fa0",
+        "0083b8de-8a33-4770-af57-07e7558dbce1"
+      ],
+      "canonical_table_all_values": true,
+      "duplicate_heading": false,
+      "captured_sources_now": 3,
+      "readbacks_as_generated": [
+        {
+          "url": "https://www.korea.kr/news/policyNewsView.do?newsId=156721918",
+          "status": "CAPTURED",
+          "captured_at": "2026-11-08T00:44:45.400409+00:00",
+          "snapshot_id": "9d16f8e6-0d35-4abd-aefe-3726d0f988ff",
+          "text_sha256": "f8b8d7dda03779dc2fcb94ee1580971fb985ba773d0b4def1666cbd24794ad2e"
+        },
+        {
+          "url": "https://mods.go.kr/menu.es?mid=b70102030000",
+          "status": "CAPTURED",
+          "captured_at": "2026-11-08T00:44:45.810446+00:00",
+          "snapshot_id": "7ded9cf0-2d9f-442a-b439-acb5e85af65d",
+          "text_sha256": "49c06f719e486e7ab75509dc3bb5e3ef133f332568c6db2833cc29bd18d379d5"
+        },
+        {
+          "url": "https://www.korea.kr/news/policyNewsView.do?newsId=156721800",
+          "status": "CAPTURED",
+          "captured_at": "2026-11-08T00:44:46.506833+00:00",
+          "snapshot_id": "9e1b68c3-42d3-486f-8b8f-465de94e4f14",
+          "text_sha256": "c6bfc6b1d35c98d7f953ada7a7e94c1e597035d0d4282e9e752e55e4a8b91645"
+        }
+      ],
+      "source_sha256": "3e21ed51811111b073bbecb07e1a6bb0da17936ace5c8a57f5226ca147a2adad",
+      "contract_sha256": "098aab048d4d31da3c910e5c1b9cdb1b61f7ece86097263128e432d58f209858",
+      "prompt_memory_reviews": [],
+      "web_calls": 1,
+      "artifact_hash_matches": true,
+      "run_id": "3ba1c638-e083-4fe7-830e-55804d36348d",
+      "work_id": "a79ba354-709e-4d5e-947f-fa507b1900db",
+      "artifact_id": "dc96b518-fcd9-4c0f-943f-07ee195fdf13",
+      "artifact_sha256": "94a6d3391653ece6b9aba9aa191aadcea4443aced4de7cf69aef2bb294653e2d",
+      "memory_sha256": "9cbafdb9b9928f55d60160eae82897765b1202ce73fd07c617b7641d59f1791e",
+      "evidence": [
+        {
+          "verification_type": "provided_text_structure",
+          "verifier_version": "provided-text-structure-v5",
+          "result": {
+            "checks": {
+              "task_memory": true,
+              "context_hash": true,
+              "input_hashes": true,
+              "execution_mode": true,
+              "output_present": true,
+              "source_version": true,
+              "steps_complete": true,
+              "task_and_labels": true,
+              "evaluation_scope": true,
+              "prompt_memory_policy": true,
+              "knowledge_policy_hash": true,
+              "source_snapshot_hashes": true,
+              "knowledge_source_quotes_current": true,
+              "persistent_checklist_and_calculations": true
+            },
+            "passed": true,
+            "semantic_review": "NOT_PERFORMED",
+            "requires_human_review": true
+          }
+        },
+        {
+          "verification_type": "automated_report_review",
+          "verifier_version": "household-report-rubric-v2",
+          "result": {
+            "note": "AI 평가 의견(사람 승인 아님). 이번 보완: 전반적으로 정확하고 실용적입니다. 더 다듬으려면 통신비 감면 종료가 비교 기준에 미친 일시적 영향을 한 문장으로 분명히 하고, 0.4%p 상승폭 확대를 전부 통신요금에 귀속하지 않는다는 점과 다른 상승 요인의 예를 짧게 덧붙이세요. 이자 스트레스 계산은 표에 ‘1억2천만원×0.5%÷12=월 5만원’처럼 산식을 함께 쓰면 검산이 쉽습니다. 계산표의 소수점 둘째 자리와 중복 링크는 간소화할 수 있습니다.\n누적 유지 교훈: 전년비·전월비·%p를 구분하고 대상월 관측치만 사용한다. / 통신비 감면 종료의 영향을 일시적 비교 효과와 구별한다. / 하위지수의 방향 차이를 설명하고 개인 체감으로 일반화하지 않는다. / 가상 고정 바구니와 실제 가계 실측치를 명확히 구별한다. / 가구별 가중액·가중률·CPI 적용 차이를 재계산 가능하게 제시한다. / 이자 스트레스는 CPI와 분리하고 가정·제외 항목을 밝힌다. / 행동 목표는 선택 가능한 예시로 제시하고 절감 보장을 피한다. / 핵심 수치 옆에 대상 시점과 정확한 공식 출처를 연결한다.",
+            "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+            "metrics": {
+              "score": 90.0,
+              "ratings": {
+                "facts": 5,
+                "actions": 4,
+                "sources": 4,
+                "arithmetic": 5,
+                "households": 5,
+                "explanation": 4,
+                "readability": 4,
+                "uncertainty": 4
+              },
+              "critical_errors": [],
+              "review_relation": "SAME_MODEL",
+              "review_response_id": "resp_0f1a84a2bc623dde016aefc5ff33a487d0b0294d288491c03e",
+              "review_context_sha256": "465445a0a334174e0d50a510aac098bc16f3d4b5c81c64ebc11726775c32f8d2"
+            },
+            "work_id": "a79ba354-709e-4d5e-947f-fa507b1900db",
+            "decision": "FEEDBACK",
+            "artifact_id": "dc96b518-fcd9-4c0f-943f-07ee195fdf13",
+            "rubric_version": "household-report-rubric-v2",
+            "evaluator_model": "gpt-6-luna",
+            "knowledge_to_retain": [
+              "전년비·전월비·%p를 구분하고 대상월 관측치만 사용한다.",
+              "통신비 감면 종료의 영향을 일시적 비교 효과와 구별한다.",
+              "하위지수의 방향 차이를 설명하고 개인 체감으로 일반화하지 않는다.",
+              "가상 고정 바구니와 실제 가계 실측치를 명확히 구별한다.",
+              "가구별 가중액·가중률·CPI 적용 차이를 재계산 가능하게 제시한다.",
+              "이자 스트레스는 CPI와 분리하고 가정·제외 항목을 밝힌다.",
+              "행동 목표는 선택 가능한 예시로 제시하고 절감 보장을 피한다.",
+              "핵심 수치 옆에 대상 시점과 정확한 공식 출처를 연결한다."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "round": 7,
+      "score": 80.0,
+      "ratings": {
+        "facts": 4,
+        "arithmetic": 4,
+        "explanation": 4,
+        "households": 4,
+        "actions": 4,
+        "readability": 4,
+        "sources": 4,
+        "uncertainty": 4
+      },
+      "judge_critical_errors": [],
+      "operator_review": {
+        "reviewed": true,
+        "artifact_sha256": "2fbaf4b1dd2f484523cd369b36e94fc566089c6c3f24de35774e31ca8989db7b",
+        "changes": "원금×0.005÷12의 이자 산식이 처음 등장. 공식9월·8월 동향의 직접 페이지로 출처가 바뀌었다.",
+        "feedback_reflection": "이자 산식과 고정 바구니 한계를 반영했으나 생활비 연산·CPI 차이의 양수 의미는 여전히 없음. 사후 철회된 교훈의 같은 단가 오류는 본문에 전파되지 않았고, 품목 구성·수량 고정으로 올바르게 서술했다.",
+        "regressions": "8월50% 감면 수치가 빠짐. 핵심 내용은 대부분 유지됐는데 AI 점수가90→80으로 크게 하락.",
+        "judge_audit": "모든 항목을 일괄4점으로 준 평가이며, 사실·산술의 실제 오류는 제시하지 못했다. 원점수는 보존하되 10점 하락을 실질 퇴행으로 해석하지 않는다. Codex 교훈 오류·철회·교정은 round-06/operator_correction.json으로 별도 보존한다.",
+        "new_source": "공식 동향의 새 URL은 추가 자료 접근이지만 고정 통계 자체는 바뀌지 않았다.",
+        "knowledge_kind": "CHECKLIST",
+        "heading": "계산표를 읽는 법",
+        "lesson": "계산표를 읽는 법을 짧게 설명한다. 증가액=식품 기준지출×3.2%+비식품 기준지출×2.1%, 가중상승률=증가액÷전체 기준지출×100, 비교액=전체 기준지출×2.1%이다. CPI 일괄 적용과 차이가 양수면 이 가상 바구니 증가액이 비교액보다 크다는 뜻이다. 고정한 것은 품목 구성·수량이며 가격은 변하고, 대체구매·계약 차이는 미반영이다. 결과는 승인 계산표를 사용하고 재산출하지 않는다. 이 항목을 마지막에 두어 아래 표와 연결한다.",
+        "applied_entry_ids": [
+          "bd60d34d-d299-4e00-afe4-169ca163ab1f"
+        ],
+        "authorization": "USER_EXPLICIT_EXPERIMENT_ONLY_APPROVAL; CODEX_REVIEW_NOT_HUMAN_EXPERT"
+      },
+      "chars": 2514,
+      "active_knowledge": 17,
+      "lessons": 6,
+      "active_entry_ids": [
+        "386db24e-f783-419a-ac19-f92646b10df3",
+        "335d2848-0c67-4569-aa01-d34f9574d2dc",
+        "5ba1df0d-f580-4cf9-811e-bad9e7dab8ce",
+        "5fcbaf0f-55b4-4ee3-8b52-c347f7210c9e",
+        "d74a2a16-48b0-4de9-ba1b-778e259b1dbd",
+        "444ab1c8-0355-4749-a173-30fada47d307",
+        "1595210b-fdb2-4728-98d3-5111989a82d2",
+        "82b79bd1-bd2b-4f76-ad91-284639d1c7a5",
+        "dd99bbbc-3d97-4498-a5e4-063c111d6c2b",
+        "1a3c7569-9992-41e0-b7f5-1afe89bf5491",
+        "f14ed6a9-7727-4e31-81d9-55d707a39841",
+        "1f3f8d85-9db0-4c21-97b9-cfe5fb71afa1",
+        "18aedb37-bb80-4622-aedb-bdbad8111be0",
+        "bceab937-0a7a-4b73-bfe6-2e4d53cd813a",
+        "a32b142e-b960-490c-8255-cefe54261fa0",
+        "0083b8de-8a33-4770-af57-07e7558dbce1",
+        "1b5c3f3a-6102-4fa4-930c-5d145ab41941"
+      ],
+      "canonical_table_all_values": true,
+      "duplicate_heading": false,
+      "captured_sources_now": 3,
+      "readbacks_as_generated": [
+        {
+          "url": "https://mods.go.kr/board.es?act=view&bid=213&list_no=438840&mainXml=Y&mid=b70203010000",
+          "status": "CAPTURED",
+          "captured_at": "2026-11-08T00:45:54.006718+00:00",
+          "snapshot_id": "87e99864-bd67-4993-92a4-bba88e5bf557",
+          "text_sha256": "fa28a1a298d223b2b4920d580f5163464dfa54e8954938da6aa966211fddda02"
+        },
+        {
+          "url": "https://mods.go.kr/board.es?act=view&bid=213&list_no=438342&mid=a10301040100&ref_bid=&tag=",
+          "status": "CAPTURED",
+          "captured_at": "2026-11-08T00:45:55.087161+00:00",
+          "snapshot_id": "87f6b6cf-88b8-43c1-a912-978006a98bad",
+          "text_sha256": "51bafa9fee32ca345470d24633c84b41ec141863d40561825eb03222f875c24a"
+        },
+        {
+          "url": "https://mods.go.kr/menu.es?mid=b70102030000",
+          "status": "CAPTURED",
+          "captured_at": "2026-11-08T00:45:55.498683+00:00",
+          "snapshot_id": "bf5b9808-a477-4e2f-9057-7f67f0533312",
+          "text_sha256": "49c06f719e486e7ab75509dc3bb5e3ef133f332568c6db2833cc29bd18d379d5"
+        }
+      ],
+      "source_sha256": "3e21ed51811111b073bbecb07e1a6bb0da17936ace5c8a57f5226ca147a2adad",
+      "contract_sha256": "098aab048d4d31da3c910e5c1b9cdb1b61f7ece86097263128e432d58f209858",
+      "prompt_memory_reviews": [],
+      "web_calls": 2,
+      "artifact_hash_matches": true,
+      "run_id": "2aa31dc6-3ff0-44e8-ac9a-cbb25423af49",
+      "work_id": "02df14f6-3d5d-4fb0-b427-5aa31208bb2e",
+      "artifact_id": "a0632597-7109-4fa5-a0cc-5e6cb2d0cd7a",
+      "artifact_sha256": "2fbaf4b1dd2f484523cd369b36e94fc566089c6c3f24de35774e31ca8989db7b",
+      "memory_sha256": "81f369161dd0df69e1a883d15fa5d7beb0c5ff0b2b55eb075f971de5e8ce3402",
+      "evidence": [
+        {
+          "verification_type": "provided_text_structure",
+          "verifier_version": "provided-text-structure-v5",
+          "result": {
+            "checks": {
+              "task_memory": true,
+              "context_hash": true,
+              "input_hashes": true,
+              "execution_mode": true,
+              "output_present": true,
+              "source_version": true,
+              "steps_complete": true,
+              "task_and_labels": true,
+              "evaluation_scope": true,
+              "prompt_memory_policy": true,
+              "knowledge_policy_hash": true,
+              "source_snapshot_hashes": true,
+              "knowledge_source_quotes_current": true,
+              "persistent_checklist_and_calculations": true
+            },
+            "passed": true,
+            "semantic_review": "NOT_PERFORMED",
+            "requires_human_review": true
+          }
+        },
+        {
+          "verification_type": "automated_report_review",
+          "verifier_version": "household-report-rubric-v2",
+          "result": {
+            "note": "AI 평가 의견(사람 승인 아님). 이번 보완: 전반적으로 정확하고 실용적인 보고서입니다. 계산표 바로 위에 식품 기준지출×3.2%와 비식품 기준지출×2.1%를 더해 증가액을 구하고, 이를 전체 기준지출×2.1%와 비교한다는 계산식을 한 줄로 덧붙이면 결과를 독자가 직접 검산하기 쉽습니다. 통신비 설명에는 8월 원문에 나온 한 달 50% 감면과 휴대전화료 하락 사실을 짧게 연결하고 해당 출처를 바로 붙이면 원인 설명의 근거가 더 명료해집니다. 본문은 비교적 잘 정리되어 있으나 통계 설명 문단을 나누고 계산표의 소수점 자릿수를 정돈하면 읽기 편해집니다. 고정 바구니 계산은 실제 대체구매나 품목별 가격 차이를 반영하지 않는다는 점도 계산표 가까이에 한 번 더 밝혀 주세요.\n누적 유지 교훈: 전월비·전년비·상승률 간 %p 차이를 분명히 구분한다. / 가상 바구니 계산은 식품·비식품 지출액과 각각의 상승률을 적용한다. / 가상 증가액과 전체 CPI 일괄 적용액의 차이를 함께 제시한다. / 통신비 감면의 영향은 원문 근거와 함께 설명하고 전부 귀속하지 않는다. / 가상 사례·이자 스트레스와 관측된 물가 및 실제 금리를 분리한다. / 행동 제안은 선택 가능한 목표와 확인 방법을 함께 제시한다.",
+            "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+            "metrics": {
+              "score": 80.0,
+              "ratings": {
+                "facts": 4,
+                "actions": 4,
+                "sources": 4,
+                "arithmetic": 4,
+                "households": 4,
+                "explanation": 4,
+                "readability": 4,
+                "uncertainty": 4
+              },
+              "critical_errors": [],
+              "review_relation": "SAME_MODEL",
+              "review_response_id": "resp_0cec72b008841f7d016aefc644316487d0adab7c1f4b7bdf21",
+              "review_context_sha256": "dd1e41baad1dc1743d0c89bf290c739fbbca6127b261f112775d7436f161d497"
+            },
+            "work_id": "02df14f6-3d5d-4fb0-b427-5aa31208bb2e",
+            "decision": "FEEDBACK",
+            "artifact_id": "a0632597-7109-4fa5-a0cc-5e6cb2d0cd7a",
+            "rubric_version": "household-report-rubric-v2",
+            "evaluator_model": "gpt-6-luna",
+            "knowledge_to_retain": [
+              "전월비·전년비·상승률 간 %p 차이를 분명히 구분한다.",
+              "가상 바구니 계산은 식품·비식품 지출액과 각각의 상승률을 적용한다.",
+              "가상 증가액과 전체 CPI 일괄 적용액의 차이를 함께 제시한다.",
+              "통신비 감면의 영향은 원문 근거와 함께 설명하고 전부 귀속하지 않는다.",
+              "가상 사례·이자 스트레스와 관측된 물가 및 실제 금리를 분리한다.",
+              "행동 제안은 선택 가능한 목표와 확인 방법을 함께 제시한다."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "round": 8,
+      "score": 89.0,
+      "ratings": {
+        "facts": 5,
+        "arithmetic": 5,
+        "explanation": 4,
+        "households": 5,
+        "actions": 4,
+        "readability": 4,
+        "sources": 3,
+        "uncertainty": 4
+      },
+      "judge_critical_errors": [],
+      "operator_review": {
+        "reviewed": true,
+        "artifact_sha256": "ee44f4237f9b68c01a003de71be29fe0d37bb5c6a96468303deaf141ad9a3546",
+        "changes": "필수항목으로 바꾼 계산표를 읽는 법이 새 절로 등장했다. 생활비 증가액·가중률·CPI 비교액의 산식과 양수 차이 의미, 가격은 변하고 구성·수량만 고정한다는 한계가 명확해졌다.",
+        "feedback_reflection": "누락되던 산식 피드백이 CHECKLIST 전환 직후 반영됐다. 단순 교훈 누적만의 효과가 아니라 출력 구조 개입 효과가 포함된다. 교정한 단가 표현은 올바르게 유지됐다.",
+        "regressions": "검토 가능성은 높아졌으나 본문이 길어졌다. 직접 통신비 설명이 있는 브리핑 대신 요약 동향 페이지를 인용해 출처 연결이 약해졌다.",
+        "judge_audit": "중대오류 없음. 산식·가구·한계 개선은 실제 본문과 부합한다. 출처3/5는 수치 출처가 공식이라도 통신비 인과 설명까지 직접 확인하기 어렵다는 문제로 해석하며 출처 조작이라고 단정하지 않는다.",
+        "new_source": "새 동향 페이지를 반복 검색했으나 기존 입력을 넘는 새로운 분석 결과는 없음.",
+        "lesson": "통신비 인과 설명에는 내용을 직접 읽은 9월 공식 브리핑 https://www.korea.kr/news/policyNewsView.do?newsId=156721918 을, 8월 한 달50% 감면 설명에는 https://www.korea.kr/news/policyNewsView.do?newsId=156721800 을 바로 붙인다. 다른 요약 페이지로 대체하지 않는다. 핵심 출처는 자료명·대상월을 보여주고 대표 링크를 사용한다. 통계 설명은 짧은2문단으로 나눠 통계·가상계산·이번주행동·계산법을 유지하며 같은 주장을 반복하지 않는다.",
+        "applied_entry_ids": [
+          "0727f308-5452-402c-b1e2-42f6acb3139b"
+        ],
+        "authorization": "USER_EXPLICIT_EXPERIMENT_ONLY_APPROVAL; CODEX_REVIEW_NOT_HUMAN_EXPERT"
+      },
+      "chars": 2672,
+      "active_knowledge": 18,
+      "lessons": 6,
+      "active_entry_ids": [
+        "386db24e-f783-419a-ac19-f92646b10df3",
+        "335d2848-0c67-4569-aa01-d34f9574d2dc",
+        "5ba1df0d-f580-4cf9-811e-bad9e7dab8ce",
+        "5fcbaf0f-55b4-4ee3-8b52-c347f7210c9e",
+        "d74a2a16-48b0-4de9-ba1b-778e259b1dbd",
+        "444ab1c8-0355-4749-a173-30fada47d307",
+        "1595210b-fdb2-4728-98d3-5111989a82d2",
+        "82b79bd1-bd2b-4f76-ad91-284639d1c7a5",
+        "dd99bbbc-3d97-4498-a5e4-063c111d6c2b",
+        "1a3c7569-9992-41e0-b7f5-1afe89bf5491",
+        "f14ed6a9-7727-4e31-81d9-55d707a39841",
+        "1f3f8d85-9db0-4c21-97b9-cfe5fb71afa1",
+        "18aedb37-bb80-4622-aedb-bdbad8111be0",
+        "bceab937-0a7a-4b73-bfe6-2e4d53cd813a",
+        "a32b142e-b960-490c-8255-cefe54261fa0",
+        "0083b8de-8a33-4770-af57-07e7558dbce1",
+        "4f7eb7e0-00a1-4f4a-8d9b-adbd00d90c6e",
+        "bd60d34d-d299-4e00-afe4-169ca163ab1f"
+      ],
+      "canonical_table_all_values": true,
+      "duplicate_heading": false,
+      "captured_sources_now": 3,
+      "readbacks_as_generated": [
+        {
+          "url": "https://mods.go.kr/board.es?act=view&bid=213&list_no=438840&mid=b70203010000&ref_bid=&tag=",
+          "status": "CAPTURED",
+          "captured_at": "2026-11-08T00:47:23.032714+00:00",
+          "snapshot_id": "0d38fc5a-13d8-4223-b879-44ea1ba8b815",
+          "text_sha256": "7a9b71a948114739773fbfc881551f73f39cfa13c6e87270cb9d1780ff70f65d"
+        },
+        {
+          "url": "https://mods.go.kr/board.es?act=view&bid=213&list_no=438342&mid=b70203010000&ref_bid=213&tag=",
+          "status": "CAPTURED",
+          "captured_at": "2026-11-08T00:47:24.089238+00:00",
+          "snapshot_id": "84026489-f396-4566-a248-047346c1bbf4",
+          "text_sha256": "454d5863e230434ab4d92e3d758033c48fd172aca4d3c890d69d5ee4aabb9dae"
+        },
+        {
+          "url": "https://mods.go.kr/menu.es?mid=b70102030000",
+          "status": "CAPTURED",
+          "captured_at": "2026-11-08T00:47:24.490607+00:00",
+          "snapshot_id": "1ac482ee-8556-421e-8f87-516ddd1707ad",
+          "text_sha256": "49c06f719e486e7ab75509dc3bb5e3ef133f332568c6db2833cc29bd18d379d5"
+        }
+      ],
+      "source_sha256": "3e21ed51811111b073bbecb07e1a6bb0da17936ace5c8a57f5226ca147a2adad",
+      "contract_sha256": "098aab048d4d31da3c910e5c1b9cdb1b61f7ece86097263128e432d58f209858",
+      "prompt_memory_reviews": [],
+      "web_calls": 2,
+      "artifact_hash_matches": true,
+      "run_id": "a985b829-dc26-428e-a9e2-9aa0604e6654",
+      "work_id": "00b62b84-a705-4e8b-ae41-480a1f66901c",
+      "artifact_id": "d87d1a13-79a0-4fde-a228-c13778ed080d",
+      "artifact_sha256": "ee44f4237f9b68c01a003de71be29fe0d37bb5c6a96468303deaf141ad9a3546",
+      "memory_sha256": "f2b3cd54f8f7c174929f71861d23b38206d0f35f29e3b34b32f3e39175ed90c4",
+      "evidence": [
+        {
+          "verification_type": "provided_text_structure",
+          "verifier_version": "provided-text-structure-v5",
+          "result": {
+            "checks": {
+              "task_memory": true,
+              "context_hash": true,
+              "input_hashes": true,
+              "execution_mode": true,
+              "output_present": true,
+              "source_version": true,
+              "steps_complete": true,
+              "task_and_labels": true,
+              "evaluation_scope": true,
+              "prompt_memory_policy": true,
+              "knowledge_policy_hash": true,
+              "source_snapshot_hashes": true,
+              "knowledge_source_quotes_current": true,
+              "persistent_checklist_and_calculations": true
+            },
+            "passed": true,
+            "semantic_review": "NOT_PERFORMED",
+            "requires_human_review": true
+          }
+        },
+        {
+          "verification_type": "automated_report_review",
+          "verifier_version": "household-report-rubric-v2",
+          "result": {
+            "note": "AI 평가 의견(사람 승인 아님). 이번 보완: 계산과 가상사례의 한계 표시는 매우 탄탄합니다. 출처는 통계 수치와 통신요금 설명을 각각 직접 뒷받침하는 자료로 연결하면 더 검토하기 쉬워집니다. 특히 통신비 감면 종료 설명에는 제공된 2025년 9월 공식 브리핑 URL을 직접 인용하고, 8월 감면 효과를 뒷받침하는 자료도 해당 내용을 담은 원문으로 연결하는 편이 좋습니다. 본문은 정확하지만 일부 출처 링크가 중복되어 있어 대표 링크만 남기면 더 간결해집니다. 통신비 설명에는 한시 감면이 비교 기준에 미치는 일시적 효과를 한 문장 더 보태면 상승률 변화의 성격이 더 잘 드러납니다.\n누적 유지 교훈: 통신비 감면 종료 설명은 이를 직접 다룬 공식 원문을 인용한다. / 전월비·전년동월비와 상승률 간 %포인트 차이를 구별한다. / 신선식품과 식품 전체의 등락 방향을 혼동하지 않는다. / 가상 고정 바구니 계산과 실제 가계 지출 측정을 분리한다. / 가구별 가중 계산은 기준지출·산식·비교액을 함께 보여준다. / 선택지출 목표는 임의 예시로 밝히고 절감 보장을 하지 않는다. / 금리 스트레스 계산은 CPI 소비지출과 분리해 한계를 표시한다.",
+            "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+            "metrics": {
+              "score": 89.0,
+              "ratings": {
+                "facts": 5,
+                "actions": 4,
+                "sources": 3,
+                "arithmetic": 5,
+                "households": 5,
+                "explanation": 4,
+                "readability": 4,
+                "uncertainty": 4
+              },
+              "critical_errors": [],
+              "review_relation": "SAME_MODEL",
+              "review_response_id": "resp_0f190a58c5fdd418016aefc69d330087d0914d1fb91db354a2",
+              "review_context_sha256": "aa1260e1749d374bab1df78aef04882f2fa6e90a54bb6acb78ec7de4887f3517"
+            },
+            "work_id": "00b62b84-a705-4e8b-ae41-480a1f66901c",
+            "decision": "FEEDBACK",
+            "artifact_id": "d87d1a13-79a0-4fde-a228-c13778ed080d",
+            "rubric_version": "household-report-rubric-v2",
+            "evaluator_model": "gpt-6-luna",
+            "knowledge_to_retain": [
+              "통신비 감면 종료 설명은 이를 직접 다룬 공식 원문을 인용한다.",
+              "전월비·전년동월비와 상승률 간 %포인트 차이를 구별한다.",
+              "신선식품과 식품 전체의 등락 방향을 혼동하지 않는다.",
+              "가상 고정 바구니 계산과 실제 가계 지출 측정을 분리한다.",
+              "가구별 가중 계산은 기준지출·산식·비교액을 함께 보여준다.",
+              "선택지출 목표는 임의 예시로 밝히고 절감 보장을 하지 않는다.",
+              "금리 스트레스 계산은 CPI 소비지출과 분리해 한계를 표시한다."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "round": 9,
+      "score": 86.0,
+      "ratings": {
+        "facts": 4,
+        "arithmetic": 5,
+        "explanation": 4,
+        "households": 5,
+        "actions": 4,
+        "readability": 4,
+        "sources": 4,
+        "uncertainty": 4
+      },
+      "judge_critical_errors": [],
+      "operator_review": {
+        "reviewed": true,
+        "artifact_sha256": "d241c4c987a3205adbd3494dde76f827f61705163b7da0ff064674c6e5d62f9a",
+        "changes": "通신비 설명에 9월·8월 공식 브리핑 직접 URL을 복원하고 한 달50% 감면을 명시. 산식·조건별 행동·이자 가정을 유지.",
+        "feedback_reflection": "직접 원문 연결은 반영됐으나 기존 동향 페이지도 그대로 남아 링크와 긴 통계 문단이 유지됐다.",
+        "regressions": "같은 내용을 더 많은 링크로 설명해 간결성 문제는 해결되지 않았다. CPI 차이의 기준금액은 식으로만 드러나 독자가 별도 계산해야 함.",
+        "judge_audit": "중대오류 없음. facts5→4는 반대되는 원문·오류 구절이 제시되지 않아 의미적 사실 퇴행으로 판정하지 않는다. CPI 기준액42000원 제안은 고정입력의 A·B 총지출200만원×2.1%를 Decimal로 확인했다.",
+        "new_source": "핵심 브리핑 직접 연결 복원이며 새 경제적 발견은 아니다.",
+        "knowledge_kind": "CALCULATION",
+        "lesson": "CPI 비교 차이의 기준값을 모델의 암산 대신 결정론적 계산표에 추가한다. 두 가구의 기준지출 합계는 각각200만원으로 같다. 42000원은 월 생활비 실제 측정값이 아니라 전체 CPI를 일괄 적용한 비교용 증가액이다.",
+        "calculation_payload": {
+          "expression": {
+            "op": "multiply",
+            "args": [
+              {
+                "op": "add",
+                "args": [
+                  {
+                    "path": "/hypothetical_households/A/living_food_won"
+                  },
+                  {
+                    "path": "/hypothetical_households/A/living_nonfood_won"
+                  }
+                ]
+              },
+              {
+                "path": "/observed_statistics/total_cpi/yoy_pct"
+              },
+              {
+                "value": "0.01"
+              }
+            ]
+          },
+          "unit": "원 · CPI 비교액(기준지출200만원)",
+          "decimal_places": 2
+        },
+        "applied_entry_ids": [
+          "4a9ba607-0500-49ac-a8ba-dc93e5ad632e"
+        ],
+        "authorization": "USER_EXPLICIT_EXPERIMENT_ONLY_APPROVAL; CODEX_REVIEW_NOT_HUMAN_EXPERT"
+      },
+      "chars": 2927,
+      "active_knowledge": 19,
+      "lessons": 7,
+      "active_entry_ids": [
+        "386db24e-f783-419a-ac19-f92646b10df3",
+        "335d2848-0c67-4569-aa01-d34f9574d2dc",
+        "5ba1df0d-f580-4cf9-811e-bad9e7dab8ce",
+        "5fcbaf0f-55b4-4ee3-8b52-c347f7210c9e",
+        "d74a2a16-48b0-4de9-ba1b-778e259b1dbd",
+        "444ab1c8-0355-4749-a173-30fada47d307",
+        "1595210b-fdb2-4728-98d3-5111989a82d2",
+        "82b79bd1-bd2b-4f76-ad91-284639d1c7a5",
+        "dd99bbbc-3d97-4498-a5e4-063c111d6c2b",
+        "1a3c7569-9992-41e0-b7f5-1afe89bf5491",
+        "f14ed6a9-7727-4e31-81d9-55d707a39841",
+        "1f3f8d85-9db0-4c21-97b9-cfe5fb71afa1",
+        "18aedb37-bb80-4622-aedb-bdbad8111be0",
+        "bceab937-0a7a-4b73-bfe6-2e4d53cd813a",
+        "a32b142e-b960-490c-8255-cefe54261fa0",
+        "0083b8de-8a33-4770-af57-07e7558dbce1",
+        "4f7eb7e0-00a1-4f4a-8d9b-adbd00d90c6e",
+        "bd60d34d-d299-4e00-afe4-169ca163ab1f",
+        "0727f308-5452-402c-b1e2-42f6acb3139b"
+      ],
+      "canonical_table_all_values": true,
+      "duplicate_heading": false,
+      "captured_sources_now": 3,
+      "readbacks_as_generated": [
+        {
+          "url": "https://mods.go.kr/board.es?act=view&bid=213&list_no=438840&mid=a20101000000&ref_bid=&tag=",
+          "status": "CAPTURED",
+          "captured_at": "2026-11-08T00:48:38.198949+00:00",
+          "snapshot_id": "0fceba1b-ac25-46d4-9d7c-4cf209cbb12c",
+          "text_sha256": "c8bba68e17047fdb797f40b3d2105c4877d291ca967b7002d89e357a9b7aff9e"
+        },
+        {
+          "url": "https://mods.go.kr/board.es?act=view&bid=213&list_no=438342&mainXml=Y&mid=b70203010000",
+          "status": "CAPTURED",
+          "captured_at": "2026-11-08T00:48:39.287462+00:00",
+          "snapshot_id": "73f9ecc1-cc96-4a92-b22c-2216e6d76e9f",
+          "text_sha256": "6bbdea3b4656d05e3c0c5a67588e47f490ecca3ecf7264b025461275089f81da"
+        },
+        {
+          "url": "https://mods.go.kr/menu.es?mid=b70102030000",
+          "status": "CAPTURED",
+          "captured_at": "2026-11-08T00:48:39.712872+00:00",
+          "snapshot_id": "81ce126b-c814-4d99-8b15-747b5492e139",
+          "text_sha256": "49c06f719e486e7ab75509dc3bb5e3ef133f332568c6db2833cc29bd18d379d5"
+        }
+      ],
+      "source_sha256": "3e21ed51811111b073bbecb07e1a6bb0da17936ace5c8a57f5226ca147a2adad",
+      "contract_sha256": "098aab048d4d31da3c910e5c1b9cdb1b61f7ece86097263128e432d58f209858",
+      "prompt_memory_reviews": [],
+      "web_calls": 1,
+      "artifact_hash_matches": true,
+      "run_id": "587b9f46-6863-4847-9c2e-f978f1a61148",
+      "work_id": "b57eb1df-3f7f-4c43-aeb8-b5fd4a199066",
+      "artifact_id": "6ce915fd-3ab2-4fe1-8c7f-7c28f6c89d8a",
+      "artifact_sha256": "d241c4c987a3205adbd3494dde76f827f61705163b7da0ff064674c6e5d62f9a",
+      "memory_sha256": "9f313453d5e4e63414d515b3757cff792e3170682a833856e3d43b4e4e21d881",
+      "evidence": [
+        {
+          "verification_type": "provided_text_structure",
+          "verifier_version": "provided-text-structure-v5",
+          "result": {
+            "checks": {
+              "task_memory": true,
+              "context_hash": true,
+              "input_hashes": true,
+              "execution_mode": true,
+              "output_present": true,
+              "source_version": true,
+              "steps_complete": true,
+              "task_and_labels": true,
+              "evaluation_scope": true,
+              "prompt_memory_policy": true,
+              "knowledge_policy_hash": true,
+              "source_snapshot_hashes": true,
+              "knowledge_source_quotes_current": true,
+              "persistent_checklist_and_calculations": true
+            },
+            "passed": true,
+            "semantic_review": "NOT_PERFORMED",
+            "requires_human_review": true
+          }
+        },
+        {
+          "verification_type": "automated_report_review",
+          "verifier_version": "household-report-rubric-v2",
+          "result": {
+            "note": "AI 평가 의견(사람 승인 아님). 이번 보완: 전반적으로 수치와 가정의 구분이 정확하고, 독자가 이번 주에 할 일을 실행 가능한 방식으로 제안했습니다. 통신비 설명은 8월 감면과 9월 종료를 연결하지만, 감면이 끝나면서 전년동월비 비교에 미치는 일시적 기저 효과를 한 문장으로 더 분명히 풀어주면 원인 설명이 더 쉬워집니다. 표의 비교 차이는 정확하지만 A·B 모두 CPI 2.1%를 일괄 적용한 증가액이 42,000원이라는 기준값도 함께 적으면 독자가 8,800원·4,400원의 차이를 즉시 검산할 수 있습니다. 출처 링크는 충분하나 같은 자료의 링크가 반복되므로 핵심 자료명과 링크를 간결하게 묶으면 읽기 편합니다.\n누적 유지 교훈: 9월 신선식품은 전년비 2.5%, 전월비 0.9% 하락으로 각각 구분한다. / 8월 통신요금 감면과 9월 종료를 시간 순서로 설명하되 전부를 단일 원인으로 돌리지 않는다. / 가구 바구니 계산은 식품 3.2%, 비식품 2.1%를 기준지출에 각각 적용한다. / A·B의 CPI 2.1% 일괄 비교액은 각각 42,000원이다. / 가상 고정수량 계산과 실제 가계 지출 변화를 분명히 구분한다. / 선택지출 목표는 임의 예시로 제시하고 절감액을 보장하지 않는다. / 대출 이자 스트레스는 소비물가와 분리하고 실제 금리 전망으로 표현하지 않는다.",
+            "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+            "metrics": {
+              "score": 86.0,
+              "ratings": {
+                "facts": 4,
+                "actions": 4,
+                "sources": 4,
+                "arithmetic": 5,
+                "households": 5,
+                "explanation": 4,
+                "readability": 4,
+                "uncertainty": 4
+              },
+              "critical_errors": [],
+              "review_relation": "SAME_MODEL",
+              "review_response_id": "resp_0aef7b3de352fba2016aefc6e872b087d0ad5a9add3b494556",
+              "review_context_sha256": "66ddfdb33119e39f85157a4592a38384d17f55dd8b50126ef73bf2e20efebd1b"
+            },
+            "work_id": "b57eb1df-3f7f-4c43-aeb8-b5fd4a199066",
+            "decision": "FEEDBACK",
+            "artifact_id": "6ce915fd-3ab2-4fe1-8c7f-7c28f6c89d8a",
+            "rubric_version": "household-report-rubric-v2",
+            "evaluator_model": "gpt-6-luna",
+            "knowledge_to_retain": [
+              "9월 신선식품은 전년비 2.5%, 전월비 0.9% 하락으로 각각 구분한다.",
+              "8월 통신요금 감면과 9월 종료를 시간 순서로 설명하되 전부를 단일 원인으로 돌리지 않는다.",
+              "가구 바구니 계산은 식품 3.2%, 비식품 2.1%를 기준지출에 각각 적용한다.",
+              "A·B의 CPI 2.1% 일괄 비교액은 각각 42,000원이다.",
+              "가상 고정수량 계산과 실제 가계 지출 변화를 분명히 구분한다.",
+              "선택지출 목표는 임의 예시로 제시하고 절감액을 보장하지 않는다.",
+              "대출 이자 스트레스는 소비물가와 분리하고 실제 금리 전망으로 표현하지 않는다."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "round": 10,
+      "score": 90.0,
+      "ratings": {
+        "facts": 5,
+        "arithmetic": 5,
+        "explanation": 4,
+        "households": 5,
+        "actions": 4,
+        "readability": 3,
+        "sources": 5,
+        "uncertainty": 5
+      },
+      "judge_critical_errors": [],
+      "operator_review": {
+        "reviewed": true,
+        "artifact_sha256": "805f8e32fd5b9607f7d0f3c5f87288ce8460f2773be868f1a1d55c58737742a3",
+        "changes": "CPI 일괄 비교액42000원이 결정론적 표에 추가됐다. 핵심 원문 링크를9월·8월 브리핑2개로 정리했다. 가구·이자·행동·산식·한계는 유지했다.",
+        "feedback_reflection": "9회 뒤의 검산한 비교액 피드백이 실제 표에 들어왔다. 기존 첫 회차 교훈과 초기 계산도 유지. 10회에서 중단하며 이번 비평을 적용한11회는 만들지 않는다.",
+        "regressions": "새 계산 행 제목이 검토 교훈09라는 내부 표식으로 노출됐다. 숫자는 정확하지만 독자용 이름으로 바꾸어야 한다. 통계는 여전히 긴 한 문단이며 간결성 문제는 남았다.",
+        "judge_audit": "중대오류 없음과 내부 표식 지적은 실제 원문과 부합한다. 원점수90을 보존하되 가독성3/5와 라벨 결함이 남아 최종 완성본이나 전문가 동등 품질로 판정하지 않는다.",
+        "new_source": "새로운 경제 자료의 발견보다 기존 직접 원문 선택과 검산한 기준액을 통합한 변화다.",
+        "lesson": null,
+        "applied_entry_ids": [],
+        "authorization": "USER_EXPLICIT_EXPERIMENT_ONLY_APPROVAL; CODEX_REVIEW_NOT_HUMAN_EXPERT"
+      },
+      "chars": 2264,
+      "active_knowledge": 20,
+      "lessons": 7,
+      "active_entry_ids": [
+        "386db24e-f783-419a-ac19-f92646b10df3",
+        "335d2848-0c67-4569-aa01-d34f9574d2dc",
+        "5ba1df0d-f580-4cf9-811e-bad9e7dab8ce",
+        "5fcbaf0f-55b4-4ee3-8b52-c347f7210c9e",
+        "d74a2a16-48b0-4de9-ba1b-778e259b1dbd",
+        "444ab1c8-0355-4749-a173-30fada47d307",
+        "1595210b-fdb2-4728-98d3-5111989a82d2",
+        "82b79bd1-bd2b-4f76-ad91-284639d1c7a5",
+        "dd99bbbc-3d97-4498-a5e4-063c111d6c2b",
+        "1a3c7569-9992-41e0-b7f5-1afe89bf5491",
+        "f14ed6a9-7727-4e31-81d9-55d707a39841",
+        "1f3f8d85-9db0-4c21-97b9-cfe5fb71afa1",
+        "18aedb37-bb80-4622-aedb-bdbad8111be0",
+        "bceab937-0a7a-4b73-bfe6-2e4d53cd813a",
+        "a32b142e-b960-490c-8255-cefe54261fa0",
+        "0083b8de-8a33-4770-af57-07e7558dbce1",
+        "4f7eb7e0-00a1-4f4a-8d9b-adbd00d90c6e",
+        "bd60d34d-d299-4e00-afe4-169ca163ab1f",
+        "0727f308-5452-402c-b1e2-42f6acb3139b",
+        "4a9ba607-0500-49ac-a8ba-dc93e5ad632e"
+      ],
+      "canonical_table_all_values": true,
+      "duplicate_heading": false,
+      "captured_sources_now": 2,
+      "readbacks_as_generated": [
+        {
+          "url": "https://www.korea.kr/news/policyNewsView.do?newsId=156721918",
+          "status": "CAPTURED",
+          "captured_at": "2026-11-08T00:50:03.747063+00:00",
+          "snapshot_id": "e1056ef6-1d52-43d3-b4c5-e5ee82031e74",
+          "text_sha256": "da54ec9d2113740f04f715aa5b9abff00bd74297841c05af0658cdc705c23bc8"
+        },
+        {
+          "url": "https://www.korea.kr/news/policyNewsView.do?newsId=156721800",
+          "status": "CAPTURED",
+          "captured_at": "2026-11-08T00:50:04.370749+00:00",
+          "snapshot_id": "7033c076-32f8-4c75-94fb-f0128fd093b1",
+          "text_sha256": "37135ec10bf1ccff2f432654812018858dcc6f0db1e6f41bb0746824b689bd27"
+        }
+      ],
+      "source_sha256": "3e21ed51811111b073bbecb07e1a6bb0da17936ace5c8a57f5226ca147a2adad",
+      "contract_sha256": "098aab048d4d31da3c910e5c1b9cdb1b61f7ece86097263128e432d58f209858",
+      "prompt_memory_reviews": [],
+      "web_calls": 1,
+      "artifact_hash_matches": true,
+      "run_id": "f5db4b13-12c7-471c-b15d-5a9994b48182",
+      "work_id": "647bf09b-aee7-44af-82a8-8e34aa4960dc",
+      "artifact_id": "593213d3-3221-4c7a-b7d9-b4360b44780b",
+      "artifact_sha256": "805f8e32fd5b9607f7d0f3c5f87288ce8460f2773be868f1a1d55c58737742a3",
+      "memory_sha256": "5ec85a16a8869d69fe5b3e534485c410b80068782366a1535f4bf7728bc3260c",
+      "evidence": [
+        {
+          "verification_type": "provided_text_structure",
+          "verifier_version": "provided-text-structure-v5",
+          "result": {
+            "checks": {
+              "task_memory": true,
+              "context_hash": true,
+              "input_hashes": true,
+              "execution_mode": true,
+              "output_present": true,
+              "source_version": true,
+              "steps_complete": true,
+              "task_and_labels": true,
+              "evaluation_scope": true,
+              "prompt_memory_policy": true,
+              "knowledge_policy_hash": true,
+              "source_snapshot_hashes": true,
+              "knowledge_source_quotes_current": true,
+              "persistent_checklist_and_calculations": true
+            },
+            "passed": true,
+            "semantic_review": "NOT_PERFORMED",
+            "requires_human_review": true
+          }
+        },
+        {
+          "verification_type": "automated_report_review",
+          "verifier_version": "household-report-rubric-v2",
+          "result": {
+            "note": "AI 평가 의견(사람 승인 아님). 이번 보완: 전반적으로 사실·계산·불확실성 처리가 탄탄합니다. 통신비 설명은 8월 감면으로 상승률이 낮아진 뒤 9월 감면 종료가 상승률 확대의 주요 요인이 됐다는 시간 흐름을 한 문장으로 더 직접 연결하면 원인 구조가 더 선명해집니다. 표의 마지막 행 ‘검토 교훈 09’는 독자에게 의미가 설명되지 않는 내부 표식처럼 보입니다. 해당 행은 삭제하거나, 기준지출 200만 원에 CPI 2.1%를 적용한 비교액이라는 뜻을 일반 독자가 알 수 있게 바꾸세요. 본문과 계산표의 숫자가 많으므로 그 행을 정리하고, 핵심 행동과 가구 차이를 더 눈에 띄게 배치하면 가독성이 좋아집니다. 5% 지출 상한은 임의의 선택 예시라고 잘 밝혔지만, 필수지출을 제외한 조정 가능\n누적 유지 교훈: 9월 관측치와 가상 계산을 명확히 구분한다. / 전월비·전년동월비·%포인트를 정확히 표기한다. / 신선식품과 식품 전체의 서로 다른 움직임을 함께 설명한다. / A·B 가중액과 CPI 비교 차이를 검산 가능한 형태로 제시한다. / 금리 스트레스는 소비물가와 별도 현금흐름으로 다룬다. / 행동 제안은 선택 사항으로 제시하고 절감 보장을 피한다. / 공식 자료명·대상월·정확한 URL을 핵심 사실과 연결한다. / 독자에게 불명확한 내부 표식이나 메모를 결과물에서 제거한다.",
+            "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+            "metrics": {
+              "score": 90.0,
+              "ratings": {
+                "facts": 5,
+                "actions": 4,
+                "sources": 5,
+                "arithmetic": 5,
+                "households": 5,
+                "explanation": 4,
+                "readability": 3,
+                "uncertainty": 5
+              },
+              "critical_errors": [],
+              "review_relation": "SAME_MODEL",
+              "review_response_id": "resp_0161e1502cf8fde3016aefc73d11ec87d083ecd3b6c8da23d6",
+              "review_context_sha256": "88dab59dd663792b39f37db4b949163e8da1c90a58ed216bc9123bbc06b3e8ce"
+            },
+            "work_id": "647bf09b-aee7-44af-82a8-8e34aa4960dc",
+            "decision": "FEEDBACK",
+            "artifact_id": "593213d3-3221-4c7a-b7d9-b4360b44780b",
+            "rubric_version": "household-report-rubric-v2",
+            "evaluator_model": "gpt-6-luna",
+            "knowledge_to_retain": [
+              "9월 관측치와 가상 계산을 명확히 구분한다.",
+              "전월비·전년동월비·%포인트를 정확히 표기한다.",
+              "신선식품과 식품 전체의 서로 다른 움직임을 함께 설명한다.",
+              "A·B 가중액과 CPI 비교 차이를 검산 가능한 형태로 제시한다.",
+              "금리 스트레스는 소비물가와 별도 현금흐름으로 다룬다.",
+              "행동 제안은 선택 사항으로 제시하고 절감 보장을 피한다.",
+              "공식 자료명·대상월·정확한 URL을 핵심 사실과 연결한다.",
+              "독자에게 불명확한 내부 표식이나 메모를 결과물에서 제거한다."
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "completed": 10,
+  "total_runs": 12,
+  "failed_runs": 2,
+  "reference": {
+    "A": {
+      "food_change_won": "25600.000",
+      "nonfood_change_won": "25200.000",
+      "total_change_won": "50800.000",
+      "weighted_pct": "2.5400",
+      "new_consumption_won": "2050800.000",
+      "headline_shortfall_won": "8800.000"
+    },
+    "B": {
+      "food_change_won": "12800.000",
+      "nonfood_change_won": "33600.000",
+      "total_change_won": "46400.000",
+      "weighted_pct": "2.3200",
+      "new_consumption_won": "2046400.000",
+      "headline_shortfall_won": "4400.000"
+    },
+    "interest_stress_extra_month_won": "50000.000",
+    "scope": "Arithmetic under fixed synthetic quantities, not measured household inflation. Reference not passed directly to writer."
+  }
+}

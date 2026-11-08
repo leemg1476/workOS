@@ -1,0 +1,16 @@
+{
+  "study_version": "longitudinal-report-v1",
+  "task_id": "USER-545faf8c-091f-462f-a834-86c909606fd7",
+  "design_id": "9684e6cb-218c-4c71-8c88-dae6b6d5e4aa",
+  "model": "gpt-6-luna",
+  "source_sha256": "30f087d95d84e2e741a53b1b6edea7e9eb863f35af15e274604bf107f1eb5a96",
+  "rubric_sha256": "f032e83b0c578a299a169c3ad73fc23c4e3d81cad9c143b15aa7ef9d3b6b386d",
+  "started_at": "2026-11-08T00:35:31.500198+00:00",
+  "target_rounds": 10,
+  "design": "single adaptive sequence; LIVE web writer and same-model isolated advisory reviewer; user-authorized experiment-only knowledge updates after Codex operator review; no report acceptance or production method promotion",
+  "status": "STOPPED_AFTER_COMPLETING_AUTHORIZED_TEN_ROUNDS",
+  "completed_rounds": 10,
+  "writer_runs": 12,
+  "stop_reason": "사용자 요청10회 완료. 추가 실행 금지.",
+  "authorization": "EXPLICIT_USER_APPROVAL_FOR_THIS_EXPERIMENT_ONLY"
+}

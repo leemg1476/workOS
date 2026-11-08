@@ -20,7 +20,7 @@ def kernel():
     try:
         migrate()
         with engine.begin() as c:
-            c.execute(text('TRUNCATE text_work_links, voc_records, voc_method_versions, voc_eval_suites, policy_documents, market_observations, source_documents, job_schedule_cursors, work_queue, work_dependencies, evidence, artifacts, runs, work_events, work_items, job_definitions, task_definitions CASCADE'))
+            c.execute(text('TRUNCATE text_work_joins, text_work_links, voc_records, voc_method_versions, voc_eval_suites, policy_documents, market_observations, source_documents, job_schedule_cursors, work_queue, work_dependencies, evidence, artifacts, runs, work_events, work_items, job_definitions, task_definitions CASCADE'))
             c.execute(text('''INSERT INTO task_definitions VALUES ('TEST',1,'test','test','{}','{}',
               '{"kind":"mock_receipt","required_fields":["mode","task_id","value"]}',true)'''))
             c.execute(text("INSERT INTO job_definitions(job_id,task_id,task_version,trigger_type) VALUES ('test-job','TEST',1,'MANUAL')"))

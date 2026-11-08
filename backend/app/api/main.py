@@ -16,11 +16,14 @@ from app.evaluation.text_experiments import ExperimentRequest, FinalizeRequest, 
 from app.evaluation.text_decisions import DecisionRequest, decide as decide_text_experiment
 from app.evaluation.text_contract_changes import ContractChangeRequest, ContractRollbackRequest, apply as apply_text_contract, rollback as rollback_text_contract
 from app.domain.hashing import digest
+from app.evaluation.report_feedback import AgentFeedback, record as record_agent_feedback
+from app.work.knowledge import KnowledgeProposal,KnowledgeDecision,propose as propose_knowledge,decide as decide_knowledge,entries as knowledge_entries
 from app.integrations.search import readiness, SearchUnavailable
 from app.work.designs import CreateDesign, EditDesign, DesignFeedback, generate, create as create_design, revise as revise_design, apply_feedback
 from app.work.register_design import RegisterDesign, ScheduleState, register as register_design, set_schedule
 from app.workloads.text_sources import UpdateTextSource, get_source, update_source
 from app.workloads.text_links import CreateLink, SetLink, create as create_text_link, set_enabled as set_text_link
+from app.workloads.text_joins import CreateJoin, SetJoin, create as create_text_join, set_enabled as set_text_join, pending as text_join_pending
 
 
 @asynccontextmanager
@@ -172,6 +175,59 @@ def tasks():
         return tasks
 
 
+@app.post('/api/work/{work_id}/agent-feedback')
+def agent_feedback(work_id: UUID, body: AgentFeedback):
+    return {'recorded':record_agent_feedback(engine,str(work_id),body),'scope':'AUTOMATED_OPINION_NOT_HUMAN_APPROVAL'}
+
+
+@app.get('/api/tasks/{task_id}/memory')
+def task_memory(task_id: str):
+    from app.work.task_memory import overview
+    with engine.connect() as c:
+        return overview(c, task_id)
+
+
+@app.get('/api/tasks/{task_id}/knowledge')
+def task_knowledge(task_id: str):
+    with engine.connect() as c:
+        if not c.execute(text('SELECT 1 FROM task_definitions WHERE task_id=:id'),{'id':task_id}).first():raise NotFound('task not found')
+        from app.work.knowledge import _resolve,source_text
+        rows=knowledge_entries(c,task_id)
+        active_version=c.execute(text('SELECT version FROM task_definitions WHERE task_id=:id AND active'),{'id':task_id}).scalar_one_or_none()
+        sources={v:source_text(c,task_id,v) for v in {r['task_version'] for r in rows}}
+        for row in rows:
+            row['scope_matches']=digest(sources[row['task_version']])==row['source_scope_sha256']
+            row['task_version_active']=row['task_version']==active_version
+            try:row['preview']=_resolve(c,row,sources[row['task_version']])
+            except (ValueError,TypeError,KeyError,ArithmeticError,IndexError):row['preview']={'invalid':True,'reason':'근거 또는 계산식 재검토 필요'}
+        return rows
+
+
+@app.post('/api/tasks/{task_id}/knowledge')
+def new_task_knowledge(task_id: str,body: KnowledgeProposal):
+    try:return {'entry_id':propose_knowledge(engine,task_id,body),'status':'PROPOSED'}
+    except (ValueError,TypeError) as exc:raise HTTPException(422,str(exc)) from exc
+
+
+@app.post('/api/tasks/{task_id}/knowledge/import-feedback')
+def import_task_feedback(task_id: str):
+    from app.work.knowledge import import_feedback
+    return {'entry_ids':import_feedback(engine,task_id),'status':'PROPOSED_ONLY'}
+
+
+@app.post('/api/knowledge/{entry_id}/decision')
+def task_knowledge_decision(entry_id: UUID,body: KnowledgeDecision):
+    return {'recorded':decide_knowledge(engine,str(entry_id),body)}
+
+
+@app.get('/api/runs/{run_id}/review-context')
+def report_review_context(run_id: UUID):
+    from app.evaluation.report_quality import reviewer_context
+    try:
+        with engine.connect() as c:return reviewer_context(c,str(run_id))
+    except ValueError as exc:raise HTTPException(409,str(exc)) from exc
+
+
 @app.get('/api/jobs')
 def jobs():
     with engine.connect() as c:
@@ -281,6 +337,34 @@ def add_text_work_link(body: CreateLink):
 @app.post('/api/text-work-links/{link_id}/state')
 def text_work_link_state(link_id: UUID, body: SetLink):
     return {'changed':set_text_link(engine,str(link_id),body)}
+
+
+@app.get('/api/text-work-joins')
+def text_work_joins():
+    with engine.connect() as c:
+        groups=[dict(r) for r in c.execute(text('SELECT * FROM text_work_joins ORDER BY created_at DESC')).mappings()]
+        for group in groups:
+            group['inputs']=[{'source_task_id':r['source_task_id'],'state':r['state'],
+                'source_work_id':str(r['source_work_id']) if r['source_work_id'] else None,
+                'source_artifact_id':str(r['source_artifact_id']) if r['source_artifact_id'] else None}
+                for r in text_join_pending(c,group)]
+            recent=c.execute(text('''SELECT target_work_id FROM text_work_join_firings WHERE join_id=:id ORDER BY created_at DESC LIMIT 1'''),
+                             {'id':group['join_id']}).scalar_one_or_none()
+            group['latest_work_id']=str(recent) if recent else None
+            group['firing_count']=c.execute(text('SELECT count(*) FROM text_work_join_firings WHERE join_id=:id'),
+                                             {'id':group['join_id']}).scalar_one()
+        return groups
+
+
+@app.post('/api/text-work-joins')
+def add_text_work_join(body: CreateJoin):
+    join_id,created=create_text_join(engine,body)
+    return {'join_id':join_id,'created':created}
+
+
+@app.post('/api/text-work-joins/{join_id}/state')
+def text_work_join_state(join_id: UUID, body: SetJoin):
+    return {'changed':set_text_join(engine,str(join_id),body)}
 
 
 @app.post('/api/tasks/{task_id}/text-experiments')
@@ -527,7 +611,9 @@ def run_detail(run_id: str):
             raise HTTPException(404, 'run not found')
         context = c.execute(text('SELECT manifest,sha256 FROM run_contexts WHERE run_id=:id'), {'id':run_id}).mappings().first()
         steps = c.execute(text('SELECT graph_version,node_name,status,error_type,created_at FROM run_steps WHERE run_id=:id ORDER BY step_id'), {'id':run_id}).mappings().all()
-        return {**dict(run), 'context':dict(context) if context else None, 'steps':[dict(step) for step in steps]}
+        memory=c.execute(text('SELECT manifest,sha256 FROM run_task_memories WHERE run_id=:id'),{'id':run_id}).mappings().first()
+        return {**dict(run), 'context':dict(context) if context else None, 'steps':[dict(step) for step in steps],
+                'task_memory':dict(memory) if memory else None}
 
 
 @app.get('/api/runs/{run_id}/artifacts')

@@ -1,0 +1,751 @@
+{
+  "round": 6,
+  "task_id": "USER-545faf8c-091f-462f-a834-86c909606fd7",
+  "work_id": "a79ba354-709e-4d5e-947f-fa507b1900db",
+  "run_id": "3ba1c638-e083-4fe7-830e-55804d36348d",
+  "artifact_id": "dc96b518-fcd9-4c0f-943f-07ee195fdf13",
+  "artifact_sha256": "94a6d3391653ece6b9aba9aa191aadcea4443aced4de7cf69aef2bb294653e2d",
+  "content": {
+    "steps": [
+      {
+        "text": "2025년 9월 물가는 전체 평균만으로 우리 집 생활비를 단정하기보다 통신요금 청구서와 식품·비식품 지출을 먼저 확인하라는 신호로 볼 수 있습니다. 식품 지출 비중이 큰 가상 A의 물가 적용 결과가 B보다 크게 나온 것은 지출 구성이 다르기 때문입니다. 이번 주에는 청구서와 최근 4주 선택지출을 확인하고, 자주 사는 식품의 단가·구매량을 기록해 조정할 항목을 고르세요. 아래는 2025년 9월 관측치와 주어진 가상 예시를 구분해 정리한 내용입니다. [2025년 9월 소비자물가동향](https://www.korea.kr/news/policyNewsView.do?newsId=156721918)\n\n## 통계의 범위와 비교 시점\n\n2025년 9월 소비자물가지수는 2020년=100 기준 117.06으로 전년동월비 2.1%, 전월비 0.5% 상승했습니다. 전년동월비 상승률은 8월 1.7%보다 0.4%포인트 높아졌습니다. 이는 상승률끼리의 차이이지, 9월 물가가 전월보다 0.4% 오른 뜻은 아닙니다. 생활물가지수는 전년동월비 2.5%, 전월비 1.4% 상승했고, 그 안에서 식품은 전년동월비 3.2%, 식품 이외는 2.1% 상승했습니다. 신선식품은 전년동월비 2.5%, 전월비 0.9% 각각 하락한 반면 가공식품은 전년동월비 4.2% 올랐습니다. 신선식품 하락만으로 식품 전체나 우리 집 장바구니 지출이 감소했다고 볼 수는 없습니다. 8월에는 일부 통신사의 한 달 요금 감면이 휴대전화료 하락에 영향을 줬고, 9월 브리핑은 감면 종료를 상승률 확대의 주요 요인으로 설명합니다. 따라서 0.4%포인트 상승폭 확대 전부를 통신요금 하나에 돌리기보다 청구서에서 할인 종료와 실제 사용량·요금제 변화를 확인하세요. 보고 대상은 2025년 9월이며 브리핑 발표일은 2025년 10월 2일입니다. [9월 공식 브리핑](https://www.korea.kr/news/policyNewsView.do?newsId=156721918) [8월 공식 브리핑](https://www.korea.kr/news/policyNewsView.do?newsId=156721800) ([korea.kr](https://www.korea.kr/news/policyNewsView.do?newsId=156721918&utm_source=openai))\n\n## 가구별 생활비 차이\n\n가상 A와 B는 모두 월 순소득 300만 원이며, 2024년 9월 한 달의 품목 구성과 수량을 2025년 9월까지 유지한다고 가정합니다. A의 기준 지출은 식품 80만 원·비식품 120만 원, B는 식품 40만 원·비식품 160만 원입니다. 식품에 적용한 상승률이 비식품보다 높으므로 식품 지출 비중이 큰 A의 가중 상승률과 가상 증가액이 B보다 크게 나타납니다. 두 가구의 가중 상승률·지출 증가액과 전체 CPI를 일괄 적용한 경우의 차이는 아래 계산표를 참고하세요. 이 고정 바구니는 통계 표본이나 실제 가계의 지출 변화가 아니며, 실제 장바구니의 품목·수량·가격은 가구마다 다릅니다. 소비자물가지수도 개별 가구의 지출 구성을 그대로 나타내지는 않습니다. [소비자물가지수 가중치 차이 설명](https://mods.go.kr/menu.es?mid=b70102030000) ([mods.go.kr](https://mods.go.kr/menu.es?mid=b70102030000&utm_source=openai)) 별도의 현금흐름 예시는 원금 1억 2천만 원, 연이율 4.0%에서 4.5%로 0.5%포인트 상승한다고 가정한 단순 이자 비교입니다. 원금상환·세금·수수료를 제외하며 실제 9월 금리 변화나 전망이 아니므로 CPI 소비지출과 분리해 아래 계산표를 참고하세요.\n\n## 이번 주 행동과 다음 점검\n\n이번 주에는 통신 청구서에서 할인 종료 여부와 정상요금 복귀를 확인하고, 사용량이나 요금제 변경이 있었는지도 따로 적으세요. 식품은 같은 품목의 단가와 구매량을 각각 기록해 가격 변화와 더 많이 산 효과를 구분합니다. 최근 4주 지출에서 이용 빈도가 낮고 대체 가능한 선택지출 한 가지를 골라 조정 후보로 삼으세요. 원한다면 필수지출을 제외한 선택지출 X원을 기준으로 다음 4주 상한을 X×0.95로 정할 수 있습니다. 5%는 통계에서 나온 처방이 아닌 임의의 선택 목표이며 절감액을 보장하지 않습니다. 직전 4주와 다음 4주를 같은 길이로 비교하고, 구매량·단가·일회성 지출을 나눠 기록한 뒤 다음 결제일 또는 4주 뒤 점검하세요. 청구서에서 할인 종료가 확인되면 정상요금 복귀와 실제 사용량 변화를 구별하고, 고정 월세나 필수지출은 물가지수만 보고 일률적으로 조정하지 마세요.\n\n## 계산 근거 · Python Decimal\n\n|항목|계산 결과|\n|---|---:|\n|A 가구 월 지출 증가액|50800.00 원|\n|A 가구 가중 상승률|2.54 %|\n|A 가구 CPI 일괄 적용과 차이|8800.00 원|\n|B 가구 월 지출 증가액|46400.00 원|\n|B 가구 가중 상승률|2.32 %|\n|B 가구 CPI 일괄 적용과 차이|4400.00 원|\n|가상 금리 스트레스 월 이자 증가|50000.00 원|",
+        "step_id": "report",
+        "model_id": "gpt-6-luna",
+        "research": {
+          "scope": "PROVIDER_URL_METADATA_NOT_INDEPENDENT_FACT_VERIFICATION",
+          "citations": [
+            {
+              "url": "https://www.korea.kr/news/policyNewsView.do?newsId=156721918&utm_source=openai",
+              "type": "url_citation",
+              "title": "2025년 9월 소비자물가동향 - 정책뉴스 | 뉴스 | 대한민국 정책브리핑",
+              "end_index": 1196,
+              "start_index": 1104
+            },
+            {
+              "url": "https://mods.go.kr/menu.es?mid=b70102030000&utm_source=openai",
+              "type": "url_citation",
+              "title": "차이 원인 ② 가중치 차이 | 체감물가와 공식물가의 차이원인 | 이해 : 소비자물가지수",
+              "end_index": 1768,
+              "start_index": 1691
+            }
+          ],
+          "web_calls": [
+            {
+              "id": "ws_0bea5b2ffa2b94b9016aefc5ea528487d0b999b1cd066ce718",
+              "type": "web_search_call",
+              "action": {
+                "type": "search",
+                "query": "site:korea.kr/news/policyNewsView.do 2025년 9월 소비자물가동향",
+                "queries": [
+                  "site:korea.kr/news/policyNewsView.do 2025년 9월 소비자물가동향",
+                  "site:mods.go.kr 소비자물가지수 체감물가 가중치 2025"
+                ],
+                "sources": [
+                  {
+                    "url": "https://www.korea.kr/news/policyNewsView.do?newsId=156721918",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://mods.go.kr/cpi/",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://mods.go.kr/boardDownload.es?bid=5107&list_no=447778&seq=3",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://m.korea.kr/briefing/policyBriefingView.do?newsId=156721918",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://mods.go.kr/board.es?act=view&bid=213&list_no=445795&mid=b70203010000&ref_bid=&tag=",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://www.korea.kr/archive/expDocList.do?group=T&srchCode=EDT03003",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://www.korea.kr/news/policyNewsView.do?newsId=148950909",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://www.mods.go.kr/boardDownload.es?bid=213&list_no=447801&seq=2",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://mods.go.kr/boardDownload.es?bid=5126&list_no=442777&seq=3",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://mods.go.kr/board.es?act=view&bid=213&list_no=445795&mid=a10301010000&ref_bid=&tag=",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://www.mods.go.kr/boardDownload.es?bid=5107&list_no=447780&seq=3",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://mods.go.kr/board.es?act=view&bid=213&list_no=445795&mid=a10301040100&nPage=1&ref_bid=213%2C215%2C214%2C11860%2C11695&tag=",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://mods.go.kr/boardDownload.es?bid=213&list_no=435356&seq=2",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://mods.go.kr/boardDownload.es?bid=5146&list_no=438962&seq=6",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://m.korea.kr/briefing/policyBriefingView.do?newsId=156721906",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://mods.go.kr/board.es?act=view&bid=213&bodo_b_type=all&keyField=T&list_no=445795&mid=a10301010000&nPage=1&ref_bid=203%2C204%2C205%2C206%2C207%2C210%2C211%2C11109%2C11113%2C11814%2C213%2C215%2C214%2C11860%2C11695%2C216%2C218%2C219%2C220%2C10820%2C11815%2C11895%2C11816%2C208%2C245%2C222%2C223%2C225%2C226%2C227%2C228%2C229%2C230%2C11321%2C232%2C233%2C234%2C12029%2C10920%2C11469%2C11470%2C11817%2C236%2C237%2C11471%2C238%2C240%2C241%2C11865%2C243%2C244%2C11893%2C11898%2C12031%2C11825%2C246%2C0067%2C0073%2C0079%2C0084",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://mods.go.kr/menu.es?mid=b70102030000",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://mods.go.kr/menu.es?mid=b70102040000",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://www.korea.kr/news/policyNewsView.do?newsId=156721918&utm_source=openai",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://mods.go.kr/menu.es?mid=b70102030000&utm_source=openai",
+                    "type": "url"
+                  }
+                ]
+              },
+              "status": "completed"
+            }
+          ],
+          "source_snapshots": [
+            {
+              "url": "https://www.korea.kr/news/policyNewsView.do?newsId=156721918",
+              "status": "CAPTURED",
+              "captured_at": "2026-11-08T00:44:45.400409+00:00",
+              "snapshot_id": "9d16f8e6-0d35-4abd-aefe-3726d0f988ff",
+              "text_sha256": "f8b8d7dda03779dc2fcb94ee1580971fb985ba773d0b4def1666cbd24794ad2e"
+            },
+            {
+              "url": "https://mods.go.kr/menu.es?mid=b70102030000",
+              "status": "CAPTURED",
+              "captured_at": "2026-11-08T00:44:45.810446+00:00",
+              "snapshot_id": "7ded9cf0-2d9f-442a-b439-acb5e85af65d",
+              "text_sha256": "49c06f719e486e7ab75509dc3bb5e3ef133f332568c6db2833cc29bd18d379d5"
+            },
+            {
+              "url": "https://www.korea.kr/news/policyNewsView.do?newsId=156721800",
+              "status": "CAPTURED",
+              "captured_at": "2026-11-08T00:44:46.506833+00:00",
+              "snapshot_id": "9e1b68c3-42d3-486f-8b8f-465de94e4f14",
+              "text_sha256": "c6bfc6b1d35c98d7f953ada7a7e94c1e597035d0d4282e9e752e55e4a8b91645"
+            }
+          ]
+        },
+        "elapsed_ms": 22468,
+        "response_id": "resp_0bea5b2ffa2b94b9016aefc5e8109887d0a298f7d4c87e8744",
+        "input_tokens": 26250,
+        "output_tokens": 2230,
+        "structured_report": "{\"introduction\":\"2025년 9월 물가는 전체 평균만으로 우리 집 생활비를 단정하기보다 통신요금 청구서와 식품·비식품 지출을 먼저 확인하라는 신호로 볼 수 있습니다. 식품 지출 비중이 큰 가상 A의 물가 적용 결과가 B보다 크게 나온 것은 지출 구성이 다르기 때문입니다. 이번 주에는 청구서와 최근 4주 선택지출을 확인하고, 자주 사는 식품의 단가·구매량을 기록해 조정할 항목을 고르세요. 아래는 2025년 9월 관측치와 주어진 가상 예시를 구분해 정리한 내용입니다. [2025년 9월 소비자물가동향](https://www.korea.kr/news/policyNewsView.do?newsId=156721918)\",\"sections\":[{\"rule_id\":\"82b79bd1-bd2b-4f76-ad91-284639d1c7a5\",\"text\":\"2025년 9월 소비자물가지수는 2020년=100 기준 117.06으로 전년동월비 2.1%, 전월비 0.5% 상승했습니다. 전년동월비 상승률은 8월 1.7%보다 0.4%포인트 높아졌습니다. 이는 상승률끼리의 차이이지, 9월 물가가 전월보다 0.4% 오른 뜻은 아닙니다. 생활물가지수는 전년동월비 2.5%, 전월비 1.4% 상승했고, 그 안에서 식품은 전년동월비 3.2%, 식품 이외는 2.1% 상승했습니다. 신선식품은 전년동월비 2.5%, 전월비 0.9% 각각 하락한 반면 가공식품은 전년동월비 4.2% 올랐습니다. 신선식품 하락만으로 식품 전체나 우리 집 장바구니 지출이 감소했다고 볼 수는 없습니다. 8월에는 일부 통신사의 한 달 요금 감면이 휴대전화료 하락에 영향을 줬고, 9월 브리핑은 감면 종료를 상승률 확대의 주요 요인으로 설명합니다. 따라서 0.4%포인트 상승폭 확대 전부를 통신요금 하나에 돌리기보다 청구서에서 할인 종료와 실제 사용량·요금제 변화를 확인하세요. 보고 대상은 2025년 9월이며 브리핑 발표일은 2025년 10월 2일입니다. [9월 공식 브리핑](https://www.korea.kr/news/policyNewsView.do?newsId=156721918) [8월 공식 브리핑](https://www.korea.kr/news/policyNewsView.do?newsId=156721800) ([korea.kr](https://www.korea.kr/news/policyNewsView.do?newsId=156721918&utm_source=openai))\"},{\"rule_id\":\"dd99bbbc-3d97-4498-a5e4-063c111d6c2b\",\"text\":\"가상 A와 B는 모두 월 순소득 300만 원이며, 2024년 9월 한 달의 품목 구성과 수량을 2025년 9월까지 유지한다고 가정합니다. A의 기준 지출은 식품 80만 원·비식품 120만 원, B는 식품 40만 원·비식품 160만 원입니다. 식품에 적용한 상승률이 비식품보다 높으므로 식품 지출 비중이 큰 A의 가중 상승률과 가상 증가액이 B보다 크게 나타납니다. 두 가구의 가중 상승률·지출 증가액과 전체 CPI를 일괄 적용한 경우의 차이는 아래 계산표를 참고하세요. 이 고정 바구니는 통계 표본이나 실제 가계의 지출 변화가 아니며, 실제 장바구니의 품목·수량·가격은 가구마다 다릅니다. 소비자물가지수도 개별 가구의 지출 구성을 그대로 나타내지는 않습니다. [소비자물가지수 가중치 차이 설명](https://mods.go.kr/menu.es?mid=b70102030000) ([mods.go.kr](https://mods.go.kr/menu.es?mid=b70102030000&utm_source=openai)) 별도의 현금흐름 예시는 원금 1억 2천만 원, 연이율 4.0%에서 4.5%로 0.5%포인트 상승한다고 가정한 단순 이자 비교입니다. 원금상환·세금·수수료를 제외하며 실제 9월 금리 변화나 전망이 아니므로 CPI 소비지출과 분리해 아래 계산표를 참고하세요.\"},{\"rule_id\":\"1a3c7569-9992-41e0-b7f5-1afe89bf5491\",\"text\":\"이번 주에는 통신 청구서에서 할인 종료 여부와 정상요금 복귀를 확인하고, 사용량이나 요금제 변경이 있었는지도 따로 적으세요. 식품은 같은 품목의 단가와 구매량을 각각 기록해 가격 변화와 더 많이 산 효과를 구분합니다. 최근 4주 지출에서 이용 빈도가 낮고 대체 가능한 선택지출 한 가지를 골라 조정 후보로 삼으세요. 원한다면 필수지출을 제외한 선택지출 X원을 기준으로 다음 4주 상한을 X×0.95로 정할 수 있습니다. 5%는 통계에서 나온 처방이 아닌 임의의 선택 목표이며 절감액을 보장하지 않습니다. 직전 4주와 다음 4주를 같은 길이로 비교하고, 구매량·단가·일회성 지출을 나눠 기록한 뒤 다음 결제일 또는 4주 뒤 점검하세요. 청구서에서 할인 종료가 확인되면 정상요금 복귀와 실제 사용량 변화를 구별하고, 고정 월세나 필수지출은 물가지수만 보고 일률적으로 조정하지 마세요.\"}]}"
+      }
+    ],
+    "task_id": "USER-545faf8c-091f-462f-a834-86c909606fd7",
+    "data_mode": "USER_PROVIDED_TEXT",
+    "model_mode": "LIVE_LLM",
+    "source_sha256": "3e21ed51811111b073bbecb07e1a6bb0da17936ace5c8a57f5226ca147a2adad",
+    "contract_sha256": "098aab048d4d31da3c910e5c1b9cdb1b61f7ece86097263128e432d58f209858",
+    "semantic_review": "NOT_PERFORMED"
+  },
+  "memory": {
+    "manifest": {
+      "scope": "SAME_TASK_VERSION_HISTORY_NOT_CURRENT_SOURCE_FACTS",
+      "reviews": [
+        {
+          "note": "AI 평가 의견(사람 승인 아님). 이번 보완: 계산 결과는 제공된 가정과 일치합니다. 가중 상승률은 A 2.54%, B 2.32%이고 월 지출 증가액은 각각 50,800원과 46,400원이며, CPI 2.1% 일괄 적용보다 각각 8,800원·4,400원 더 큽니다. 다만 계산표에 식품·비식품별 증가액과 산식을 덧붙이면 독자가 결과를 더 쉽게 재검산할 수 있습니다. 특히 ‘CPI 일괄 적용과 차이’는 비교 기준이 되는 CPI 적용액도 함께 표시하면 의미가 더 분명합니다. 핵심 통계의 원문 링크는 적절합니다. 가중치 자료 링크는 보고서에 제시되어 있으나 이번 평가 자료의 스냅샷에서 해당 세부 페이지 본문은 확인되지 않았으므로, 그 자료의 내용은 미확인입니다.\n누적 유지 교훈: 전년비와 전월비, 상승률과 %포인트 차이를 분리해 쓴다. / 신선식품 하락을 식품 전체나 개인 장바구니 하락으로 확대하지 않는다. / 통신요금 감면 종료는 브리핑의 설명 범위 안에서만 서술한다. / 가상 고정 바구니와 실제 가구 지출을 명확히 구분한다. / A·B 입력 지출과 품목 상승률을 함께 보여 주고 원화 결과를 재검산한다. / 금리 스트레스는 CPI 계산과 분리하고 가정·제외 항목을 적는다. / 행동 목표는 선택 가능한 예시로 제시하고 절감 보장을 피한다. / 확인되지 않은 출처 내용은 오류가 아니라 미확인으로 표시한다.",
+          "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+          "work_id": "ad801497-1956-4ca0-b82b-04f3ae83812d",
+          "decision": "FEEDBACK",
+          "event_id": "7e3d31d1-b29b-4abf-86df-4ac2201d1f63",
+          "artifact_id": "42298827-0c12-48d7-bb9c-1349d243e344"
+        },
+        {
+          "note": "AI 평가 의견(사람 승인 아님). 이번 보완: 전반적으로 정확하고 실용적인 보고서입니다. 특히 첫 문단에서 행동 방향을 제시하고, 통계 수치와 가상 계산을 분리한 점이 좋습니다. 더 완결성을 높이려면 통신비 상승 원인을 8월 일부 통신사의 한 달 요금 감면으로 낮아졌던 비교 기준이 9월 종료되며 반등한 흐름으로 짧게 설명하되, 이를 물가 전반의 지속적 악화로 확대 해석하지 않으면 좋겠습니다. 이자 스트레스 5만 원은 계산 결과가 맞지만, 원금 1억2천만 원과 금리 4.0%에서 4.5%로의 가정도 표에 함께 적으면 독자가 재계산하기 쉽습니다. 가중치 개편 자료 링크는 본문에 제시된 주소와 수집 스냅샷의 주소가 다르므로, 접근 가능한 공식 링크 하나로 통일하는 편이 검증에 유리합니다. \n누적 유지 교훈: 통신비는 8월 감면 종료의 비교 기준 효과로 설명하고 지속적 악화로 일반화하지 않기 / 이자 스트레스 결과에는 원금과 금리 가정도 함께 표시해 재계산 가능하게 하기 / 가상 고정 바구니 결과와 실제 가계 지출 변화를 계속 구분하기 / 신선식품 하락과 식품 전체·가공식품 상승을 서로 다른 지표로 설명하기 / 공식 자료 링크는 수집·확인한 주소와 일치하는 주소로 통일하기",
+          "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+          "work_id": "da6a02fe-7a24-4720-b661-ae905fd4ef2f",
+          "decision": "FEEDBACK",
+          "event_id": "8552920d-e7bf-4bf9-aa1d-7b8bc756d66b",
+          "artifact_id": "a2ede0d7-f1f9-48f5-8176-4d16efe79ff5"
+        },
+        {
+          "note": "AI 평가 의견(사람 승인 아님). 이번 보완: 정확하고 실용적인 보고서입니다. 설명 부분에서는 8월의 한시 감면이 당시 전년비를 낮춘 뒤 9월 감면 종료로 상승률이 되돌아온 흐름을 한 문장 더 풀어주면 ‘일시적 기저’의 의미가 선명해집니다. 가구 비교도 A와 B의 월 지출 증가액 차이가 식품 비중 차이에서 비롯된다는 점을 본문에서 직접 요약하면 계산표 해석이 쉬워집니다. 행동 제안은 선택지출 기록 외에 통신요금제·할인 조건을 어떤 기준으로 비교할지 한 가지 확인 항목을 더 제시할 수 있습니다. 출처 링크는 중복을 줄이고, 자료명과 대상 시점을 핵심 수치 가까이에 한 번씩 배치하면 더 깔끔합니다. 방법론 링크는 제공된 증거에서 원문 확인이 되지 않았으므로, 그 설명에 의존한다면 확인 \n누적 유지 교훈: 통신비 감면의 종료가 8월과 9월 상승률에 미친 시간 흐름을 짧게 설명한다. / A·B의 증가액 차이를 식품 지출 비중과 연결해 본문에서 해석한다. / 가상 고정 바구니 계산과 실제 가계의 지출 변화를 계속 구분한다. / 선택지출 목표는 임의의 예시임을 밝히고 다음 점검 시점을 둔다. / 출처 링크 중복을 줄이고 핵심 수치 옆에 자료명·대상 시점을 둔다.",
+          "scope": "AUTOMATED_OPINION_NOT_HUMAN_APPROVAL",
+          "work_id": "5438e91e-3ebb-490e-b165-41511f2e149b",
+          "decision": "FEEDBACK",
+          "event_id": "26bb6271-d44f-4c17-a350-037df73a2090",
+          "artifact_id": "058fbd02-6f49-4958-b1c9-49d25e6dd6a2"
+        }
+      ],
+      "task_id": "USER-545faf8c-091f-462f-a834-86c909606fd7",
+      "version": "task-memory-v3",
+      "failures": [
+        {
+          "reason": "workload execution failed: ValueError",
+          "run_id": "04da2349-9a0a-4809-8573-76d8fa672088",
+          "status": "FAILED",
+          "work_id": "11a4b31d-b836-481f-8a8f-0b78505381b9"
+        },
+        {
+          "reason": "{\"checks\":{\"context_hash\":true,\"evaluation_scope\":true,\"execution_mode\":true,\"input_hashes\":true,\"knowledge_policy_hash\":true,\"knowledge_source_quotes_current\":true,\"output_present\":true,\"persistent_checklist_and_calculations\":false,\"prompt_memory_policy\":true,\"source_snapshot_hashes\":true,\"source_version\":true,\"steps_complete\":true,\"task_and_labels\":true,\"task_memory\":true},\"passed\":false,\"requires_human_review\":true,\"semantic_review\":\"NOT_PERFORMED\"}",
+          "run_id": "65021d73-6cd0-4617-9e14-3ab560b1236d",
+          "status": "VERIFICATION_FAILED",
+          "work_id": "11a4b31d-b836-481f-8a8f-0b78505381b9"
+        }
+      ],
+      "knowledge": {
+        "active": [
+          {
+            "kind": "CALCULATION",
+            "unit": "원",
+            "scope": "DETERMINISTIC_DECIMAL_RESULT",
+            "title": "A 가구 월 지출 증가액",
+            "value": "50800.00",
+            "sha256": "07b18d6a17f0fb0309db02e2efffa16cee3ddcc9d1ede40cc8aeee098f6c9b2a",
+            "entry_id": "386db24e-f783-419a-ac19-f92646b10df3",
+            "expression": {
+              "op": "add",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "path": "/hypothetical_households/A/living_food_won"
+                    },
+                    {
+                      "path": "/observed_statistics/living_prices/food_yoy_pct"
+                    },
+                    {
+                      "value": ".01"
+                    }
+                  ]
+                },
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "path": "/hypothetical_households/A/living_nonfood_won"
+                    },
+                    {
+                      "path": "/observed_statistics/living_prices/nonfood_yoy_pct"
+                    },
+                    {
+                      "value": ".01"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "kind": "CALCULATION",
+            "unit": "%",
+            "scope": "DETERMINISTIC_DECIMAL_RESULT",
+            "title": "A 가구 가중 상승률",
+            "value": "2.54",
+            "sha256": "80937abc848ed5135156ee810136e32bdad16b344b72d24b2ecb1b17519f9ac2",
+            "entry_id": "335d2848-0c67-4569-aa01-d34f9574d2dc",
+            "expression": {
+              "op": "multiply",
+              "args": [
+                {
+                  "op": "divide",
+                  "args": [
+                    {
+                      "op": "add",
+                      "args": [
+                        {
+                          "op": "multiply",
+                          "args": [
+                            {
+                              "path": "/hypothetical_households/A/living_food_won"
+                            },
+                            {
+                              "path": "/observed_statistics/living_prices/food_yoy_pct"
+                            },
+                            {
+                              "value": ".01"
+                            }
+                          ]
+                        },
+                        {
+                          "op": "multiply",
+                          "args": [
+                            {
+                              "path": "/hypothetical_households/A/living_nonfood_won"
+                            },
+                            {
+                              "path": "/observed_statistics/living_prices/nonfood_yoy_pct"
+                            },
+                            {
+                              "value": ".01"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "op": "add",
+                      "args": [
+                        {
+                          "path": "/hypothetical_households/A/living_food_won"
+                        },
+                        {
+                          "path": "/hypothetical_households/A/living_nonfood_won"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "value": "100"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "CALCULATION",
+            "unit": "원",
+            "scope": "DETERMINISTIC_DECIMAL_RESULT",
+            "title": "A 가구 CPI 일괄 적용과 차이",
+            "value": "8800.00",
+            "sha256": "c82a187e9705d24397efcb716aa03ec75db885ea684d288e3a694e732c02e303",
+            "entry_id": "5ba1df0d-f580-4cf9-811e-bad9e7dab8ce",
+            "expression": {
+              "op": "subtract",
+              "args": [
+                {
+                  "op": "add",
+                  "args": [
+                    {
+                      "op": "multiply",
+                      "args": [
+                        {
+                          "path": "/hypothetical_households/A/living_food_won"
+                        },
+                        {
+                          "path": "/observed_statistics/living_prices/food_yoy_pct"
+                        },
+                        {
+                          "value": ".01"
+                        }
+                      ]
+                    },
+                    {
+                      "op": "multiply",
+                      "args": [
+                        {
+                          "path": "/hypothetical_households/A/living_nonfood_won"
+                        },
+                        {
+                          "path": "/observed_statistics/living_prices/nonfood_yoy_pct"
+                        },
+                        {
+                          "value": ".01"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "op": "add",
+                      "args": [
+                        {
+                          "path": "/hypothetical_households/A/living_food_won"
+                        },
+                        {
+                          "path": "/hypothetical_households/A/living_nonfood_won"
+                        }
+                      ]
+                    },
+                    {
+                      "path": "/observed_statistics/total_cpi/yoy_pct"
+                    },
+                    {
+                      "value": ".01"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "kind": "CALCULATION",
+            "unit": "원",
+            "scope": "DETERMINISTIC_DECIMAL_RESULT",
+            "title": "B 가구 월 지출 증가액",
+            "value": "46400.00",
+            "sha256": "be0492153f6d8b2f1760fc8322b70f182be92ca0adeb82e50eb1d9a751b49d1b",
+            "entry_id": "5fcbaf0f-55b4-4ee3-8b52-c347f7210c9e",
+            "expression": {
+              "op": "add",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "path": "/hypothetical_households/B/living_food_won"
+                    },
+                    {
+                      "path": "/observed_statistics/living_prices/food_yoy_pct"
+                    },
+                    {
+                      "value": ".01"
+                    }
+                  ]
+                },
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "path": "/hypothetical_households/B/living_nonfood_won"
+                    },
+                    {
+                      "path": "/observed_statistics/living_prices/nonfood_yoy_pct"
+                    },
+                    {
+                      "value": ".01"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "kind": "CALCULATION",
+            "unit": "%",
+            "scope": "DETERMINISTIC_DECIMAL_RESULT",
+            "title": "B 가구 가중 상승률",
+            "value": "2.32",
+            "sha256": "a0dcb686f26f779c2595504a340a831d000a5f6bc56450e368a633c041f03d93",
+            "entry_id": "d74a2a16-48b0-4de9-ba1b-778e259b1dbd",
+            "expression": {
+              "op": "multiply",
+              "args": [
+                {
+                  "op": "divide",
+                  "args": [
+                    {
+                      "op": "add",
+                      "args": [
+                        {
+                          "op": "multiply",
+                          "args": [
+                            {
+                              "path": "/hypothetical_households/B/living_food_won"
+                            },
+                            {
+                              "path": "/observed_statistics/living_prices/food_yoy_pct"
+                            },
+                            {
+                              "value": ".01"
+                            }
+                          ]
+                        },
+                        {
+                          "op": "multiply",
+                          "args": [
+                            {
+                              "path": "/hypothetical_households/B/living_nonfood_won"
+                            },
+                            {
+                              "path": "/observed_statistics/living_prices/nonfood_yoy_pct"
+                            },
+                            {
+                              "value": ".01"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "op": "add",
+                      "args": [
+                        {
+                          "path": "/hypothetical_households/B/living_food_won"
+                        },
+                        {
+                          "path": "/hypothetical_households/B/living_nonfood_won"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "value": "100"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "CALCULATION",
+            "unit": "원",
+            "scope": "DETERMINISTIC_DECIMAL_RESULT",
+            "title": "B 가구 CPI 일괄 적용과 차이",
+            "value": "4400.00",
+            "sha256": "5c3ee5eda6f4db5687df389f773eb64d68d25ad399b62d5b71c96dd9aa043f9c",
+            "entry_id": "444ab1c8-0355-4749-a173-30fada47d307",
+            "expression": {
+              "op": "subtract",
+              "args": [
+                {
+                  "op": "add",
+                  "args": [
+                    {
+                      "op": "multiply",
+                      "args": [
+                        {
+                          "path": "/hypothetical_households/B/living_food_won"
+                        },
+                        {
+                          "path": "/observed_statistics/living_prices/food_yoy_pct"
+                        },
+                        {
+                          "value": ".01"
+                        }
+                      ]
+                    },
+                    {
+                      "op": "multiply",
+                      "args": [
+                        {
+                          "path": "/hypothetical_households/B/living_nonfood_won"
+                        },
+                        {
+                          "path": "/observed_statistics/living_prices/nonfood_yoy_pct"
+                        },
+                        {
+                          "value": ".01"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "op": "add",
+                      "args": [
+                        {
+                          "path": "/hypothetical_households/B/living_food_won"
+                        },
+                        {
+                          "path": "/hypothetical_households/B/living_nonfood_won"
+                        }
+                      ]
+                    },
+                    {
+                      "path": "/observed_statistics/total_cpi/yoy_pct"
+                    },
+                    {
+                      "value": ".01"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "kind": "CALCULATION",
+            "unit": "원",
+            "scope": "DETERMINISTIC_DECIMAL_RESULT",
+            "title": "가상 금리 스트레스 월 이자 증가",
+            "value": "50000.00",
+            "sha256": "8be4daed28d26907957f71bcafa1eff971e967bbf8f11e64ab83af977e42ed63",
+            "entry_id": "1595210b-fdb2-4728-98d3-5111989a82d2",
+            "expression": {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "path": "/hypothetical_households/loan_scenario/principal_won"
+                    },
+                    {
+                      "path": "/hypothetical_households/loan_scenario/stress_increase_pp"
+                    },
+                    {
+                      "value": ".01"
+                    }
+                  ]
+                },
+                {
+                  "value": "12"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "CHECKLIST",
+            "scope": "USER_APPROVED_PROCEDURE_NOT_VERIFIED_FACT",
+            "title": "통계의 범위·비교 시점 유지",
+            "sha256": "03b8a2ddba5ce3108f48b5e7c7cb868df64b55bcbb6a848b77eb7b6f305a3817",
+            "payload": {
+              "heading": "통계의 범위와 비교 시점",
+              "instruction": "전월비·전년비·%포인트를 구분하고, 생활물가지수의 식품 구분과 가상의 고정 바구니라는 한계를 명시한다."
+            },
+            "entry_id": "82b79bd1-bd2b-4f76-ad91-284639d1c7a5"
+          },
+          {
+            "kind": "CHECKLIST",
+            "scope": "USER_APPROVED_PROCEDURE_NOT_VERIFIED_FACT",
+            "title": "가구별 차이와 계산 근거 유지",
+            "sha256": "9a79671fb7fcea9898238ababeaa8b4711ce61d9553e0c997091121e9941aa63",
+            "payload": {
+              "heading": "가구별 생활비 차이",
+              "instruction": "두 가구의 식품 지출 비중 차이를 설명하고 서버가 붙인 계산표를 참조한다. 관측 통계와 가상 계산을 구분한다."
+            },
+            "entry_id": "dd99bbbc-3d97-4498-a5e4-063c111d6c2b"
+          },
+          {
+            "kind": "CHECKLIST",
+            "scope": "USER_APPROVED_PROCEDURE_NOT_VERIFIED_FACT",
+            "title": "행동 기준과 점검 조건 유지",
+            "sha256": "28717602f5d1ae88cecb45c252333c00ffd5e68d77acda9287ebc9d63920d454",
+            "payload": {
+              "heading": "이번 주 행동과 다음 점검",
+              "instruction": "독자가 선택할 구체적 조정 대상과 선택 조건, 기록 기간, 점검 시점을 제시한다. 절감액을 확정 보장하지 않는다."
+            },
+            "entry_id": "1a3c7569-9992-41e0-b7f5-1afe89bf5491"
+          },
+          {
+            "url": "https://www.korea.kr/news/policyNewsView.do?newsId=156721800",
+            "kind": "SOURCE_EXCERPT",
+            "quote": "일부 통신사의 1개월간 요금 50% 감면의 영향으로 휴대전화료가 전년동월대비 21% 하락함으로써 소비자물가 상승 폭이 0.4%p 하락하였습니다. 보다 자세히 품목성질별 분류를 기준",
+            "scope": "EXACT_SOURCE_EXCERPT_AS_CAPTURED_NOT_INTERPRETATION_VERIFIED",
+            "title": "2025년 8월 한시 통신비 감면 원문",
+            "sha256": "6e58fa7db0c71e5c3749ff9a3260339349ef5fb01bc5034e2d9100ae99d2eb3f",
+            "entry_id": "f14ed6a9-7727-4e31-81d9-55d707a39841",
+            "snapshot_id": "37e17894-523d-4406-8cbd-b6af6ffbf255",
+            "text_sha256": "c6bfc6b1d35c98d7f953ada7a7e94c1e597035d0d4282e9e752e55e4a8b91645"
+          },
+          {
+            "kind": "LESSON",
+            "scope": "USER_APPROVED_PROCEDURE_NOT_VERIFIED_FACT",
+            "title": "검토 교훈 01",
+            "sha256": "8bfa118b0850f495e436726c64bdc0022a24a7701ac27274c358315048c2bb3f",
+            "payload": {
+              "text": "신선식품은 전년비 2.5% 하락, 전월비 0.9% 하락처럼 방향을 각각 명시하되 과거 올바른 문장을 오류로 취급하지 않는다. 첫 문단에 A/B 생활비 차이와 이번 주 우선 행동을 연결하고, 임의의 절감 목표는 선택 가능한 예시·검증 방법과 함께 적는다. 서버 계산표는 마지막에 유지하되 독자에게 서버·내부구현을 설명하지 않는다. 반복 제목을 쓰지 않는다."
+            },
+            "entry_id": "1f3f8d85-9db0-4c21-97b9-cfe5fb71afa1"
+          },
+          {
+            "kind": "LESSON",
+            "scope": "USER_APPROVED_PROCEDURE_NOT_VERIFIED_FACT",
+            "title": "검토 교훈 02",
+            "sha256": "9a6a8a79a798217322567b8aa16f16b70a520181bad26b04747429f9c100c79c",
+            "payload": {
+              "text": "각 CHECKLIST 본문은 제목 없이 문단부터 시작한다. 자동 생성·서버라는 말을 쓰지 말고 아래 계산표라고만 안내한다. 가구별 식품/비식품 기준지출을 간단히 복원하고 실제 생활비 변화와 구별한다. 이번 주 행동에는 조정 가능한 선택지출 X원을 먼저 확인하고 예시로 다음4주 상한 X×0.95를 선택할 수 있다고 제시하되, 5%는 임의 목표이고 필수지출 제외·절감 보장 아님을 밝힌다."
+            },
+            "entry_id": "18aedb37-bb80-4622-aedb-bdbad8111be0"
+          },
+          {
+            "kind": "LESSON",
+            "scope": "USER_APPROVED_PROCEDURE_NOT_VERIFIED_FACT",
+            "title": "검토 교훈 03",
+            "sha256": "4cff8534ac57216da9271c1004df69aa35e428ceaec301aa85cdacea03640db9",
+            "payload": {
+              "text": "통신요금 원인은 2025년8월 일부 통신사의 한 달50% 감면으로 요금·상승률이 낮아졌다가 9월 감면이 끝났다는 시간 순서로 짧게 설명한다. 이를 지난해 할인이나 전반적·지속적 물가 악화의 증거로 바꾸지 말고, 0.4%p 전부를 한 요인에 귀속하지 않는다. A는 더 높은 식품 상승률이 적용되는 지출비중이 커 가상 증가액이 B보다 크다고 계산표를 해석한다."
+            },
+            "entry_id": "bceab937-0a7a-4b73-bfe6-2e4d53cd813a"
+          },
+          {
+            "kind": "LESSON",
+            "scope": "USER_APPROVED_PROCEDURE_NOT_VERIFIED_FACT",
+            "title": "검토 교훈 04",
+            "sha256": "727a35669b0e109515d8077bdf033c82158bab46e668a28db697239b5f1f1ad4",
+            "payload": {
+              "text": "목표 비교는 같은 길이의 기간으로 맞춘다. 직전4주 선택지출 X와 다음4주 상한 X×0.95를 비교하고, 구매량·단가·일회성 지출을 나눠 확인한다. 대출 시나리오에는 원금1억2천만원, 연4.0%→4.5%, 금리차0.5%p, 단순 월이자 차이=원금×0.005÷12라는 가정과 원금상환·세금·수수료 제외를 적는다. 실제금리 전망이나 대환 권고로 확대하지 않는다."
+            },
+            "entry_id": "a32b142e-b960-490c-8255-cefe54261fa0"
+          },
+          {
+            "kind": "LESSON",
+            "scope": "USER_APPROVED_PROCEDURE_NOT_VERIFIED_FACT",
+            "title": "검토 교훈 05",
+            "sha256": "9e8c692362a054095547783ea031b2e252f98d628a9707e2e749abbbc5ff796a",
+            "payload": {
+              "text": "행동은 조건에 따라 나눈다. 청구서에서 할인 종료가 확인되면 정상요금 복귀와 실제 사용량 변화를 구분해 비교하고, 식품은 같은 품목의 단가와 구매량을 따로 기록한다. 조정 대상은 이용 빈도 낮고 대체 가능한 선택지출 하나부터 고른다. X×0.95는 선택 가능한 임의 목표의 예시이며 통계에서 도출한 처방·절감 보장이 아니다. 고정 월세·필수지출을 지수만 보고 일률 변경하지 않는다."
+            },
+            "entry_id": "0083b8de-8a33-4770-af57-07e7558dbce1"
+          }
+        ],
+        "sha256": "ed7cb51ac729ac549ac53752b620e98e250db532fe09156ea8bb1acc4538ddc9",
+        "version": "task-knowledge-v1",
+        "excluded": []
+      },
+      "task_version": 1,
+      "draft_results": [
+        {
+          "scope": "UNACCEPTED_DRAFT_NOT_VERIFIED_FACTS",
+          "run_id": "c96970b9-8369-48ff-8058-4d2175798c8c",
+          "sha256": "b873ae99b12ef2b2029ce3dabd8db586cfbe7cebb151859c5765b2159fcae314",
+          "excerpt": "2025년 9월 물가는 전체 평균만으로 내 생활비 변화를 단정하기보다 통신요금 청구서와 식품·비식품 지출을 먼저 확인할 이유를 보여줍니다. 식품 지출 비중이 큰 가상 A는 B보다 식품 가격 상승의 영향을 더 받는 예시입니다. 이번 주에는 실제 청구서와 최근 지출을 기록하고, 확인된 선택지출부터 조정 후보를 고르세요. [9월 소비자물가 공식 브리핑](https://www.korea.kr/news/policyNewsView.do?newsId=156721918) ([korea.kr](https://www.korea.kr/news/policyNewsView.do?newsId=156721918&utm_source=openai))\n\n## 통계의 범위와 비교 시점\n\n전년동월비는 1년 전 같은 달과, 전월비는 직전 달과 비교한 변화율입니다. 2025년 9월 소비자물가지수는 2020년=100 기준 117.06으로 전년동월비 2.1%, 전월비 0.5% 상승했습니다. 전년동월비 상승률은 8월 1.7%보다 0.4%포인트 높아졌습니다. 이는 상승률 간 차이이지 물가가 전월보다 0.4% 올랐다는 뜻이 아닙니다. 생활물가지수는 전년동월비 2.5%, 전월비 1.4% 상승했습니다. 식품은 전년동월비 3.2%, 식품 이외는 2.1% 상승했지만, 신선식품은 전년동월비 2.5%, 전월비 0.9% 각각 하락했고 가공식품은 전년동월비 4.2% 상승했습니다. 신선식품 하락만으로 식품 전체나 우리 집 장바구니 지출이 줄었다고 볼 수는 없습니다. 일부 통신사의 한 달 요금 50% 감면은 8월 휴대전화료 하락에 영향을 줬고, 9월 브리핑은 감면 종료를 상승률 확대의 주요 요인으로 설명합니다. 이를 전반적·지속적 물가 악화의 증거로 확대하지 말고 본인 청구서에서 할인 종료나 요금제 변경을 확인하세요. 대상은 2025년 9월이며 브리핑은 10월 2일 발표됐습니다. [9월 브리핑](https://www.korea.kr/news/policyNewsView.do?newsId=156721918) ([korea.kr](https://www.korea.kr/news/policyNewsView.do?newsId=156721918&utm_source=openai)) [8월 브리핑](https://www.korea.kr/news/policyNewsView.do?newsId=156721800) ([korea.kr](https://www.korea.kr/news/policyNewsView.do?newsId=156721800&utm_source=openai))\n\n## 가구별 생활비 차이\n\n가상 A와 B는 모두 월 순소득 300만 원이고, 2024년 9월의 같은 품목 구성과 수량을 2025년 9월까지 유지한다고 가정합니다. A의 기준 지출은 식품 80만 원·비식품 120만 원, B는 식품 40만 원·비식품 160만 원입니다. 식품의 기준 지출 비중이 더 큰 A에는 상대적으로 높은 식품 상승률이 더 크게 반영됩니다. 두 가구의 가중 상승률과 월 지출 증가액, 전체 CPI를 일괄 적용한 경우와의 차이는 아래 계산표를 참고하세요. 이는 고정 바구니를 이용한 가상 예시이며 통계 표본이나 실제 가계 지출 변화가 아닙니다. 소비자물가지수는 가구마다 다른 구매 품목·수량과 다를 수 있으므로 실제 생활비는 본인의 지출 내역으로 판단하세요. 대출 예시는 원금 1억 2천만 원, 연 4.0%에서 4.5%로 0.5%포인트 상승한다고 가정한 단순 이자 스트레스입니다. 원금상환·세금·수수료는 제외하며 실제 9월 금리 변화나 전망이 아닙니다. 계산 결과는 아래 계산표를 참고하고, 이를 CPI 소비지출과 별개의 현금흐름으로 보세요. [소비자물가 가중치 개편 자료](https://mods.go.kr/board.es?act=view&bid=213&list_no=428549&mid=a10301040100&nPage=1&ref_bid=&tag=) ([mods.go.kr](https://mods.go.kr/cpi/?utm_source=openai))\n\n## 이번 주 행동과 다음 점검\n\n이번 주에는 최근 4주 지출을 식품, ",
+          "work_id": "ad801497-1956-4ca0-b82b-04f3ae83812d",
+          "truncated": true,
+          "artifact_id": "42298827-0c12-48d7-bb9c-1349d243e344"
+        },
+        {
+          "scope": "UNACCEPTED_DRAFT_NOT_VERIFIED_FACTS",
+          "run_id": "8a61b389-7a0d-4384-a892-1c025bdb9597",
+          "sha256": "d13c09b09bbda5026c7e45e447d47c6709a47dfe19a357c54b055d261852efda",
+          "excerpt": "2025년 9월 물가를 가계부에 적용할 때는 전체 평균을 내 지출 증가율로 간주하기보다 통신요금 청구서와 식품·비식품 지출을 먼저 확인하는 편이 실용적입니다. 소비자물가는 전년 동월보다 2.1%, 전월보다 0.5% 상승했습니다. 8월의 전년동월비 상승률 1.7%와 비교하면 0.4%포인트 높아진 것입니다. 공식 브리핑은 일부 통신사의 요금 감면 종료에 따른 휴대전화료 상승을 주요 요인으로 들었습니다. 이번 주에는 청구서와 최근 지출을 확인하고, 조정할 항목은 실제 사용 내역을 본 뒤 고르세요. [2025년 9월 공식 브리핑](https://www.korea.kr/news/policyNewsView.do?newsId=156721918) ([m.korea.kr](https://m.korea.kr/briefing/policyBriefingView.do?newsId=156721918&utm_source=openai))\n\n## 통계의 범위와 비교 시점\n\n전년동월비는 1년 전 같은 달과, 전월비는 직전 달과 비교한 변화율입니다. 소비자물가 상승률은 8월 1.7%에서 9월 2.1%로 0.4%포인트 높아졌습니다. 이는 상승률 간 차이이지, 물가가 0.4% 오른다는 뜻은 아닙니다. 생활물가지수는 전년 동월보다 2.5%, 전월보다 1.4% 상승했습니다. 그중 식품은 전년 동월보다 3.2%, 식품 이외는 2.1% 올랐습니다. 신선식품은 전년 동월보다 2.5%, 전월보다 0.9% 하락한 반면 가공식품은 전년 동월보다 4.2% 상승했습니다. 신선식품 하락만으로 식품 전체나 내 장바구니 지출이 줄었다고 단정하기 어렵습니다. 생활물가지수의 식품·식품 이외 구분과 지수의 평균적 성격을 염두에 두고 실제 구매 품목·수량과 비교하세요. 보고 대상은 2025년 9월이며 공식 브리핑은 10월 2일 발표됐습니다. [9월 공식 브리핑](https://www.korea.kr/news/policyNewsView.do?newsId=156721918) ([m.korea.kr](https://m.korea.kr/briefing/policyBriefingView.do?newsId=156721918&utm_source=openai))\n\n## 가구별 생활비 차이\n\n가상 A와 B는 모두 월 순소득 300만 원이며, 2024년 9월의 같은 품목 구성과 수량을 2025년 9월까지 유지한다고 가정합니다. A의 기준 지출은 식품 80만 원·비식품 120만 원, B는 식품 40만 원·비식품 160만 원입니다. 따라서 식품 지출 비중이 더 큰 A에는 상대적으로 높은 식품 상승률이 더 크게 반영됩니다. 두 가구의 가중 상승률과 월 지출 변화, CPI를 일괄 적용한 경우와의 차이는 아래 계산표를 참고하세요. 이는 주어진 가상 고정 바구니에 품목별 상승률을 적용한 예시일 뿐, 통계 표본이나 실제 가계 지출의 변화가 아닙니다. 소비자물가 지수는 가구별 구매 구성과 다를 수 있으므로 본인 생활비는 실제 지출액으로 살펴보세요. [소비자물가 가중치 개편 자료](https://sri.kostat.go.kr/board.es?act=view&bid=213&list_no=428549&mid=a10301040100&nPage=1&ref_bid=&tag=) ([mods.go.kr](https://mods.go.kr/board.es?act=view&bid=213&list_no=428549&mid=a10301040100&nPage=1&ref_bid=&tag=))\n\n## 이번 주 행동과 다음 점검\n\n이번 주에는 최근 한 달 지출을 식품, 통신, 공공요금, 그 밖의 비식품으로 나눠 적고 통신 청구서에서 감면 종료나 요금제 변경 여부를 확인하세요. 식품은 자주 사는 품목의 가격과 구매량을 신선·가공식품별로 기록하면 지출 변화를 살펴보는 데 도움이 됩니다. 조정 후보는 실제 이용 빈도와 대체 가능성을 확인한 뒤 선택하세요. 선택지출 X원을 확인하고, 필수지출을 제외한 뒤 원한다면 다음 4주 상한을 X×0.95로 정해 볼 수 있습니다. 5%는 임의의 예시이며 절감액을 보장하지 않습니다. 다음 결제일 또는 4주 뒤에 ",
+          "work_id": "da6a02fe-7a24-4720-b661-ae905fd4ef2f",
+          "truncated": true,
+          "artifact_id": "a2ede0d7-f1f9-48f5-8176-4d16efe79ff5"
+        }
+      ],
+      "source_library": [
+        {
+          "url": "https://mods.go.kr/cpi/",
+          "scope": "CAPTURED_SOURCE_DATA_NOT_VERIFIED_INTERPRETATION",
+          "excerpt": "소비자물가지수 반복영역 건너뛰기 본문 바로가기 주요메뉴 바로가기 이 누리집은 대한민국 공식 전자정부 누리집입니다. 소비자물가지수 통합검색 통계청 누리집 지표누리 국가통계포털(KOSIS) 통계표 한눈에 알아보는 나라지표(e-나라지표) 통계분류 온라인간행물 통계설명자료 통계용어 채용정보 검색하기 통합검색 바로가기(새창열기) 전체메뉴 열기 이해 소비자물가지수 알아보기 소비자물가지수 개요 대표품목 가격조사 가중치 계산식 및 계산방법 소비자물가지수 이용 인포그래픽 체감물가와 공식물가의 차이원인 체감물가와 공식물가의 차이는 해소될 수 있나요? 차이 원인 ① 포괄범위의 차이 차이 원인 ② 가중치 차이 차이 원인 ③ 체감물가 인식에 영향을 미치는 요인 공식물가의 현실 반영도를 높이는 방법 대표성 있는 상품선정 및 품질 조정 지수개편 소비자물가지수에 대한 오해 및 오용 사례 유일한 인플레이션(물가상승률) 측정 수단이다? 집값이 오르면 소비자물가지수도 상승한다? 지수가 높으면 가격도 높다? 소비자물가지수는 생계비를 나타낸다? 동영상 동향 소비자물가지수 동향 총지수 동향 지출목적별 동향 품목성질별 동향 시/도별 동향 해외 동향 소비자물가지수 보는 법 물가지수 등락률 지수의 분류 및 종류 분석 사례 국가통계포털(KOSIS)길라잡이 보도자료 보도자료 목록 공표일정 체험 우리 집 물가상승률 화폐가치 계산 안내 이용안내 관련 사이트 자료실 통계용어사전 사이트맵 바로가기 이해 소비자물가지수 알아보기 소비자물가지수 개요 대표품목 가격조사 가중치 계산식 및 계산방법 소비자물가지수 이용 인포그래픽 체감물가와 공식물가의 차이원인 체감물가와 공식물가의 차이는 해소될 수 있나요? 차이 원인 ① 포괄범위의 차이 차이 원인 ② 가중치 차이 차이 원인 ③ 체감물가 인식에 영향을 미치는 요인 공식물가의 현실 반영도를 높이는 방법 대표성 있는 상품선정 및 품질 조정 지수개편 소비자물가지수에 대한 오해 및 오용 사례 유일한 인플레이션(물가상승률) 측정 수단이다? 집값이 오르면 소비자물가지수도 상승한다? 지수가 높으면 가격도 높다? 소비자물가지수는 생계비를 나타낸다? 동영상 동향 소비자물가지수 동향 총지수 동향 지출목적별 동향 품목성질별 동향 시/도별 동향 해외 동향 소비자물가지수 보는 법 물가지수 등락률 지수의 분류 및 종류 분석 사례 국가통계포털(KOSIS)길라잡이 보도자료 보도자료 목록 공표일정 체험 우리 집 물가상승률 화폐가치 계산 안내 이용안내 관련 사이트 자료실 통계용어사전 누리집이용안내 누리집안내지도 도움말 전체메뉴 닫기 체감물가와 공식물가의 차이 원인체감물가와 공식물가의 차이는 해소될 수 있나요? 체감물가와 공식물가의 차이 원인차이 원인 ① 포괄범위의 차이 체감물가와 공식물가의 차이 원인차이 원인 ② 가중치 차이 체감물가와 공식물가의 차이 원인차이 원인 ③ 체감물가 인식에 영향을 미치는 요인 일시정지 재생 소비자물가지수 알아보기 개요 대표품목 가격조사 가중치 계산식 및 계산방법 이용 인포그래픽 2026년 10월 (2020년=100) 소비자물가지수 120.73 전월(2026년 09월) 대비 0.2% 상승 전년동월(2025년 10월) 대비 2.8% 상승 지출목적별 소비자물가지수 전년동월 (2025년 10월) 대비 이전으로 다음으로 / 식료품 및 비주류음료 0.5 % 주류 및 담배 0.0 % 의류 및 신발 2.4 % 주택, 수도, 전기 및 연료 2.0 % 가정용품 및 가사 서비스 4.0 % 보건 2.1 % 교통 6.8 % 통신 2.7 % 오락 및 문화 5.1 % 교육 1.7 % 음식 및 숙박 3.0 % 기타 상품 및 서비스 4.2 % 보도자료 2026년 10월 소비자물가동향 2026-11-03 2026년 9월 소비자물가동향 2026-10-02 국가데이터처, 추석 일일물가조사로 민생안정대책 신속 지원 2026-09-10 2026년 8월 소비자물가동향 2026-09-02 보도자료 더보기 소비자물가지수에 대한 오해 및 오용 사례 유일한 인플레이션(물가상승률) 측정 수단이다? 집값이 오르면 소비자물가지수도 상승한다? 지수가 높으면 가격도 높다? 소비자물가지수는 생계비를 나타낸다? 보도자료 더보기 소비자물가지수 보는법 물가지수 등락률 지수의 분류 및 종류 분석사례 소비자물가지수 [35208] 대전광역시 서구 청사로 189 (둔산동, 정부대전청사 3동) 대표전화 02-2012-9114 (유료) 국번없이 110 개인정보처리방침 저작권 정책 ⓒ Ministry of Data and Statistics. All rights reserved. 너비 1640px 이상 너비 1639px - 1180px 너비 768px - 1179px 너비 767px 이하",
+          "truncated": false,
+          "snapshot_id": "00b29307-45cd-4038-98c2-1418ac5aec61",
+          "text_sha256": "04d0d6d01c53797714752134abc725517e31bdc15fdfb01ed2d95bc570671512"
+        },
+        {
+          "url": "https://www.korea.kr/news/policyNewsView.do?newsId=156721800",
+          "scope": "CAPTURED_SOURCE_DATA_NOT_VERIFIED_INTERPRETATION",
+          "excerpt": "2025년 8월 소비자물가동향 - 정책뉴스 | 뉴스 | 대한민국 정책브리핑 본문 바로가기 메인메뉴 바로가기 이 누리집은 대한민국 공식 전자정부 누리집입니다. 대한민국 정책브리핑 뉴스 뉴스 정책뉴스 부처별 뉴스 정책포커스 국민이 말하는 정책 오피니언 키워드 뉴스 멀티미디어 뉴스 브리핑룸 브리핑룸 보도자료 사실은 이렇습니다 브리핑 자료 연설문 정책자료 정책자료 국정과제 전자책 전문자료 채용정보 국정신문(’92-’04) 대한뉴스 구독&참여 구독&참여 이벤트 뉴스레터 정책정보 알림설정 정부기관 SNS 배너달기 공지사항 청와대 소식 공직메일 알림 ON 상세검색 검색 Search 검색폼 검색어를 입력하세요 입력내용삭제 검색 #2027 예산안 #국민성장펀드 #3대 메가프로젝트 상세검색 열기 검색기간 전체 최근 1년 최근 1달 최근 1주 직접입력 검색시작년월일입력 시작날짜 달력 팝업 열기 ~ 검색마지막년월일입력 끝날짜 달력 팝업 열기 검색범위 전체 제목 본문 첨부파일 주제별 경제 접기 경제일반 생활경제 기업 금융 산업 국토개발·지역경제 통신·과학 사회 접기 사회일반 노동·고용 복지 보건·위생 교육·입시 환경 문화 접기 문화일반 공연·예술 문화콘텐츠 관광 체육 외교/안보 접기 외교 안보 남북관계 국제 기관별 부처 접기 청와대 국무조정실 고용노동부 과학기술정보통신부 교육부 국가데이터처 국가보훈부 국방부 국토교통부 기획예산처 기후에너지환경부 농림축산식품부 문화체육관광부 법무부 법제처 보건복지부 산업통상부 성평등가족부 식품의약품안전처 외교부 인사혁신처 재정경제부 중소벤처기업부 지식재산처 통일부 해양수산부 행정안전부 청 접기 경찰청 공소청 관세청 국가유산청 국세청 기상청 농촌진흥청 방위사업청 병무청 산림청 새만금개발청 소방청 우주항공청 재외동포청 조달청 중대범죄수사청 질병관리청 해양경찰청 행정중심복합도시건설청 위원회 접기 감사원 개인정보보호위원회 공정거래위원회 국가인권위원회 국민권익위원회 금융위원회 방송미디어통신위원회 원자력안전위원회 중앙선거관리위원회 유형별 정책뉴스 웹툰 카드/한컷 사진 영상 숏폼 KTV 사실은 이렇습니다 국민이 말하는 정책 오피니언 보도자료 브리핑 전문자료 연설문 전자책 국정신문 선택한 항목 초기화 상세검색 상세검색 닫기 검색 닫기 사이트 이동경로 홈 뉴스 정책뉴스 콘텐츠 영역 공유 열기 공유 페이스북 X 밴드 카카오톡 즐겨찾기 URL 복사 공유 닫기 공감수 댓글수(클릭시 댓글로 이동) 뉴스레터 구독신청(클릭시 페이지로 이동) 2025년 8월 소비자물가동향 2025.09.02 통계청 부처별 뉴스 이동 본문듣기 시작 글자크기 설정 열기 글자크기 설정 작게 보통 크게 아주크게 최대크게 글자크기 설정 닫기 인쇄하기 목록 안녕하십니까? 경제동향통계심의관 이두원입니다. 지금부터 2025년 8월 소비자물가동향을 발표하겠습니다. 2025년 8월 소비자물가지수는 116.45로 전월대비 0.1% 하락하였습니다. 전년동월대비로는 1.7% 상승하여 전월보다, 전월 2.1%보다 0.4%p 하락하였습니다. 식료품 및 에너지제외지수는 전월대비 0.6% 하락, 전년동월대비 1.3% 상승하였습니다. 농산물 및 석유류제외지수는 전월대비 0.4% 하락, 전년동월대비 1.9% 상승하였습니다. 구입빈도가 높고 지출비중이 높아 가격 변동을 민감하게 느끼는 생활물가지수는 전월대비 0.5% 하락, 전년동월대비 1.5% 상승하였습니다. 식품의 경우 전월대비 1.4%, 전년동월대비 3.9% 각각 상승하였습니다. 식품이외는 전월대비 1.7%, 전년동월대비 0.1% 각각 하락하였습니다. 신선식품지수는 전월대비 7.8%, 전년동월대비 2.1% 각각 상승하였습니다. 다음은 4페이지, 지출목적별 동향을 보면 전월대비 식료품·비주류음료, 교통 등은 상승하였고 의류·신발, 주류·담배, 기타 상품·서비스는 변동 없고 통신은 하락하였습니다. 전년동월대비 식료품·비주류음료 등은 상승하였고 통신은 하락하였습니다. 다음은 6페이지, 품목성질별 동향을 보면 상품의 경우 전월대비 0.9%, 전년동월대비 2.1% 각각 상승하였습니다. 농축수산물은 전월대비 4.8%, 전년동월대비 4.8% 각각 상승하였습니다. 공업제품은 전월대비 0.1%, 전년동월대비 1.7% 각각 상승하였습니다. 전기·수도·가스는 전월대비 변동 없고 전년동월대비 0.3% 상승하였습니다. 서비스의 경우 전월대비 0.8% 하락하였습니다. 전년동월대비는 1.8% 상승하였습니다. 집세는 전월대비 0.1%, 전년동월대비 0.8% 각각 상승하였습니다. 공공서비스는 전월대비 4.9%, 전년동월대비 3.6% 각각 하락하였습니다. 개인서비스는 전월대비 0.3%, 전년동월대비 3.1% 각각 상승하였습니다. 주요 등락품목은 7페이지 표를 참고해 주시기 바랍니다. 이상 발표를 마치고 질의응답 받도록 하겠습니다. 일단 간단히 8월 총평 한번 말씀드리고 끝내도록 하겠습니다. 일단 8월 소비자물가는 전년동월대비 1.7% 상승하였습니다. 상승률은 전월의 2.1%보다 0.4%p 하락하여 3개월 만에 1%대 상승하였습니다. 특히, 이번 달은 일부 통신사의 1개월간 요금 50% 감면의 영향으로 휴대전화료가 전년동월대비 21% 하락함으로써 소비자물가 상승 폭이 0.4%p 하락하였습니다. 보다 자세히 품목성질별 분류를 기준으로 간단히 말씀드리면 농산물은 폭염 등 기상 여건으로 출하량이 감소하여 채소·과실 등이 상승 전환하였고, 곡물은 전년도 생산량 감소 등의 영향으로 상승 폭이 확대되었습니다. 축산물, 수산물 또한 도축 마릿수 감소 및 어획량 감소 등으로 상승 폭이 확대되어 전년동월비 4.8% 상승하였습니다. 반면에 하락 요인으로는 공공서비스는 일부 지역 시내버스료 등은 상승하였음에도 서두에 말씀드린 대로 휴대전화료가 21% 하락함으로써 공공서비스는 3.6% 하락하였습니다. 석유류는 국제유가 영향 등으로 상승 폭이 둔화되어 1.2% 하락하였습니다. 이상 발표를 마치겠습니다. 수고하셨습니다. [질문·답변] ※마이크 미사용으로 확인되지 않는 내용은 별표(***)로 표기하였으니 양해 바랍니다. <질문> *** <답변> 일단 휴대전화료 같은 경우 이번 달에 21% 하락했고요. 사실 이번 달 공식적인 소비자물가는 전년동월대비 1.7% 상승했고, 만약에 말씀하신 대로 휴대전화료 부분은 하락을 제외했을 때 말씀하시는 거죠? 제외했을 때는 대략, 저희가 공식적으로 이 부분 말씀드리긴 그렇고 계산해 보면 2.3% 내외 정도라고 보시면 될 것 같습니다. <질문> 그렇다면 휴대전화 요금은 일시적인 거니까 그 부분을 제외하면 물가가 지금 상황이 어떤지 설명해 주세요. <답변> 일단 향후 물가 저희가 구체적인 전망은 보통 하지 않습니다만, 다만 휴대전화료 같은 경우 이번 8월에 일시적으로 감면됐기 때문에 하락 폭이라든지 이런 것 감안했을 때는 그게 원래의 가격으로 환원된다고 하면 다음 달에는 그 영향으로 일부 상승할 수 있지 않을까 생각됩니다. <질문> 그리고 강원도 아까 가뭄 얘기 나왔었잖아요. 그 강원도 가뭄에 영향을 받은 감자나 품목들 상승률을 종합해서 설명해 주세요. <답변> 일단 아까 말씀드린 대로 일단 강원도 가뭄이라기보다는 채소류 같은 경우 이번 달, 아무래도 최근에 강원도뿐만 아니라 전체적인 폭염 등의 영향으로 인해서 신선채소, 특히 신선채소 같은 경우는 전월비 같은 경우는 19.3% 상승했습니다. 그다음에 동월비는 0.9% 상승했고요. 대표적으로 상승한 품목 같은 경우 아까 말씀하신 배추 같은 경우... 그러니까 동월비는 4.8% 상승했고요. 전월비는 51.6% 상승했습니다. 또 감자 같은 경우는 지금 전월비 같은 경우는 2.8%, 전년동월비 같은 경우는 7.6% 상승했습니다. 배추도 그렇고 감자도 그렇고 아무래도 폭염, 가뭄 등의 영향으로 인해서 아마 시장 출하 물량이 감소한 영향으로 보입니다. <질문> 추석 앞두고 관련 물가들도 아까 말씀해 주셨잖아요? 그것도 한번 종합해서 설명 부탁드릴게요. <답변> 추석 앞두고요? <질문> 추석 앞두고 제사 관련해서 과일, 고기, 아까 연관된 품목들 설명을 드릴게요. <답변> 일단 저희가 구체적으로 9월, 10월 초에 아마 추석 명절이 있는 거로 알고 있고요. 그로 인해서 농축수산물 같은 경우 아마 수요는 증가할 거로 예상되고, 저희가 다만 구체적으로 물가가 어느 정도 상승할지 아니면 하락할지 부분에 대해서는 저희가 예측하기는 쉽지 않을 것 같습니다. <질문> 그러니까 제가 예측을 여쭤본 게 아니라 이번 달 물가에 대해서 여쭤본 겁니다. <답변> 이번 달이요? 이번 달 같은 경우 구체적으로 곡물 같은 경우도 상승했고요. 그다음 곡물 같은 경우 14.7% 상승했고, 그다음에 채소 같은 경우도 출하량이 감소한 영향으로 인해서 전년동월대비 0.9% 상승으로 전환되었습니다. 그동안 아마 채소류가 그동안 마이너스 전년동월대비 보이다가 이번 달에 상승으로 전환했고요. 그다음 과실 같은 경우도 2023년도 작황 영향으로 2024년도 가을 이후로 계속 마이너스 상승세를 보이다가 이번 달에 기상 영향 등으로 출하량이 감소되면서 전년동월대비 0.2% 상승 전환되었습니다. 반면에, 수산물이라든지 축산물 같은 경우는 도축 마릿수 감소라든지 수입가격 상승, 그다음에 어획량 감소 등의 영향으로 인해서 수산물은 7.5% 상승했고 축산물은 7.1% 상승하였습니다. <질문> 마지막으로, 저는 개인적으로 마지막으로 아까 통신료 말씀하셨잖아요. 그런데 이번 달에, 그 질문과 연관된 건데 사실 이번 달에 말씀하신 대로 많은 부분에서 물가가 올랐는데 실제 1.7이었단 말이에요. 그 영향이 무엇인지를 설명을 다시 한번 부탁드릴게요. <답변> 일단 이번 달에 전년동월대비 1.7% 상승했고요. 그동안 저희가 동월대비 6월 이후에 2.2%, 7월에 2.1%, 이번 달에 1.7%로 상승 폭이 0.4%p 줄어든 이유는 아까 말씀하신 대로 휴대전화료 요금 감면 부분의 영향이 제일 컸던 것으로 보입니다. <질문> 지금 신선채소 항목에 대해서 되게 굉장히 상승률이 굉장히 가파른데 신선채소 중에서도 일단 종류가 여러 가지가 있을 거 아닙니까? 그거에 대한 가장 상승 폭이 컸던 항목이 무엇인지 그 상승률 품목대로 설명 부탁드리겠습니다. <답변> 일단 신선채소 같은 경우는 저희가요, 잠시만. 일단, 전월비 말씀드릴까요? 전년동월비 말씀을... <질문> *** <답변> 전월비로 말씀드리면 일단 아무래도 전월비 관련돼서요. 이번 달에 채소류 같은 경우 상승한 품목들이 대부분이고요. 일단은 채소 같은 경우 전월비 전체적으로는 19.2%, 신선채소류는 19.3% 상승하였습니다. 이 중에 토마토 같은 경우 전월비 35.9% 상승했고요. 그다음에 파프리카 같은 경우도 52.1% 상승했습니다. 그다음 배추가 51.6%, 그다음 파나 감자, 시금치, 특히 시금치 같은 경우 50.7% 상승하였습니다. 전체적으로 채소 같은 경우 전년동월대비... 전월비 대비는 많은 품목에서 상승했다고 보시면 됩니다. <질문> 곡물 가격이 상승한 이유도 지금 기후적인 요인으로 봐도 되는 겁니까? <답변> 일단 곡물 같은 경우 채소와 달리 2024년도의 생산량이라든지 재배면적의 영향을 받을 수밖에 없고요. 그래서 2024년도 생산량이라든지 기타 재고량 감소 등의 영향으로 인해서 지금 곡물 같은 경우 이번 달에 전년동월비 기준으로 14.7% 상승했습니다. 상승 폭 같은 경우 지난달과 비교해서 2.5%p 확대되었습니다. 이상 질문 없으시면 마치도록 하겠습니다. 수고하셨습니다. <끝> 첨부파일 속기자료.hwp 바로보기 내려받기 속기자료.pdf 바로보기 내려받기 [통계청]_2025년_8월_소비자물가동향(보도자료).hwp 바로보기 내려받기 [통계청]_2025년_8월_소비자물가동향(보도자료).hwpx 바로보기 내려받기 [통계청]_2025년_8월_소비자물가동향(보도자료).pdf 바로보기 내려받기 [통계청]_2025년_8월_전년동월비_시계열_통계표(50부).xlsx 바로보기 내려받기 공공누리가 부착되지 않은 자료는 담당자와 협의한 후에 사용하여 주시기 바랍니다. 저작권정책 담당자안내 공유 열기 공유 페이스북 X 밴드 카카오톡 즐겨찾기 URL 복사 공유 닫기 좋아요 댓글 보기 운영원칙 열기 정책브리핑 게시물 운영원칙에 따라 다음과 같은 게시물은 삭제 또는 계정이 차단 될 수 있습니다. 1. 타인의 메일주소, 전화번호, 주민등록번호 등의 개인정보 또는 해",
+          "truncated": true,
+          "snapshot_id": "37e17894-523d-4406-8cbd-b6af6ffbf255",
+          "text_sha256": "c6bfc6b1d35c98d7f953ada7a7e94c1e597035d0d4282e9e752e55e4a8b91645"
+        },
+        {
+          "url": "https://www.korea.kr/news/policyNewsView.do?newsId=156721918",
+          "scope": "CAPTURED_SOURCE_DATA_NOT_VERIFIED_INTERPRETATION",
+          "excerpt": "2025년 9월 소비자물가동향 - 정책뉴스 | 뉴스 | 대한민국 정책브리핑 본문 바로가기 메인메뉴 바로가기 이 누리집은 대한민국 공식 전자정부 누리집입니다. 대한민국 정책브리핑 뉴스 뉴스 정책뉴스 부처별 뉴스 정책포커스 국민이 말하는 정책 오피니언 키워드 뉴스 멀티미디어 뉴스 브리핑룸 브리핑룸 보도자료 사실은 이렇습니다 브리핑 자료 연설문 정책자료 정책자료 국정과제 전자책 전문자료 채용정보 국정신문(’92-’04) 대한뉴스 구독&참여 구독&참여 이벤트 뉴스레터 정책정보 알림설정 정부기관 SNS 배너달기 공지사항 청와대 소식 공직메일 알림 ON 상세검색 검색 Search 검색폼 검색어를 입력하세요 입력내용삭제 검색 #2027 예산안 #국민성장펀드 #3대 메가프로젝트 상세검색 열기 검색기간 전체 최근 1년 최근 1달 최근 1주 직접입력 검색시작년월일입력 시작날짜 달력 팝업 열기 ~ 검색마지막년월일입력 끝날짜 달력 팝업 열기 검색범위 전체 제목 본문 첨부파일 주제별 경제 접기 경제일반 생활경제 기업 금융 산업 국토개발·지역경제 통신·과학 사회 접기 사회일반 노동·고용 복지 보건·위생 교육·입시 환경 문화 접기 문화일반 공연·예술 문화콘텐츠 관광 체육 외교/안보 접기 외교 안보 남북관계 국제 기관별 부처 접기 청와대 국무조정실 고용노동부 과학기술정보통신부 교육부 국가데이터처 국가보훈부 국방부 국토교통부 기획예산처 기후에너지환경부 농림축산식품부 문화체육관광부 법무부 법제처 보건복지부 산업통상부 성평등가족부 식품의약품안전처 외교부 인사혁신처 재정경제부 중소벤처기업부 지식재산처 통일부 해양수산부 행정안전부 청 접기 경찰청 공소청 관세청 국가유산청 국세청 기상청 농촌진흥청 방위사업청 병무청 산림청 새만금개발청 소방청 우주항공청 재외동포청 조달청 중대범죄수사청 질병관리청 해양경찰청 행정중심복합도시건설청 위원회 접기 감사원 개인정보보호위원회 공정거래위원회 국가인권위원회 국민권익위원회 금융위원회 방송미디어통신위원회 원자력안전위원회 중앙선거관리위원회 유형별 정책뉴스 웹툰 카드/한컷 사진 영상 숏폼 KTV 사실은 이렇습니다 국민이 말하는 정책 오피니언 보도자료 브리핑 전문자료 연설문 전자책 국정신문 선택한 항목 초기화 상세검색 상세검색 닫기 검색 닫기 사이트 이동경로 홈 뉴스 정책뉴스 콘텐츠 영역 공유 열기 공유 페이스북 X 밴드 카카오톡 즐겨찾기 URL 복사 공유 닫기 공감수 댓글수(클릭시 댓글로 이동) 뉴스레터 구독신청(클릭시 페이지로 이동) 2025년 9월 소비자물가동향 2025.10.02 본문듣기 시작 글자크기 설정 열기 글자크기 설정 작게 보통 크게 아주크게 최대크게 글자크기 설정 닫기 인쇄하기 목록 국가데이터처 경제동향통계심의관 이두원입니다. 2025년 9월 소비자물가를 발표하겠습니다. 2025년 9월 소비자물가지수는 117.06으로 전월대비 0.5% 상승하였고, 전년동월대비 2.1% 상승하여 전월 1.7%보다 0.4%p 상승하였습니다. 식료품 및 에너지제외지수는 전월대비 0.5%, 전년동월대비 2.0% 각각 상승하였습니다. 농산물 및 석유류제외지수는 전월대비 0.6%, 전년동월대비 2.4% 각각 상승하였습니다. 생활물가지수는 전월대비 1.4%, 전년동월대비 2.5% 각각 상승하였습니다. 식품의 경우 전월대비 0.1%, 전년동월대비 3.2% 각각 상승하였습니다. 식품이외는 전월대비 2.3%, 전년동월대비 2.1% 각각 상승하였습니다. 신선식품지수는 전월대비 0.9%, 전년동월대비 2.5% 각각 하락하였습니다. 다음은 소비자물가지수 부문별 동향을 발표하겠습니다. 먼저, 지출목적별 동향입니다. 전월대비 통신, 주택·수도·전기·연료, 기타 상품·서비스, 주류·담배는 상승하였고, 의류·신발은 변동 없고, 교통, 음식·숙박, 오락·문화, 교육, 식료품·비주류음료는 하락하였습니다. 전년동월대비로는 음식·숙박, 식료품·비주류음료, 기타 상품·서비스, 가정용품·가사서비스, 교육, 교통, 의류·신발, 보건, 오락·문화, 통신 등 모두 상승하였습니다. 다음은 품목성질별 동향입니다. 상품은 전월대비 0.4%, 전년동월대비 2.0% 각각 상승하였습니다. 농축수산물은 전월대비 변동 없고 전년동월대비 1.9% 상승했고, 공업 제품은 전월대비 0.1% 하락, 전년동월대비 2.2% 각각 상승하였으며, 전기·가스·수도는 전월대비 5.5%, 전년동월대비 0.3% 각각 상승하였습니다. 서비스는 전월대비 0.6%, 전년동월대비 2.2% 각각 상승하였습니다. 집세의 경우 전월대비 0.1%, 전년동월대비 0.8% 각각 상승하였습니다. 공공서비스는 전월대비 4.9%, 전년동월대비 1.2% 각각 상승하였습니다. 개인서비스는 전월대비 0.6% 하락, 전년동월대비 2.9% 상승하였습니다. 주요 등락 품목은 보도자료 7페이지를 참고해 주시기 바랍니다. 이상 발표를 마치고 질문받도록 하겠습니다. [질문·답변] ※마이크 미사용으로 확인되지 않는 내용은 별표(***)로 표기하였으니 양해 바랍니다. <질문> 마트 같은 데 가보니까 쌀값이 정부양곡 풀리면서 조금, 현장에서는 조금 하락하고 있더라고요. 그런데 여기는 쌀값하고 찹쌀 가격이 굉장히 많이 오른 걸로 나타났잖아요. 좀 시차 두고 다음 달에는 낮아질 가능성이 있는 걸까요? <답변> 일단 저희가 이번 달에 지금 아마 전월비... 전년동월대비 기준으로 쌀이 15.9% 상승했고 아마 찹쌀이 46.1% 상승했습니다. 이 부분은 아마 작년 수확량이라든지 재배면적 대비해서 그런 요인이 있는 걸로 알고 있고요. 아마 신곡이 곧 풀리고 있는데요. 아마 그런 부분은 10월 물가에는 아마 수확량이 어떻게 될지는 아마 오늘 예상량 발표가 있는 걸로 알고 있는데요. 그에 따라서 아마 신곡 출하되면 그에 따른 영향이 있지 않을까 생각됩니다. <질문> 지금 지난달 1%대에서 2%대 다시 올라선 이유를 설명 부탁드리고, 먼저 그거부터 말씀 부탁드릴게요. <답변> 일단 지난달 1.7%에서 이번 달 2.1%, 상승 폭은 0.4%p인데요. 아마 가장 큰 이유는 8월에 하락했던 일부 통신사 휴대폰 감면이 종료됨에 따라서 그 영향으로 휴대전화료 등이 상승해서 2.1%로 상승했습니다. 아마 세부적으로는 기타 농축수산물 같은 경우는 지난달에 4.8에서 이번 달에 1.9로 상승 폭은 축소된 반면에, 공업 제품은 1.7에서 2.2%로 상승 폭이 확대되었습니다. 아마 확대 이유는 공업 제품의 경우 석유류가 이번 달에 소폭 국제유가 영향이라든지 전년 기저효과 등으로 인해서 하락에서 상승으로 전환하였습니다. <질문> 그리고 가공식품이 많이 오른 것 같거든요. 그걸 어떻게 봐야 되는지 말씀 부탁드릴게요. <답변> 일단 이번 달에 가공식품 같은 경우는 상승 폭은 지난달하고 4.2%로 동일한데요. 아무래도 전체 소비자물가 2.1보다는 상승 폭이 더 높으니까 그 이유들은 아마 그동안 일부 품목은 세일가 환원이라든지 아니면 세일을 통해서 등락 폭이 있었지만 전반적으로 가공식품은 원재료비라든지 인건비라든지 그다음 작년에 비해서 환율 상승이라든지 그런 영향으로 인해서 전년동월대비는 4.2% 상승하였습니다. <질문> 그리고 달걀 값과, 달걀 값이 많이 보이는데요. 그건 왜 그런지 말씀 부탁드릴게요. <답변> 일단 달걀 값이 이번 달에 9.2% 상승하였습니다. 이 부분은 현지 산지가격이 상승한 영향도 있고요. 아무래도 다음 달 추석 대비한 9월 성수품에 대한 수요 증가라든지, 기타 또 최근 우리나라에서 아마 달걀 소비량이 계속 매년 증가하고 있는 걸로 알고 있는데요. 그런 영향으로 인해서 달걀 가격이 상승하였고, 최근 6월, 7월, 8월, 9월 계속 상승 추세입니다. <질문> 성수품 관련해서 마지막으로, 저는 마지막으로 성수품 관련해서 물가 어떤지 종합으로 말씀 부탁드릴게요. <답변> 일단 저희가 따로 성수품 관련돼서 일일물가조사는 하고 있지만 전체적으로 성수품 관련돼서 이번 저희가 9월 초에 시작된 이후로 큰 변동 폭은 없고요. 다만, 지금 성수품의 주요 품목인 농축수산물 같은 경우 상승 폭이 지난달보다 이번 9월에 상승 폭이 하락은 했고요. 기타 가공식품 같은 경우는 상승 폭이 동일합니다. 이상 없으시면 마지막으로 총평하고 마치도록 하겠습니다. 일단 2025년 9월 소비자물자는 전년동월대비 2.1% 상승하였습니다. 아까 말씀드린 대로 0.4%p 확대된 이유는 일부 통신사 요금 감면 종료에 따른 휴대전화료 등이 상승한 것이 주요 요인입니다. 품목성질별로 주요 동향을 간단히 보면 농축수산물은 농산물의 경우 하락 전환하였습니다. 축산물 및 수산물은 오름폭 축소로 인해서 전체 상승 폭은 지난달 4.9%보다 둔화하여 1.9% 상승하였습니다. 석유류의 경우는 국제유가 및 전년 기저 등의 영향으로 2.3%로 상승 전환하였습니다. 가공식품은 지난달과 상승 폭이 동일하게 4.2% 상승하였습니다. 공공서비스는 일부 통신사 요금 감면 종료에 따라 상승 전환하여 1.2% 상승하였고, 개인서비스의 경우 휴가철 종료에 따른 여행 관련 품목이 하락함으로써 외식 제외 개인서비스는 상승 폭이 축소되었지만 외식 개인서비스는 상승 폭이 확대되면서 개인서비스는 전체 2.9% 상승하였습니다. 이상 보고를 마치겠습니다. 수고하셨습니다. <끝> 첨부파일 속기자료.hwp 바로보기 내려받기 속기자료.pdf 바로보기 내려받기 공공누리가 부착되지 않은 자료는 담당자와 협의한 후에 사용하여 주시기 바랍니다. 저작권정책 담당자안내 공유 열기 공유 페이스북 X 밴드 카카오톡 즐겨찾기 URL 복사 공유 닫기 좋아요 댓글 보기 운영원칙 열기 정책브리핑 게시물 운영원칙에 따라 다음과 같은 게시물은 삭제 또는 계정이 차단 될 수 있습니다. 1. 타인의 메일주소, 전화번호, 주민등록번호 등의 개인정보 또는 해당 정보를 게재하는 경우 2. 확인되지 않은 내용으로 타인의 명예를 훼손시키는 경우 3. 공공질서 및 미풍양속에 위반되는 내용을 유포하거나 링크시키는 경우 4. 욕설 및 비속어의 사용 및 특정 인종, 성별, 지역 또는 특정한 정치적 견해를 비하하는 용어를 게시하는 경우 5. 불법복제, 바이러스, 해킹 등을 조장하는 내용인 경우 6. 영리를 목적으로 하는 광고 또는 특정 개인(단체)의 홍보성 글인 경우 7. 타인의 저작물(기사, 사진 등 링크)을 무단으로 게시하여 저작권 침해에 해당하는 글 8. 범죄와 관련있거나 범죄를 유도하는 행위 및 관련 내용을 게시한 경우 9. 공인이나 특정이슈와 관련된 당사자 및 당사자의 주변인, 지인 등을 가장 또는 사칭하여 글을 게시하는 경우 10. 해당 기사나 게시글의 내용과 관련없는 특정 의견, 주장, 정보 등을 게시하는 경우 11. 동일한 제목, 내용의 글 또는 일부분만 변경해서 글을 반복 게재하는 경우 12. 기타 관계법령에 위배된다고 판단되는 경우 13. 수사기관 등의 공식적인 요청이 있는 경우 운영원칙 닫기 뉴스레터 구독 관련기사 관련기사 더보기 정책 NOW 실시간 인기뉴스 11.08. 09:37 기준 \"이걸 우리가 만들었어?\"…KF-21 첫 조종사들이 말하는 '보라매' 순위동일 증권사 신용융자 담보비율 의무 '3개월 면제'…증시 변동성 대응 NEW '단원고 4.16 아카이브' 유네스코 아태목록 등재 NEW 내년 공무원 시험 바뀐다…'PSAT' 첫 시행, 2월·7월 실시 단계하락 2 신생아·소아 중증 급성 신손상치료용 의료기기 2종 긴급 도입 NEW 이 대통령 \"한·동티모르 협력 확대…미래 위한 동행으로 발전\" NEW 인기뉴스 \"이걸 우리가 만들었어?\"…KF-21 첫 조종사들이 말하는 '보라매' 이 대통령 \"2027년 예산안은 성장확산 예산…'모두의 성장' 대전환\" 연체 걱정·월세 부담 없는 '전월세 안심신탁' 첫 임대인 모집 이 대통령 \"한·튀르키예 전략적 동반자 관계 심화…원전·방산 협력 확대\" 이 대통령 \"사이버보안, 사후 대응서 선제 예방으로…범정부 총괄기구 검토\" 최신뉴스 폐교의 새로운 시작, 지역의 가능성을 열다 [보도설명자료][11.7.토 중앙일보] 비대면진료 6년… 규제 근거·사후평가 부실 관련 수상의 영광을 시장의 기회로, K-Sool의 도약이 시작된다. 산업통상부 정례브리핑 (참고) 노동부 장관, 산업안전 대응 강화를 위한 긴급 기관장 회의 개최 오늘의 멀티미디어 니들이 피셋맛을 알어? 그래요 나 비염이에요 처음엔 분양가 25%로 입주, 내 집 지분은 차근차근! 한·동티모르 공동언론발표 정책포커스 하단 배너",
+          "truncated": true,
+          "snapshot_id": "ae0e5148-284f-471a-8167-9d2981315224",
+          "text_sha256": "f8b8d7dda03779dc2fcb94ee1580971fb985ba773d0b4def1666cbd24794ad2e"
+        }
+      ],
+      "accepted_results": [],
+      "evaluation_isolated": false
+    },
+    "sha256": "9cbafdb9b9928f55d60160eae82897765b1202ce73fd07c617b7641d59f1791e"
+  },
+  "captured_at": "2026-11-08T00:44:46.586965+00:00"
+}

@@ -1,0 +1,20 @@
+{
+  "A": {
+    "food_change_won": "25600.000",
+    "nonfood_change_won": "25200.000",
+    "total_change_won": "50800.000",
+    "weighted_pct": "2.5400",
+    "new_consumption_won": "2050800.000",
+    "headline_shortfall_won": "8800.000"
+  },
+  "B": {
+    "food_change_won": "12800.000",
+    "nonfood_change_won": "33600.000",
+    "total_change_won": "46400.000",
+    "weighted_pct": "2.3200",
+    "new_consumption_won": "2046400.000",
+    "headline_shortfall_won": "4400.000"
+  },
+  "interest_stress_extra_month_won": "50000.000",
+  "scope": "Arithmetic under fixed synthetic quantities, not measured household inflation. Reference not passed directly to writer."
+}

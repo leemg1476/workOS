@@ -1,0 +1,449 @@
+{
+  "run_id": "411277dc-050c-422a-9ce3-4ded74935a4d",
+  "source_text": "{\"report_window\": {\"start\": \"2025-09-01\", \"end\": \"2025-09-30\"}, \"observed_statistics\": {\"source_url\": \"https://www.korea.kr/news/policyNewsView.do?newsId=156721918\", \"source_title\": \"2025년 9월 소비자물가동향 공식 브리핑\", \"published_at\": \"2025-10-02\", \"total_cpi\": {\"index_2020_100\": 117.06, \"yoy_pct\": 2.1, \"mom_pct\": 0.5, \"previous_month_yoy_pct\": 1.7}, \"living_prices\": {\"yoy_pct\": 2.5, \"mom_pct\": 1.4, \"food_yoy_pct\": 3.2, \"nonfood_yoy_pct\": 2.1}, \"fresh_food\": {\"yoy_pct\": -2.5, \"mom_pct\": -0.9}, \"processed_food_yoy_pct\": 4.2, \"briefing_explanation\": \"일부 통신사 휴대폰 요금 감면 종료가 전체 상승률 확대의 주요 요인이라고 공식 브리핑은 설명한다.\"}, \"hypothetical_households\": {\"label\": \"통계 표본이나 사용자 실측이 아닌, 지수 적용 차이를 보는 가상 예시\", \"baseline\": \"2024년 9월 한 달, 같은 품목 구성과 수량을 2025년 9월까지 유지한다고 가정\", \"A\": {\"net_income_won\": 3000000, \"living_food_won\": 800000, \"living_nonfood_won\": 1200000}, \"B\": {\"net_income_won\": 3000000, \"living_food_won\": 400000, \"living_nonfood_won\": 1600000}, \"loan_scenario\": {\"principal_won\": 120000000, \"annual_interest_pct\": 4.0, \"stress_increase_pp\": 0.5, \"scope\": \"실제 9월 금리 변화나 전망 아님. 단순 이자만 계산, 원금상환·세금·수수료 제외. CPI 소비지출과 별도 현금흐름 스트레스\"}}, \"research_policy\": \"매 회차 기존 기억·피드백에서 드러난 빈틈에 대해 공식 원문을 추가 검색할 수 있다. 보고 대상은 계속 2025년9월이다. 이후에 게시된 방법론은 설명에 쓸 수 있지만 이후 기간 수치를 대상월 관측치로 대체하지 않는다. 과거 보고서·AI 의견은 사실 검증 근거가 아니다. 검색이 실패하면 미확인으로 남긴다. 주가·부동산 매매·대출 권고를 하지 않는다.\"}",
+  "source_sha256": "3e21ed51811111b073bbecb07e1a6bb0da17936ace5c8a57f5226ca147a2adad",
+  "source_snapshots": [],
+  "source_readbacks": [
+    [
+      {
+        "url": "https://kostat.go.kr/boardDownload.es?bid=5146&list_no=426919&seq=1",
+        "reason": "SOURCE_CONTENT_TYPE_UNSUPPORTED",
+        "status": "UNAVAILABLE"
+      }
+    ]
+  ],
+  "knowledge": {
+    "active": [
+      {
+        "kind": "CALCULATION",
+        "unit": "원",
+        "scope": "DETERMINISTIC_DECIMAL_RESULT",
+        "title": "A 가구 월 지출 증가액",
+        "value": "50800.00",
+        "sha256": "07b18d6a17f0fb0309db02e2efffa16cee3ddcc9d1ede40cc8aeee098f6c9b2a",
+        "entry_id": "386db24e-f783-419a-ac19-f92646b10df3",
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "path": "/hypothetical_households/A/living_food_won"
+                },
+                {
+                  "path": "/observed_statistics/living_prices/food_yoy_pct"
+                },
+                {
+                  "value": ".01"
+                }
+              ]
+            },
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "path": "/hypothetical_households/A/living_nonfood_won"
+                },
+                {
+                  "path": "/observed_statistics/living_prices/nonfood_yoy_pct"
+                },
+                {
+                  "value": ".01"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "kind": "CALCULATION",
+        "unit": "%",
+        "scope": "DETERMINISTIC_DECIMAL_RESULT",
+        "title": "A 가구 가중 상승률",
+        "value": "2.54",
+        "sha256": "80937abc848ed5135156ee810136e32bdad16b344b72d24b2ecb1b17519f9ac2",
+        "entry_id": "335d2848-0c67-4569-aa01-d34f9574d2dc",
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "add",
+                  "args": [
+                    {
+                      "op": "multiply",
+                      "args": [
+                        {
+                          "path": "/hypothetical_households/A/living_food_won"
+                        },
+                        {
+                          "path": "/observed_statistics/living_prices/food_yoy_pct"
+                        },
+                        {
+                          "value": ".01"
+                        }
+                      ]
+                    },
+                    {
+                      "op": "multiply",
+                      "args": [
+                        {
+                          "path": "/hypothetical_households/A/living_nonfood_won"
+                        },
+                        {
+                          "path": "/observed_statistics/living_prices/nonfood_yoy_pct"
+                        },
+                        {
+                          "value": ".01"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "op": "add",
+                  "args": [
+                    {
+                      "path": "/hypothetical_households/A/living_food_won"
+                    },
+                    {
+                      "path": "/hypothetical_households/A/living_nonfood_won"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "value": "100"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "CALCULATION",
+        "unit": "원",
+        "scope": "DETERMINISTIC_DECIMAL_RESULT",
+        "title": "A 가구 CPI 일괄 적용과 차이",
+        "value": "8800.00",
+        "sha256": "c82a187e9705d24397efcb716aa03ec75db885ea684d288e3a694e732c02e303",
+        "entry_id": "5ba1df0d-f580-4cf9-811e-bad9e7dab8ce",
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "path": "/hypothetical_households/A/living_food_won"
+                    },
+                    {
+                      "path": "/observed_statistics/living_prices/food_yoy_pct"
+                    },
+                    {
+                      "value": ".01"
+                    }
+                  ]
+                },
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "path": "/hypothetical_households/A/living_nonfood_won"
+                    },
+                    {
+                      "path": "/observed_statistics/living_prices/nonfood_yoy_pct"
+                    },
+                    {
+                      "value": ".01"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "op": "add",
+                  "args": [
+                    {
+                      "path": "/hypothetical_households/A/living_food_won"
+                    },
+                    {
+                      "path": "/hypothetical_households/A/living_nonfood_won"
+                    }
+                  ]
+                },
+                {
+                  "path": "/observed_statistics/total_cpi/yoy_pct"
+                },
+                {
+                  "value": ".01"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "kind": "CALCULATION",
+        "unit": "원",
+        "scope": "DETERMINISTIC_DECIMAL_RESULT",
+        "title": "B 가구 월 지출 증가액",
+        "value": "46400.00",
+        "sha256": "be0492153f6d8b2f1760fc8322b70f182be92ca0adeb82e50eb1d9a751b49d1b",
+        "entry_id": "5fcbaf0f-55b4-4ee3-8b52-c347f7210c9e",
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "path": "/hypothetical_households/B/living_food_won"
+                },
+                {
+                  "path": "/observed_statistics/living_prices/food_yoy_pct"
+                },
+                {
+                  "value": ".01"
+                }
+              ]
+            },
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "path": "/hypothetical_households/B/living_nonfood_won"
+                },
+                {
+                  "path": "/observed_statistics/living_prices/nonfood_yoy_pct"
+                },
+                {
+                  "value": ".01"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "kind": "CALCULATION",
+        "unit": "%",
+        "scope": "DETERMINISTIC_DECIMAL_RESULT",
+        "title": "B 가구 가중 상승률",
+        "value": "2.32",
+        "sha256": "a0dcb686f26f779c2595504a340a831d000a5f6bc56450e368a633c041f03d93",
+        "entry_id": "d74a2a16-48b0-4de9-ba1b-778e259b1dbd",
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "add",
+                  "args": [
+                    {
+                      "op": "multiply",
+                      "args": [
+                        {
+                          "path": "/hypothetical_households/B/living_food_won"
+                        },
+                        {
+                          "path": "/observed_statistics/living_prices/food_yoy_pct"
+                        },
+                        {
+                          "value": ".01"
+                        }
+                      ]
+                    },
+                    {
+                      "op": "multiply",
+                      "args": [
+                        {
+                          "path": "/hypothetical_households/B/living_nonfood_won"
+                        },
+                        {
+                          "path": "/observed_statistics/living_prices/nonfood_yoy_pct"
+                        },
+                        {
+                          "value": ".01"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "op": "add",
+                  "args": [
+                    {
+                      "path": "/hypothetical_households/B/living_food_won"
+                    },
+                    {
+                      "path": "/hypothetical_households/B/living_nonfood_won"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "value": "100"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "CALCULATION",
+        "unit": "원",
+        "scope": "DETERMINISTIC_DECIMAL_RESULT",
+        "title": "B 가구 CPI 일괄 적용과 차이",
+        "value": "4400.00",
+        "sha256": "5c3ee5eda6f4db5687df389f773eb64d68d25ad399b62d5b71c96dd9aa043f9c",
+        "entry_id": "444ab1c8-0355-4749-a173-30fada47d307",
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "path": "/hypothetical_households/B/living_food_won"
+                    },
+                    {
+                      "path": "/observed_statistics/living_prices/food_yoy_pct"
+                    },
+                    {
+                      "value": ".01"
+                    }
+                  ]
+                },
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "path": "/hypothetical_households/B/living_nonfood_won"
+                    },
+                    {
+                      "path": "/observed_statistics/living_prices/nonfood_yoy_pct"
+                    },
+                    {
+                      "value": ".01"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "op": "add",
+                  "args": [
+                    {
+                      "path": "/hypothetical_households/B/living_food_won"
+                    },
+                    {
+                      "path": "/hypothetical_households/B/living_nonfood_won"
+                    }
+                  ]
+                },
+                {
+                  "path": "/observed_statistics/total_cpi/yoy_pct"
+                },
+                {
+                  "value": ".01"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "kind": "CALCULATION",
+        "unit": "원",
+        "scope": "DETERMINISTIC_DECIMAL_RESULT",
+        "title": "가상 금리 스트레스 월 이자 증가",
+        "value": "50000.00",
+        "sha256": "8be4daed28d26907957f71bcafa1eff971e967bbf8f11e64ab83af977e42ed63",
+        "entry_id": "1595210b-fdb2-4728-98d3-5111989a82d2",
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "path": "/hypothetical_households/loan_scenario/principal_won"
+                },
+                {
+                  "path": "/hypothetical_households/loan_scenario/stress_increase_pp"
+                },
+                {
+                  "value": ".01"
+                }
+              ]
+            },
+            {
+              "value": "12"
+            }
+          ]
+        }
+      },
+      {
+        "kind": "CHECKLIST",
+        "scope": "USER_APPROVED_PROCEDURE_NOT_VERIFIED_FACT",
+        "title": "통계의 범위·비교 시점 유지",
+        "sha256": "03b8a2ddba5ce3108f48b5e7c7cb868df64b55bcbb6a848b77eb7b6f305a3817",
+        "payload": {
+          "heading": "통계의 범위와 비교 시점",
+          "instruction": "전월비·전년비·%포인트를 구분하고, 생활물가지수의 식품 구분과 가상의 고정 바구니라는 한계를 명시한다."
+        },
+        "entry_id": "82b79bd1-bd2b-4f76-ad91-284639d1c7a5"
+      },
+      {
+        "kind": "CHECKLIST",
+        "scope": "USER_APPROVED_PROCEDURE_NOT_VERIFIED_FACT",
+        "title": "가구별 차이와 계산 근거 유지",
+        "sha256": "9a79671fb7fcea9898238ababeaa8b4711ce61d9553e0c997091121e9941aa63",
+        "payload": {
+          "heading": "가구별 생활비 차이",
+          "instruction": "두 가구의 식품 지출 비중 차이를 설명하고 서버가 붙인 계산표를 참조한다. 관측 통계와 가상 계산을 구분한다."
+        },
+        "entry_id": "dd99bbbc-3d97-4498-a5e4-063c111d6c2b"
+      },
+      {
+        "kind": "CHECKLIST",
+        "scope": "USER_APPROVED_PROCEDURE_NOT_VERIFIED_FACT",
+        "title": "행동 기준과 점검 조건 유지",
+        "sha256": "28717602f5d1ae88cecb45c252333c00ffd5e68d77acda9287ebc9d63920d454",
+        "payload": {
+          "heading": "이번 주 행동과 다음 점검",
+          "instruction": "독자가 선택할 구체적 조정 대상과 선택 조건, 기록 기간, 점검 시점을 제시한다. 절감액을 확정 보장하지 않는다."
+        },
+        "entry_id": "1a3c7569-9992-41e0-b7f5-1afe89bf5491"
+      }
+    ],
+    "sha256": "856e7df4616ec1906cb5c46406c0b881933cc62246b73e0013ebae498735120c",
+    "version": "task-knowledge-v1",
+    "excluded": []
+  },
+  "report": {
+    "steps": [
+      {
+        "step_id": "report",
+        "text": "2025년 9월 물가를 생활비에 적용할 때는 전체 평균만 보기보다 전월 변화와 전년 변화, 내 가구의 지출 구성을 나눠 보는 편이 유용합니다. 보고 대상은 2025년 9월이며, 아래 가구 사례는 통계 표본이나 실제 가계의 실측치가 아닌 가상 고정 바구니입니다. 공식 발표 원문: https://www.korea.kr/news/policyNewsView.do?newsId=156721918 ([kostat.go.kr](https://kostat.go.kr/boardDownload.es?bid=5146&list_no=426919&seq=1&utm_source=openai))\n\n## 통계의 범위와 비교 시점\n\n### 통계의 범위와 비교 시점\n9월 소비자물가지수는 2020년=100 기준 117.06으로 전월보다 0.5%, 1년 전보다 2.1% 올랐습니다. 전년 상승률은 8월 1.7%에서 0.4%포인트 높아졌습니다. 전월비는 바로 전 달과의 변화, 전년동월비는 1년 전 같은 달과의 변화이고, %포인트는 두 상승률의 차이입니다. 공식 브리핑은 일부 통신사의 휴대전화 요금 감면 종료를 상승률 확대의 주요 요인으로 설명했습니다. 생활물가지수는 전년동월비 2.5%, 전월비 1.4% 상승했고, 그중 식품은 전년동월비 3.2%, 식품 이외는 2.1% 상승했습니다. 신선식품은 전년동월비 2.5%, 전월비 0.9% 하락한 반면 가공식품은 전년동월비 4.2% 올랐습니다. 신선식품의 하락이 전체 식품 물가나 모든 장바구니의 하락을 뜻하지는 않습니다. 소비자물가지수는 품목별 지출 비중을 반영한 평균이므로 개인의 체감과 달라질 수 있습니다. 지수 설명: https://kostat.go.kr/boardDownload.es?bid=5146&list_no=426919&seq=1 ([kostat.go.kr](https://kostat.go.kr/boardDownload.es?bid=5146&list_no=426919&seq=1&utm_source=openai))\n\n## 가구별 생활비 차이\n\n### 가구별 생활비 차이\n가상 A·B 가구는 모두 월 순소득 300만 원이며, 2024년 9월의 같은 품목 구성과 수량을 2025년 9월까지 유지한다고 가정합니다. A는 식품 지출이 80만 원, 비식품이 120만 원이고, B는 각각 40만 원과 160만 원입니다. 식품 비중이 더 큰 A는 식품 물가 변동에 상대적으로 더 민감할 수 있고, 비식품 비중이 큰 B는 비식품 가격 흐름의 영향을 더 받습니다. 가정한 품목별 상승률을 적용한 금액과 가중 상승률은 서버가 덧붙이는 계산표를 참조하세요. 이는 관측된 가구 지출이나 실제 가구의 청구액이 아니라, 두 지출 구성이 어떻게 다른 결과를 낼 수 있는지 보여주는 예시입니다. 따라서 전체 CPI 상승률을 모든 가구의 실제 생활비 증가율로 간주하지 말고, 본인 가계부의 식품·통신·공공요금 등 항목을 함께 확인하세요.\n\n## 이번 주 행동과 다음 점검\n\n### 이번 주 행동과 다음 점검\n이번 주에는 최근 한 달 지출을 식품, 통신, 공공요금, 그 밖의 비식품으로 나눠 기록하고, 지난달 또는 전년 같은 달과 비교해 큰 변동이 있는 항목을 먼저 표시해 보세요. 통신비는 할인 종료나 요금제 변경 여부를 청구서에서 확인하고, 식품은 자주 사는 품목 가운데 가공식품·신선식품을 나눠 구매량과 가격을 기록하세요. 줄일 항목은 실제 이용 빈도와 대체 가능성을 확인한 뒤 선택하고, 절감액을 미리 확정하지 마세요. 다음 결제일 또는 4주 뒤에 지출 기록을 다시 비교하면 조정이 실제로 도움이 됐는지 점검할 수 있습니다. 별도의 대출 예시는 실제 9월 금리 변화나 전망이 아니라 원금상환·세금·수수료를 제외한 단순 이자 스트레스 가정입니다. 해당 월 이자 변화 계산은 서버 계산표를 참조하고, CPI 소비지출과 구분해 현금흐름을 살펴보세요.\n\n## 계산 근거 · Python Decimal\n\n|항목|계산 결과|\n|---|---:|\n|A 가구 월 지출 증가액|50800.00 원|\n|A 가구 가중 상승률|2.54 %|\n|A 가구 CPI 일괄 적용과 차이|8800.00 원|\n|B 가구 월 지출 증가액|46400.00 원|\n|B 가구 가중 상승률|2.32 %|\n|B 가구 CPI 일괄 적용과 차이|4400.00 원|\n|가상 금리 스트레스 월 이자 증가|50000.00 원|"
+      }
+    ]
+  },
+  "review_policy": "AI_SCORE_IS_ADVISORY; ABSENT_EVIDENCE_IS_UNKNOWN_NOT_FALSE; QUOTE_ERROR_CLAIMS_AND_COMPARE_ACTUAL_SOURCE; NO_AUTO_APPLY"
+}

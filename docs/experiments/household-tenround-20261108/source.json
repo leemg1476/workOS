@@ -1,0 +1,50 @@
+{
+  "report_window": {
+    "start": "2025-09-01",
+    "end": "2025-09-30"
+  },
+  "observed_statistics": {
+    "source_url": "https://www.korea.kr/news/policyNewsView.do?newsId=156721918",
+    "source_title": "2025년 9월 소비자물가동향 공식 브리핑",
+    "published_at": "2025-10-02",
+    "total_cpi": {
+      "index_2020_100": 117.06,
+      "yoy_pct": 2.1,
+      "mom_pct": 0.5,
+      "previous_month_yoy_pct": 1.7
+    },
+    "living_prices": {
+      "yoy_pct": 2.5,
+      "mom_pct": 1.4,
+      "food_yoy_pct": 3.2,
+      "nonfood_yoy_pct": 2.1
+    },
+    "fresh_food": {
+      "yoy_pct": -2.5,
+      "mom_pct": -0.9
+    },
+    "processed_food_yoy_pct": 4.2,
+    "briefing_explanation": "일부 통신사 휴대폰 요금 감면 종료가 전체 상승률 확대의 주요 요인이라고 공식 브리핑은 설명한다."
+  },
+  "hypothetical_households": {
+    "label": "통계 표본이나 사용자 실측이 아닌, 지수 적용 차이를 보는 가상 예시",
+    "baseline": "2024년 9월 한 달, 같은 품목 구성과 수량을 2025년 9월까지 유지한다고 가정",
+    "A": {
+      "net_income_won": 3000000,
+      "living_food_won": 800000,
+      "living_nonfood_won": 1200000
+    },
+    "B": {
+      "net_income_won": 3000000,
+      "living_food_won": 400000,
+      "living_nonfood_won": 1600000
+    },
+    "loan_scenario": {
+      "principal_won": 120000000,
+      "annual_interest_pct": 4.0,
+      "stress_increase_pp": 0.5,
+      "scope": "실제 9월 금리 변화나 전망 아님. 단순 이자만 계산, 원금상환·세금·수수료 제외. CPI 소비지출과 별도 현금흐름 스트레스"
+    }
+  },
+  "research_policy": "매 회차 기존 기억·피드백에서 드러난 빈틈에 대해 공식 원문을 추가 검색할 수 있다. 보고 대상은 계속 2025년9월이다. 이후에 게시된 방법론은 설명에 쓸 수 있지만 이후 기간 수치를 대상월 관측치로 대체하지 않는다. 과거 보고서·AI 의견은 사실 검증 근거가 아니다. 검색이 실패하면 미확인으로 남긴다. 주가·부동산 매매·대출 권고를 하지 않는다."
+}

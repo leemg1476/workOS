@@ -1,0 +1,48 @@
+{
+  "scope": "CODEX_SPOT_REVIEW_NOT_HUMAN_EXPERT_GROUND_TRUTH",
+  "checked_at": "2026-11-07T15:01:18.821708+00:00",
+  "checkpoints": [
+    {
+      "round": 1,
+      "arithmetic": "FAIL",
+      "finding": "A: 800000*0.032 + 1200000*0.021 = 50800. Report says 49200; verified error, not only model-judge assertion. B=46400 and interest stress=50000 are correct.",
+      "report_sha256": "093e2b2d0ea33d1f22fa67922d334d0c80c1413d54c99fd382820f88de15f27a"
+    },
+    {
+      "round": 10,
+      "arithmetic": "PASS_ON_SPOT_CHECK",
+      "finding": "A 50800/2.54%, B 46400/2.32%, headline differences 8800/4400, loan stress50000 match Decimal reference. Report distinguishes fixed hypothetical basket from observation.",
+      "additional_source_check": "2025-08 official briefing directly confirms 50% one-month discount, phone fee -21% YoY and total-CPI rate effect0.4pp; official index-methodology page supports living-price index definition. Extra research therefore added supported explanation, not only more URLs.",
+      "source_urls": [
+        "https://www.korea.kr/news/policyNewsView.do?newsId=156721800",
+        "https://mods.go.kr/menu.es?mid=b70202030000"
+      ],
+      "weakness": "Budget-action criteria remain general, and some citation links repeat. This is a useful explanatory report, not proof of expert-human parity.",
+      "report_sha256": "120c51bcc45f2efc34c9cd8d595a6b77739b8187dbcb12e411a6f409bbc4d0d9"
+    },
+    {
+      "round": 20,
+      "automated_critical_flag": "FALSE_POSITIVE_ON_TEXT_REVIEW",
+      "finding": "보고서는 신선식품 전년비 2.5%, 전월비 0.9% 하락이라고 썼다. 평가자가 전년비 +2.5% 상승으로 잘못 읽었다. 원 점수74와 경고는 보존하지만 확정 사실 오류로 집계하지 않는다.",
+      "source_statement": "공식 브리핑: 전월비0.9%, 전년동월비2.5% 각각 하락",
+      "correction_feedback": "원문 독해 교정 의견(사람 승인 아님): 20회차 보고서의 신선식품은 전년비 2.5%, 전월비 0.9% 하락했다는 문장은 두 수치에 하락이 함께 적용됩니다. 원 보고서는 전년비 +2.5% 상승이라고 쓰지 않았으므로 평가자가 이를 핵심 부호 오류라고 확정한 것은 과잉 판정입니다. 내용 부호를 바꾸지 말고 모호함을 없애려면 전년비 2.5% 하락, 전월비 0.9% 하락이라고 각각 명시하세요. 이 교정은 원 점수/평가를 덮어쓰지 않으며, 평가자 경고도 원문과 대조해야 한다는 사례로 남깁니다.",
+      "recorded_at": "2026-11-07T15:07:08.308936+00:00"
+    },
+    {
+      "round": 30,
+      "arithmetic": "PASS_ON_SPOT_CHECK",
+      "finding": "A50800/2.54%, B46400/2.32%, CPI differences8800/4400 and interest-stress50000 remain correct. Period and hypothetical assumptions explicit. Action guidance remains general, much like round10.",
+      "reviewer_issue": "Feedback again requests unverified previous-year low-base explanation; same-source correction provided as separate AI opinion, original score83 and feedback preserved.",
+      "report_sha256": "3804e8d059b370bc22b8bb0b4dee9d5f19591033eac678e0090ebef84f25f59f",
+      "recorded_at": "2026-11-07T15:14:42.516623+00:00"
+    },
+    {
+      "round": 42,
+      "arithmetic": "PASS_ON_SPOT_CHECK",
+      "finding": "A50800/2.54%, B46400/2.32%, CPI gaps8800/4400, income ratios1.69%/1.55%, interest stress50000 all match direct arithmetic. X*0.95 is explicitly optional four-week spending trial, not guaranteed savings.",
+      "source_check": "August discount50%, phone fee-21% and CPI-rate effect0.4pp match the previously opened official August briefing. Latest AI critique cannot verify them from its seed input, which is a limitation of that reviewer context, not proof that these claims are false.",
+      "remaining_weakness": "Same core structure and sources as round10/30; moderate action specificity gain but no demonstrated expert-human parity, out-of-sample transfer, or sustained accumulation.",
+      "report_sha256": "ba214873d2cdf4fc68e9ee168d59b45dbe9ca820c674743f85f8b9f94591ff9b"
+    }
+  ]
+}

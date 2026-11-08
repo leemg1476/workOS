@@ -1,0 +1,697 @@
+{
+  "round": 1,
+  "task_id": "USER-545faf8c-091f-462f-a834-86c909606fd7",
+  "work_id": "11a4b31d-b836-481f-8a8f-0b78505381b9",
+  "run_id": "411277dc-050c-422a-9ce3-4ded74935a4d",
+  "artifact_id": "4a0a1485-72b4-4c13-8931-38395d5a1901",
+  "artifact_sha256": "fc3aa157162d48599222420ea177631861d2e3b828e233809251cc520c740948",
+  "content": {
+    "steps": [
+      {
+        "text": "2025년 9월 물가를 생활비에 적용할 때는 전체 평균만 보기보다 전월 변화와 전년 변화, 내 가구의 지출 구성을 나눠 보는 편이 유용합니다. 보고 대상은 2025년 9월이며, 아래 가구 사례는 통계 표본이나 실제 가계의 실측치가 아닌 가상 고정 바구니입니다. 공식 발표 원문: https://www.korea.kr/news/policyNewsView.do?newsId=156721918 ([kostat.go.kr](https://kostat.go.kr/boardDownload.es?bid=5146&list_no=426919&seq=1&utm_source=openai))\n\n## 통계의 범위와 비교 시점\n\n### 통계의 범위와 비교 시점\n9월 소비자물가지수는 2020년=100 기준 117.06으로 전월보다 0.5%, 1년 전보다 2.1% 올랐습니다. 전년 상승률은 8월 1.7%에서 0.4%포인트 높아졌습니다. 전월비는 바로 전 달과의 변화, 전년동월비는 1년 전 같은 달과의 변화이고, %포인트는 두 상승률의 차이입니다. 공식 브리핑은 일부 통신사의 휴대전화 요금 감면 종료를 상승률 확대의 주요 요인으로 설명했습니다. 생활물가지수는 전년동월비 2.5%, 전월비 1.4% 상승했고, 그중 식품은 전년동월비 3.2%, 식품 이외는 2.1% 상승했습니다. 신선식품은 전년동월비 2.5%, 전월비 0.9% 하락한 반면 가공식품은 전년동월비 4.2% 올랐습니다. 신선식품의 하락이 전체 식품 물가나 모든 장바구니의 하락을 뜻하지는 않습니다. 소비자물가지수는 품목별 지출 비중을 반영한 평균이므로 개인의 체감과 달라질 수 있습니다. 지수 설명: https://kostat.go.kr/boardDownload.es?bid=5146&list_no=426919&seq=1 ([kostat.go.kr](https://kostat.go.kr/boardDownload.es?bid=5146&list_no=426919&seq=1&utm_source=openai))\n\n## 가구별 생활비 차이\n\n### 가구별 생활비 차이\n가상 A·B 가구는 모두 월 순소득 300만 원이며, 2024년 9월의 같은 품목 구성과 수량을 2025년 9월까지 유지한다고 가정합니다. A는 식품 지출이 80만 원, 비식품이 120만 원이고, B는 각각 40만 원과 160만 원입니다. 식품 비중이 더 큰 A는 식품 물가 변동에 상대적으로 더 민감할 수 있고, 비식품 비중이 큰 B는 비식품 가격 흐름의 영향을 더 받습니다. 가정한 품목별 상승률을 적용한 금액과 가중 상승률은 서버가 덧붙이는 계산표를 참조하세요. 이는 관측된 가구 지출이나 실제 가구의 청구액이 아니라, 두 지출 구성이 어떻게 다른 결과를 낼 수 있는지 보여주는 예시입니다. 따라서 전체 CPI 상승률을 모든 가구의 실제 생활비 증가율로 간주하지 말고, 본인 가계부의 식품·통신·공공요금 등 항목을 함께 확인하세요.\n\n## 이번 주 행동과 다음 점검\n\n### 이번 주 행동과 다음 점검\n이번 주에는 최근 한 달 지출을 식품, 통신, 공공요금, 그 밖의 비식품으로 나눠 기록하고, 지난달 또는 전년 같은 달과 비교해 큰 변동이 있는 항목을 먼저 표시해 보세요. 통신비는 할인 종료나 요금제 변경 여부를 청구서에서 확인하고, 식품은 자주 사는 품목 가운데 가공식품·신선식품을 나눠 구매량과 가격을 기록하세요. 줄일 항목은 실제 이용 빈도와 대체 가능성을 확인한 뒤 선택하고, 절감액을 미리 확정하지 마세요. 다음 결제일 또는 4주 뒤에 지출 기록을 다시 비교하면 조정이 실제로 도움이 됐는지 점검할 수 있습니다. 별도의 대출 예시는 실제 9월 금리 변화나 전망이 아니라 원금상환·세금·수수료를 제외한 단순 이자 스트레스 가정입니다. 해당 월 이자 변화 계산은 서버 계산표를 참조하고, CPI 소비지출과 구분해 현금흐름을 살펴보세요.\n\n## 계산 근거 · Python Decimal\n\n|항목|계산 결과|\n|---|---:|\n|A 가구 월 지출 증가액|50800.00 원|\n|A 가구 가중 상승률|2.54 %|\n|A 가구 CPI 일괄 적용과 차이|8800.00 원|\n|B 가구 월 지출 증가액|46400.00 원|\n|B 가구 가중 상승률|2.32 %|\n|B 가구 CPI 일괄 적용과 차이|4400.00 원|\n|가상 금리 스트레스 월 이자 증가|50000.00 원|",
+        "step_id": "report",
+        "model_id": "gpt-6-luna",
+        "research": {
+          "scope": "PROVIDER_URL_METADATA_NOT_INDEPENDENT_FACT_VERIFICATION",
+          "citations": [
+            {
+              "url": "https://kostat.go.kr/boardDownload.es?bid=5146&list_no=426919&seq=1&utm_source=openai",
+              "type": "url_citation",
+              "title": "소비자물가조사\n일 러 두 기\n부\n보도자료\n보도시점\n2023. 9. 5.(화) 08:00\n배",
+              "end_index": 337,
+              "start_index": 234
+            },
+            {
+              "url": "https://kostat.go.kr/boardDownload.es?bid=5146&list_no=426919&seq=1&utm_source=openai",
+              "type": "url_citation",
+              "title": "소비자물가조사\n일 러 두 기\n부\n보도자료\n보도시점\n2023. 9. 5.(화) 08:00\n배",
+              "end_index": 1048,
+              "start_index": 945
+            }
+          ],
+          "web_calls": [
+            {
+              "id": "ws_09c2e080e555665d016aefc480437c87d099056c3e50f8fbb0",
+              "type": "web_search_call",
+              "action": {
+                "type": "search",
+                "query": "site:kostat.go.kr 소비자물가지수 생활물가지수 신선식품지수 조사 대상 가중치",
+                "queries": [
+                  "site:kostat.go.kr 소비자물가지수 생활물가지수 신선식품지수 조사 대상 가중치",
+                  "site:kostat.go.kr 2025년 9월 소비자물가동향 보도자료 생활물가지수 식품"
+                ],
+                "sources": [
+                  {
+                    "url": "https://kostat.go.kr/boardDownload.es?bid=5146&list_no=438962&seq=6",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://kostat.go.kr/boardDownload.es?bid=5146&list_no=426919&seq=1",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://www.kostat.go.kr/index.es?sid=b7",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://kostat.go.kr/boardDownload.es?bid=5146&list_no=438999&seq=3",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://sri.kostat.go.kr/boardDownload.es?bid=5146&list_no=439119&seq=3",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://sri.kostat.go.kr/boardDownload.es?bid=5146&list_no=439122&seq=3",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://kostat.go.kr/boardDownload.es?bid=5146&list_no=438345&seq=3",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://www.kostat.go.kr/boardDownload.es?bid=67&list_no=434314&seq=1",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://kostat.go.kr/",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://www.kostat.go.kr/newsPln.es?mid=a10305000000&oa_mm=08",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://www.kostat.go.kr/board.es?act=view&bid=5107&list_no=445324&mid=a30301010100&ref_bid=&tag=",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://sri.kostat.go.kr/board.es?act=view&bid=213&list_no=428549&mid=a10301040100&nPage=1&ref_bid=&tag=",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://mlib1.kostat.go.kr/search/media/toc/CAT000000027201",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://www.kostat.go.kr/board.es?act=view&bid=5126&list_no=444318&mid=a40301010100&ref_bid=&tag=",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://mlib1.kostat.go.kr/search/detail/CATSUZ000000019680?briefLink=%2FsearchS%2Fsuz%2Fresult%3FsNo%3D0_A_sq%3D31016_A_bk_0%3Djttjyjttj_A_st%3DSUBJ_A_bk_4%3D%ED%86%B5%EA%B3%84%EC%B2%AD_A_pn%3D17&mainLink=%2FsearchS%2Fsuz",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://mlib1.kostat.go.kr/search/detail/CATTOT000000052874?location=B0000002",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://www.kostat.go.kr/board.es?act=view&bid=11997&list_no=444798&mid=a40301010300&nPage=1&ref_bid=5126%2C11997&tag=",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://lib1.kostat.go.kr/search/detail/CATSUZ000000046549?briefLink=%2FsearchS%2Fsuz%2Fresult%3Fos%3DDESC_A_cpp%3D100_A_sNo%3D0_A_sq%3D3101_A_bk_1%3Djttjkorjttj_A_bk_0%3Djttjyjttj_A_st%3DSUBJ_A_oi%3DDISP03_A_bk_5%3D%ED%86%B5%EA%B3%84%EC%B2%AD_A_pn%3D11&mainLink=%2FsearchS%2Fsuz",
+                    "type": "url"
+                  }
+                ]
+              },
+              "status": "completed"
+            },
+            {
+              "id": "ws_09c2e080e555665d016aefc487de2887d0a698c49a3d43f6c3",
+              "type": "web_search_call",
+              "action": {
+                "type": "search",
+                "query": "site:kostat.go.kr/board.es \"2025년 9월 소비자물가동향\"",
+                "queries": [
+                  "site:kostat.go.kr/board.es \"2025년 9월 소비자물가동향\"",
+                  "site:kostat.go.kr \"2025년 9월 소비자물가동향\" \"2.1\" \"휴대전화료\""
+                ],
+                "sources": [
+                  {
+                    "url": "https://www.kostat.go.kr/boardDownload.es?bid=5166&list_no=439124&seq=3",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://kostat.go.kr/boardDownload.es?bid=5166&list_no=439124&seq=3",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://www.kostat.go.kr/ansk/file/schedule_2025.pdf",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://sri.kostat.go.kr/boardDownload.es?bid=12030&list_no=442868&seq=1",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://www.kostat.go.kr/boardDownload.es?bid=11997&list_no=436259&seq=4",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://sri.kostat.go.kr/boardDownload.es?bid=5107&list_no=434960&seq=3",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://www.kostat.go.kr/boardDownload.es?bid=67&list_no=434314&seq=1",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://www.kostat.go.kr/boardDownload.es?bid=11996&list_no=425887&seq=2",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://www.kostat.go.kr/boardDownload.es?bid=12030&list_no=434409&seq=1",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://www.kostat.go.kr/boardDownload.es?bid=5145&list_no=429864&seq=1",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://www.kostat.go.kr/boardDownload.es?bid=216&list_no=431995&seq=3",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://www.kostat.go.kr/boardDownload.es?bid=107&list_no=436949&seq=2",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://kostat.go.kr/board.es?bid=5126&list_no=&mid=a40301010300&tag=",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://kostat.go.kr/ansk?aSeq=161930&bmode=read&rowNum=10",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://mlib1.kostat.go.kr/search/detail/CATTOT000000057034?briefLink=%2Fsearch%2Ftot%2Fresult%3Fq%3D%ED%86%B5%EA%B3%84%EC%B2%AD+%EB%AC%BC%EA%B0%80%ED%86%B5%EA%B3%84%EA%B3%BC_A_st%3DFRNT_A_si%3D2_A_bk_2%3Djttja0000001jttj&mainLink=%2Fsearch%2Ftot",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://mlib1.kostat.go.kr/search/detail/CATTOT000000057034?briefLink=%2Fsearch%2Ftot%2Fresult%3Fq%3D%ED%86%B5%EA%B3%84%EC%B2%AD.++%EB%AC%BC%EA%B0%80%ED%86%B5%EA%B3%84%EA%B3%BC_A_st%3DFRNT_A_bk_5%3D%ED%86%B5%EA%B3%84%EC%B2%AD+%EB%AC%BC%EA%B0%80%ED%86%B5%EA%B3%84%EA%B3%BC_A_si%3D2&mainLink=%2Fsearch%2Ftot",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://mlib1.kostat.go.kr/search/detail/CATTOT000000057034?briefLink=%2Fsearch%2Ftot%2Fresult%3Fq%3D314.22_A_bk_1%3Djttjkorjttj_A_st%3DFRNT_A_si%3D12&mainLink=%2Fsearch%2Ftot",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://mlib1.kostat.go.kr/search/detail/CATTOT000000057034?briefLink=%2FbrowsingByPeriod%2Fresult%3Fsq%3Deconomic_planning_board_A_st%3DSUBJ_A_bk_2%3Djttjb0000002jttj_A_bk_2%3Djttjc0000003jttj&mainLink=%2FbrowsingByPeriod",
+                    "type": "url"
+                  },
+                  {
+                    "url": "https://kostat.go.kr/boardDownload.es?bid=5146&list_no=426919&seq=1&utm_source=openai",
+                    "type": "url"
+                  }
+                ]
+              },
+              "status": "completed"
+            }
+          ],
+          "source_snapshots": [
+            {
+              "url": "https://kostat.go.kr/boardDownload.es?bid=5146&list_no=426919&seq=1",
+              "reason": "SOURCE_CONTENT_TYPE_UNSUPPORTED",
+              "status": "UNAVAILABLE"
+            }
+          ]
+        },
+        "elapsed_ms": 23438,
+        "response_id": "resp_09c2e080e555665d016aefc47e727487d0a13d85048ea2c435",
+        "input_tokens": 27346,
+        "output_tokens": 2132,
+        "structured_report": "{\"introduction\":\"2025년 9월 물가를 생활비에 적용할 때는 전체 평균만 보기보다 전월 변화와 전년 변화, 내 가구의 지출 구성을 나눠 보는 편이 유용합니다. 보고 대상은 2025년 9월이며, 아래 가구 사례는 통계 표본이나 실제 가계의 실측치가 아닌 가상 고정 바구니입니다. 공식 발표 원문: https://www.korea.kr/news/policyNewsView.do?newsId=156721918 ([kostat.go.kr](https://kostat.go.kr/boardDownload.es?bid=5146&list_no=426919&seq=1&utm_source=openai))\",\"sections\":[{\"rule_id\":\"82b79bd1-bd2b-4f76-ad91-284639d1c7a5\",\"text\":\"### 통계의 범위와 비교 시점\\n9월 소비자물가지수는 2020년=100 기준 117.06으로 전월보다 0.5%, 1년 전보다 2.1% 올랐습니다. 전년 상승률은 8월 1.7%에서 0.4%포인트 높아졌습니다. 전월비는 바로 전 달과의 변화, 전년동월비는 1년 전 같은 달과의 변화이고, %포인트는 두 상승률의 차이입니다. 공식 브리핑은 일부 통신사의 휴대전화 요금 감면 종료를 상승률 확대의 주요 요인으로 설명했습니다. 생활물가지수는 전년동월비 2.5%, 전월비 1.4% 상승했고, 그중 식품은 전년동월비 3.2%, 식품 이외는 2.1% 상승했습니다. 신선식품은 전년동월비 2.5%, 전월비 0.9% 하락한 반면 가공식품은 전년동월비 4.2% 올랐습니다. 신선식품의 하락이 전체 식품 물가나 모든 장바구니의 하락을 뜻하지는 않습니다. 소비자물가지수는 품목별 지출 비중을 반영한 평균이므로 개인의 체감과 달라질 수 있습니다. 지수 설명: https://kostat.go.kr/boardDownload.es?bid=5146&list_no=426919&seq=1 ([kostat.go.kr](https://kostat.go.kr/boardDownload.es?bid=5146&list_no=426919&seq=1&utm_source=openai))\"},{\"rule_id\":\"dd99bbbc-3d97-4498-a5e4-063c111d6c2b\",\"text\":\"### 가구별 생활비 차이\\n가상 A·B 가구는 모두 월 순소득 300만 원이며, 2024년 9월의 같은 품목 구성과 수량을 2025년 9월까지 유지한다고 가정합니다. A는 식품 지출이 80만 원, 비식품이 120만 원이고, B는 각각 40만 원과 160만 원입니다. 식품 비중이 더 큰 A는 식품 물가 변동에 상대적으로 더 민감할 수 있고, 비식품 비중이 큰 B는 비식품 가격 흐름의 영향을 더 받습니다. 가정한 품목별 상승률을 적용한 금액과 가중 상승률은 서버가 덧붙이는 계산표를 참조하세요. 이는 관측된 가구 지출이나 실제 가구의 청구액이 아니라, 두 지출 구성이 어떻게 다른 결과를 낼 수 있는지 보여주는 예시입니다. 따라서 전체 CPI 상승률을 모든 가구의 실제 생활비 증가율로 간주하지 말고, 본인 가계부의 식품·통신·공공요금 등 항목을 함께 확인하세요.\"},{\"rule_id\":\"1a3c7569-9992-41e0-b7f5-1afe89bf5491\",\"text\":\"### 이번 주 행동과 다음 점검\\n이번 주에는 최근 한 달 지출을 식품, 통신, 공공요금, 그 밖의 비식품으로 나눠 기록하고, 지난달 또는 전년 같은 달과 비교해 큰 변동이 있는 항목을 먼저 표시해 보세요. 통신비는 할인 종료나 요금제 변경 여부를 청구서에서 확인하고, 식품은 자주 사는 품목 가운데 가공식품·신선식품을 나눠 구매량과 가격을 기록하세요. 줄일 항목은 실제 이용 빈도와 대체 가능성을 확인한 뒤 선택하고, 절감액을 미리 확정하지 마세요. 다음 결제일 또는 4주 뒤에 지출 기록을 다시 비교하면 조정이 실제로 도움이 됐는지 점검할 수 있습니다. 별도의 대출 예시는 실제 9월 금리 변화나 전망이 아니라 원금상환·세금·수수료를 제외한 단순 이자 스트레스 가정입니다. 해당 월 이자 변화 계산은 서버 계산표를 참조하고, CPI 소비지출과 구분해 현금흐름을 살펴보세요.\"}]}"
+      }
+    ],
+    "task_id": "USER-545faf8c-091f-462f-a834-86c909606fd7",
+    "data_mode": "USER_PROVIDED_TEXT",
+    "model_mode": "LIVE_LLM",
+    "source_sha256": "3e21ed51811111b073bbecb07e1a6bb0da17936ace5c8a57f5226ca147a2adad",
+    "contract_sha256": "098aab048d4d31da3c910e5c1b9cdb1b61f7ece86097263128e432d58f209858",
+    "semantic_review": "NOT_PERFORMED"
+  },
+  "memory": {
+    "manifest": {
+      "scope": "SAME_TASK_VERSION_HISTORY_NOT_CURRENT_SOURCE_FACTS",
+      "reviews": [],
+      "task_id": "USER-545faf8c-091f-462f-a834-86c909606fd7",
+      "version": "task-memory-v3",
+      "failures": [
+        {
+          "reason": "workload execution failed: ValueError",
+          "run_id": "04da2349-9a0a-4809-8573-76d8fa672088",
+          "status": "FAILED",
+          "work_id": "11a4b31d-b836-481f-8a8f-0b78505381b9"
+        },
+        {
+          "reason": "{\"checks\":{\"context_hash\":true,\"evaluation_scope\":true,\"execution_mode\":true,\"input_hashes\":true,\"knowledge_policy_hash\":true,\"knowledge_source_quotes_current\":true,\"output_present\":true,\"persistent_checklist_and_calculations\":false,\"prompt_memory_policy\":true,\"source_snapshot_hashes\":true,\"source_version\":true,\"steps_complete\":true,\"task_and_labels\":true,\"task_memory\":true},\"passed\":false,\"requires_human_review\":true,\"semantic_review\":\"NOT_PERFORMED\"}",
+          "run_id": "65021d73-6cd0-4617-9e14-3ab560b1236d",
+          "status": "VERIFICATION_FAILED",
+          "work_id": "11a4b31d-b836-481f-8a8f-0b78505381b9"
+        }
+      ],
+      "knowledge": {
+        "active": [
+          {
+            "kind": "CALCULATION",
+            "unit": "원",
+            "scope": "DETERMINISTIC_DECIMAL_RESULT",
+            "title": "A 가구 월 지출 증가액",
+            "value": "50800.00",
+            "sha256": "07b18d6a17f0fb0309db02e2efffa16cee3ddcc9d1ede40cc8aeee098f6c9b2a",
+            "entry_id": "386db24e-f783-419a-ac19-f92646b10df3",
+            "expression": {
+              "op": "add",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "path": "/hypothetical_households/A/living_food_won"
+                    },
+                    {
+                      "path": "/observed_statistics/living_prices/food_yoy_pct"
+                    },
+                    {
+                      "value": ".01"
+                    }
+                  ]
+                },
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "path": "/hypothetical_households/A/living_nonfood_won"
+                    },
+                    {
+                      "path": "/observed_statistics/living_prices/nonfood_yoy_pct"
+                    },
+                    {
+                      "value": ".01"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "kind": "CALCULATION",
+            "unit": "%",
+            "scope": "DETERMINISTIC_DECIMAL_RESULT",
+            "title": "A 가구 가중 상승률",
+            "value": "2.54",
+            "sha256": "80937abc848ed5135156ee810136e32bdad16b344b72d24b2ecb1b17519f9ac2",
+            "entry_id": "335d2848-0c67-4569-aa01-d34f9574d2dc",
+            "expression": {
+              "op": "multiply",
+              "args": [
+                {
+                  "op": "divide",
+                  "args": [
+                    {
+                      "op": "add",
+                      "args": [
+                        {
+                          "op": "multiply",
+                          "args": [
+                            {
+                              "path": "/hypothetical_households/A/living_food_won"
+                            },
+                            {
+                              "path": "/observed_statistics/living_prices/food_yoy_pct"
+                            },
+                            {
+                              "value": ".01"
+                            }
+                          ]
+                        },
+                        {
+                          "op": "multiply",
+                          "args": [
+                            {
+                              "path": "/hypothetical_households/A/living_nonfood_won"
+                            },
+                            {
+                              "path": "/observed_statistics/living_prices/nonfood_yoy_pct"
+                            },
+                            {
+                              "value": ".01"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "op": "add",
+                      "args": [
+                        {
+                          "path": "/hypothetical_households/A/living_food_won"
+                        },
+                        {
+                          "path": "/hypothetical_households/A/living_nonfood_won"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "value": "100"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "CALCULATION",
+            "unit": "원",
+            "scope": "DETERMINISTIC_DECIMAL_RESULT",
+            "title": "A 가구 CPI 일괄 적용과 차이",
+            "value": "8800.00",
+            "sha256": "c82a187e9705d24397efcb716aa03ec75db885ea684d288e3a694e732c02e303",
+            "entry_id": "5ba1df0d-f580-4cf9-811e-bad9e7dab8ce",
+            "expression": {
+              "op": "subtract",
+              "args": [
+                {
+                  "op": "add",
+                  "args": [
+                    {
+                      "op": "multiply",
+                      "args": [
+                        {
+                          "path": "/hypothetical_households/A/living_food_won"
+                        },
+                        {
+                          "path": "/observed_statistics/living_prices/food_yoy_pct"
+                        },
+                        {
+                          "value": ".01"
+                        }
+                      ]
+                    },
+                    {
+                      "op": "multiply",
+                      "args": [
+                        {
+                          "path": "/hypothetical_households/A/living_nonfood_won"
+                        },
+                        {
+                          "path": "/observed_statistics/living_prices/nonfood_yoy_pct"
+                        },
+                        {
+                          "value": ".01"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "op": "add",
+                      "args": [
+                        {
+                          "path": "/hypothetical_households/A/living_food_won"
+                        },
+                        {
+                          "path": "/hypothetical_households/A/living_nonfood_won"
+                        }
+                      ]
+                    },
+                    {
+                      "path": "/observed_statistics/total_cpi/yoy_pct"
+                    },
+                    {
+                      "value": ".01"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "kind": "CALCULATION",
+            "unit": "원",
+            "scope": "DETERMINISTIC_DECIMAL_RESULT",
+            "title": "B 가구 월 지출 증가액",
+            "value": "46400.00",
+            "sha256": "be0492153f6d8b2f1760fc8322b70f182be92ca0adeb82e50eb1d9a751b49d1b",
+            "entry_id": "5fcbaf0f-55b4-4ee3-8b52-c347f7210c9e",
+            "expression": {
+              "op": "add",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "path": "/hypothetical_households/B/living_food_won"
+                    },
+                    {
+                      "path": "/observed_statistics/living_prices/food_yoy_pct"
+                    },
+                    {
+                      "value": ".01"
+                    }
+                  ]
+                },
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "path": "/hypothetical_households/B/living_nonfood_won"
+                    },
+                    {
+                      "path": "/observed_statistics/living_prices/nonfood_yoy_pct"
+                    },
+                    {
+                      "value": ".01"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "kind": "CALCULATION",
+            "unit": "%",
+            "scope": "DETERMINISTIC_DECIMAL_RESULT",
+            "title": "B 가구 가중 상승률",
+            "value": "2.32",
+            "sha256": "a0dcb686f26f779c2595504a340a831d000a5f6bc56450e368a633c041f03d93",
+            "entry_id": "d74a2a16-48b0-4de9-ba1b-778e259b1dbd",
+            "expression": {
+              "op": "multiply",
+              "args": [
+                {
+                  "op": "divide",
+                  "args": [
+                    {
+                      "op": "add",
+                      "args": [
+                        {
+                          "op": "multiply",
+                          "args": [
+                            {
+                              "path": "/hypothetical_households/B/living_food_won"
+                            },
+                            {
+                              "path": "/observed_statistics/living_prices/food_yoy_pct"
+                            },
+                            {
+                              "value": ".01"
+                            }
+                          ]
+                        },
+                        {
+                          "op": "multiply",
+                          "args": [
+                            {
+                              "path": "/hypothetical_households/B/living_nonfood_won"
+                            },
+                            {
+                              "path": "/observed_statistics/living_prices/nonfood_yoy_pct"
+                            },
+                            {
+                              "value": ".01"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "op": "add",
+                      "args": [
+                        {
+                          "path": "/hypothetical_households/B/living_food_won"
+                        },
+                        {
+                          "path": "/hypothetical_households/B/living_nonfood_won"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "value": "100"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "CALCULATION",
+            "unit": "원",
+            "scope": "DETERMINISTIC_DECIMAL_RESULT",
+            "title": "B 가구 CPI 일괄 적용과 차이",
+            "value": "4400.00",
+            "sha256": "5c3ee5eda6f4db5687df389f773eb64d68d25ad399b62d5b71c96dd9aa043f9c",
+            "entry_id": "444ab1c8-0355-4749-a173-30fada47d307",
+            "expression": {
+              "op": "subtract",
+              "args": [
+                {
+                  "op": "add",
+                  "args": [
+                    {
+                      "op": "multiply",
+                      "args": [
+                        {
+                          "path": "/hypothetical_households/B/living_food_won"
+                        },
+                        {
+                          "path": "/observed_statistics/living_prices/food_yoy_pct"
+                        },
+                        {
+                          "value": ".01"
+                        }
+                      ]
+                    },
+                    {
+                      "op": "multiply",
+                      "args": [
+                        {
+                          "path": "/hypothetical_households/B/living_nonfood_won"
+                        },
+                        {
+                          "path": "/observed_statistics/living_prices/nonfood_yoy_pct"
+                        },
+                        {
+                          "value": ".01"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "op": "add",
+                      "args": [
+                        {
+                          "path": "/hypothetical_households/B/living_food_won"
+                        },
+                        {
+                          "path": "/hypothetical_households/B/living_nonfood_won"
+                        }
+                      ]
+                    },
+                    {
+                      "path": "/observed_statistics/total_cpi/yoy_pct"
+                    },
+                    {
+                      "value": ".01"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "kind": "CALCULATION",
+            "unit": "원",
+            "scope": "DETERMINISTIC_DECIMAL_RESULT",
+            "title": "가상 금리 스트레스 월 이자 증가",
+            "value": "50000.00",
+            "sha256": "8be4daed28d26907957f71bcafa1eff971e967bbf8f11e64ab83af977e42ed63",
+            "entry_id": "1595210b-fdb2-4728-98d3-5111989a82d2",
+            "expression": {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "path": "/hypothetical_households/loan_scenario/principal_won"
+                    },
+                    {
+                      "path": "/hypothetical_households/loan_scenario/stress_increase_pp"
+                    },
+                    {
+                      "value": ".01"
+                    }
+                  ]
+                },
+                {
+                  "value": "12"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "CHECKLIST",
+            "scope": "USER_APPROVED_PROCEDURE_NOT_VERIFIED_FACT",
+            "title": "통계의 범위·비교 시점 유지",
+            "sha256": "03b8a2ddba5ce3108f48b5e7c7cb868df64b55bcbb6a848b77eb7b6f305a3817",
+            "payload": {
+              "heading": "통계의 범위와 비교 시점",
+              "instruction": "전월비·전년비·%포인트를 구분하고, 생활물가지수의 식품 구분과 가상의 고정 바구니라는 한계를 명시한다."
+            },
+            "entry_id": "82b79bd1-bd2b-4f76-ad91-284639d1c7a5"
+          },
+          {
+            "kind": "CHECKLIST",
+            "scope": "USER_APPROVED_PROCEDURE_NOT_VERIFIED_FACT",
+            "title": "가구별 차이와 계산 근거 유지",
+            "sha256": "9a79671fb7fcea9898238ababeaa8b4711ce61d9553e0c997091121e9941aa63",
+            "payload": {
+              "heading": "가구별 생활비 차이",
+              "instruction": "두 가구의 식품 지출 비중 차이를 설명하고 서버가 붙인 계산표를 참조한다. 관측 통계와 가상 계산을 구분한다."
+            },
+            "entry_id": "dd99bbbc-3d97-4498-a5e4-063c111d6c2b"
+          },
+          {
+            "kind": "CHECKLIST",
+            "scope": "USER_APPROVED_PROCEDURE_NOT_VERIFIED_FACT",
+            "title": "행동 기준과 점검 조건 유지",
+            "sha256": "28717602f5d1ae88cecb45c252333c00ffd5e68d77acda9287ebc9d63920d454",
+            "payload": {
+              "heading": "이번 주 행동과 다음 점검",
+              "instruction": "독자가 선택할 구체적 조정 대상과 선택 조건, 기록 기간, 점검 시점을 제시한다. 절감액을 확정 보장하지 않는다."
+            },
+            "entry_id": "1a3c7569-9992-41e0-b7f5-1afe89bf5491"
+          }
+        ],
+        "sha256": "856e7df4616ec1906cb5c46406c0b881933cc62246b73e0013ebae498735120c",
+        "version": "task-knowledge-v1",
+        "excluded": []
+      },
+      "task_version": 1,
+      "draft_results": [],
+      "source_library": [
+        {
+          "url": "https://www.korea.kr/news/policyNewsView.do?newsId=156721918",
+          "scope": "CAPTURED_SOURCE_DATA_NOT_VERIFIED_INTERPRETATION",
+          "excerpt": "2025년 9월 소비자물가동향 - 정책뉴스 | 뉴스 | 대한민국 정책브리핑 본문 바로가기 메인메뉴 바로가기 이 누리집은 대한민국 공식 전자정부 누리집입니다. 대한민국 정책브리핑 뉴스 뉴스 정책뉴스 부처별 뉴스 정책포커스 국민이 말하는 정책 오피니언 키워드 뉴스 멀티미디어 뉴스 브리핑룸 브리핑룸 보도자료 사실은 이렇습니다 브리핑 자료 연설문 정책자료 정책자료 국정과제 전자책 전문자료 채용정보 국정신문(’92-’04) 대한뉴스 구독&참여 구독&참여 이벤트 뉴스레터 정책정보 알림설정 정부기관 SNS 배너달기 공지사항 청와대 소식 공직메일 알림 ON 상세검색 검색 Search 검색폼 검색어를 입력하세요 입력내용삭제 검색 #2027 예산안 #국민성장펀드 #3대 메가프로젝트 상세검색 열기 검색기간 전체 최근 1년 최근 1달 최근 1주 직접입력 검색시작년월일입력 시작날짜 달력 팝업 열기 ~ 검색마지막년월일입력 끝날짜 달력 팝업 열기 검색범위 전체 제목 본문 첨부파일 주제별 경제 접기 경제일반 생활경제 기업 금융 산업 국토개발·지역경제 통신·과학 사회 접기 사회일반 노동·고용 복지 보건·위생 교육·입시 환경 문화 접기 문화일반 공연·예술 문화콘텐츠 관광 체육 외교/안보 접기 외교 안보 남북관계 국제 기관별 부처 접기 청와대 국무조정실 고용노동부 과학기술정보통신부 교육부 국가데이터처 국가보훈부 국방부 국토교통부 기획예산처 기후에너지환경부 농림축산식품부 문화체육관광부 법무부 법제처 보건복지부 산업통상부 성평등가족부 식품의약품안전처 외교부 인사혁신처 재정경제부 중소벤처기업부 지식재산처 통일부 해양수산부 행정안전부 청 접기 경찰청 공소청 관세청 국가유산청 국세청 기상청 농촌진흥청 방위사업청 병무청 산림청 새만금개발청 소방청 우주항공청 재외동포청 조달청 중대범죄수사청 질병관리청 해양경찰청 행정중심복합도시건설청 위원회 접기 감사원 개인정보보호위원회 공정거래위원회 국가인권위원회 국민권익위원회 금융위원회 방송미디어통신위원회 원자력안전위원회 중앙선거관리위원회 유형별 정책뉴스 웹툰 카드/한컷 사진 영상 숏폼 KTV 사실은 이렇습니다 국민이 말하는 정책 오피니언 보도자료 브리핑 전문자료 연설문 전자책 국정신문 선택한 항목 초기화 상세검색 상세검색 닫기 검색 닫기 사이트 이동경로 홈 뉴스 정책뉴스 콘텐츠 영역 공유 열기 공유 페이스북 X 밴드 카카오톡 즐겨찾기 URL 복사 공유 닫기 공감수 댓글수(클릭시 댓글로 이동) 뉴스레터 구독신청(클릭시 페이지로 이동) 2025년 9월 소비자물가동향 2025.10.02 본문듣기 시작 글자크기 설정 열기 글자크기 설정 작게 보통 크게 아주크게 최대크게 글자크기 설정 닫기 인쇄하기 목록 국가데이터처 경제동향통계심의관 이두원입니다. 2025년 9월 소비자물가를 발표하겠습니다. 2025년 9월 소비자물가지수는 117.06으로 전월대비 0.5% 상승하였고, 전년동월대비 2.1% 상승하여 전월 1.7%보다 0.4%p 상승하였습니다. 식료품 및 에너지제외지수는 전월대비 0.5%, 전년동월대비 2.0% 각각 상승하였습니다. 농산물 및 석유류제외지수는 전월대비 0.6%, 전년동월대비 2.4% 각각 상승하였습니다. 생활물가지수는 전월대비 1.4%, 전년동월대비 2.5% 각각 상승하였습니다. 식품의 경우 전월대비 0.1%, 전년동월대비 3.2% 각각 상승하였습니다. 식품이외는 전월대비 2.3%, 전년동월대비 2.1% 각각 상승하였습니다. 신선식품지수는 전월대비 0.9%, 전년동월대비 2.5% 각각 하락하였습니다. 다음은 소비자물가지수 부문별 동향을 발표하겠습니다. 먼저, 지출목적별 동향입니다. 전월대비 통신, 주택·수도·전기·연료, 기타 상품·서비스, 주류·담배는 상승하였고, 의류·신발은 변동 없고, 교통, 음식·숙박, 오락·문화, 교육, 식료품·비주류음료는 하락하였습니다. 전년동월대비로는 음식·숙박, 식료품·비주류음료, 기타 상품·서비스, 가정용품·가사서비스, 교육, 교통, 의류·신발, 보건, 오락·문화, 통신 등 모두 상승하였습니다. 다음은 품목성질별 동향입니다. 상품은 전월대비 0.4%, 전년동월대비 2.0% 각각 상승하였습니다. 농축수산물은 전월대비 변동 없고 전년동월대비 1.9% 상승했고, 공업 제품은 전월대비 0.1% 하락, 전년동월대비 2.2% 각각 상승하였으며, 전기·가스·수도는 전월대비 5.5%, 전년동월대비 0.3% 각각 상승하였습니다. 서비스는 전월대비 0.6%, 전년동월대비 2.2% 각각 상승하였습니다. 집세의 경우 전월대비 0.1%, 전년동월대비 0.8% 각각 상승하였습니다. 공공서비스는 전월대비 4.9%, 전년동월대비 1.2% 각각 상승하였습니다. 개인서비스는 전월대비 0.6% 하락, 전년동월대비 2.9% 상승하였습니다. 주요 등락 품목은 보도자료 7페이지를 참고해 주시기 바랍니다. 이상 발표를 마치고 질문받도록 하겠습니다. [질문·답변] ※마이크 미사용으로 확인되지 않는 내용은 별표(***)로 표기하였으니 양해 바랍니다. <질문> 마트 같은 데 가보니까 쌀값이 정부양곡 풀리면서 조금, 현장에서는 조금 하락하고 있더라고요. 그런데 여기는 쌀값하고 찹쌀 가격이 굉장히 많이 오른 걸로 나타났잖아요. 좀 시차 두고 다음 달에는 낮아질 가능성이 있는 걸까요? <답변> 일단 저희가 이번 달에 지금 아마 전월비... 전년동월대비 기준으로 쌀이 15.9% 상승했고 아마 찹쌀이 46.1% 상승했습니다. 이 부분은 아마 작년 수확량이라든지 재배면적 대비해서 그런 요인이 있는 걸로 알고 있고요. 아마 신곡이 곧 풀리고 있는데요. 아마 그런 부분은 10월 물가에는 아마 수확량이 어떻게 될지는 아마 오늘 예상량 발표가 있는 걸로 알고 있는데요. 그에 따라서 아마 신곡 출하되면 그에 따른 영향이 있지 않을까 생각됩니다. <질문> 지금 지난달 1%대에서 2%대 다시 올라선 이유를 설명 부탁드리고, 먼저 그거부터 말씀 부탁드릴게요. <답변> 일단 지난달 1.7%에서 이번 달 2.1%, 상승 폭은 0.4%p인데요. 아마 가장 큰 이유는 8월에 하락했던 일부 통신사 휴대폰 감면이 종료됨에 따라서 그 영향으로 휴대전화료 등이 상승해서 2.1%로 상승했습니다. 아마 세부적으로는 기타 농축수산물 같은 경우는 지난달에 4.8에서 이번 달에 1.9로 상승 폭은 축소된 반면에, 공업 제품은 1.7에서 2.2%로 상승 폭이 확대되었습니다. 아마 확대 이유는 공업 제품의 경우 석유류가 이번 달에 소폭 국제유가 영향이라든지 전년 기저효과 등으로 인해서 하락에서 상승으로 전환하였습니다. <질문> 그리고 가공식품이 많이 오른 것 같거든요. 그걸 어떻게 봐야 되는지 말씀 부탁드릴게요. <답변> 일단 이번 달에 가공식품 같은 경우는 상승 폭은 지난달하고 4.2%로 동일한데요. 아무래도 전체 소비자물가 2.1보다는 상승 폭이 더 높으니까 그 이유들은 아마 그동안 일부 품목은 세일가 환원이라든지 아니면 세일을 통해서 등락 폭이 있었지만 전반적으로 가공식품은 원재료비라든지 인건비라든지 그다음 작년에 비해서 환율 상승이라든지 그런 영향으로 인해서 전년동월대비는 4.2% 상승하였습니다. <질문> 그리고 달걀 값과, 달걀 값이 많이 보이는데요. 그건 왜 그런지 말씀 부탁드릴게요. <답변> 일단 달걀 값이 이번 달에 9.2% 상승하였습니다. 이 부분은 현지 산지가격이 상승한 영향도 있고요. 아무래도 다음 달 추석 대비한 9월 성수품에 대한 수요 증가라든지, 기타 또 최근 우리나라에서 아마 달걀 소비량이 계속 매년 증가하고 있는 걸로 알고 있는데요. 그런 영향으로 인해서 달걀 가격이 상승하였고, 최근 6월, 7월, 8월, 9월 계속 상승 추세입니다. <질문> 성수품 관련해서 마지막으로, 저는 마지막으로 성수품 관련해서 물가 어떤지 종합으로 말씀 부탁드릴게요. <답변> 일단 저희가 따로 성수품 관련돼서 일일물가조사는 하고 있지만 전체적으로 성수품 관련돼서 이번 저희가 9월 초에 시작된 이후로 큰 변동 폭은 없고요. 다만, 지금 성수품의 주요 품목인 농축수산물 같은 경우 상승 폭이 지난달보다 이번 9월에 상승 폭이 하락은 했고요. 기타 가공식품 같은 경우는 상승 폭이 동일합니다. 이상 없으시면 마지막으로 총평하고 마치도록 하겠습니다. 일단 2025년 9월 소비자물자는 전년동월대비 2.1% 상승하였습니다. 아까 말씀드린 대로 0.4%p 확대된 이유는 일부 통신사 요금 감면 종료에 따른 휴대전화료 등이 상승한 것이 주요 요인입니다. 품목성질별로 주요 동향을 간단히 보면 농축수산물은 농산물의 경우 하락 전환하였습니다. 축산물 및 수산물은 오름폭 축소로 인해서 전체 상승 폭은 지난달 4.9%보다 둔화하여 1.9% 상승하였습니다. 석유류의 경우는 국제유가 및 전년 기저 등의 영향으로 2.3%로 상승 전환하였습니다. 가공식품은 지난달과 상승 폭이 동일하게 4.2% 상승하였습니다. 공공서비스는 일부 통신사 요금 감면 종료에 따라 상승 전환하여 1.2% 상승하였고, 개인서비스의 경우 휴가철 종료에 따른 여행 관련 품목이 하락함으로써 외식 제외 개인서비스는 상승 폭이 축소되었지만 외식 개인서비스는 상승 폭이 확대되면서 개인서비스는 전체 2.9% 상승하였습니다. 이상 보고를 마치겠습니다. 수고하셨습니다. <끝> 첨부파일 속기자료.hwp 바로보기 내려받기 속기자료.pdf 바로보기 내려받기 공공누리가 부착되지 않은 자료는 담당자와 협의한 후에 사용하여 주시기 바랍니다. 저작권정책 담당자안내 공유 열기 공유 페이스북 X 밴드 카카오톡 즐겨찾기 URL 복사 공유 닫기 좋아요 댓글 보기 운영원칙 열기 정책브리핑 게시물 운영원칙에 따라 다음과 같은 게시물은 삭제 또는 계정이 차단 될 수 있습니다. 1. 타인의 메일주소, 전화번호, 주민등록번호 등의 개인정보 또는 해당 정보를 게재하는 경우 2. 확인되지 않은 내용으로 타인의 명예를 훼손시키는 경우 3. 공공질서 및 미풍양속에 위반되는 내용을 유포하거나 링크시키는 경우 4. 욕설 및 비속어의 사용 및 특정 인종, 성별, 지역 또는 특정한 정치적 견해를 비하하는 용어를 게시하는 경우 5. 불법복제, 바이러스, 해킹 등을 조장하는 내용인 경우 6. 영리를 목적으로 하는 광고 또는 특정 개인(단체)의 홍보성 글인 경우 7. 타인의 저작물(기사, 사진 등 링크)을 무단으로 게시하여 저작권 침해에 해당하는 글 8. 범죄와 관련있거나 범죄를 유도하는 행위 및 관련 내용을 게시한 경우 9. 공인이나 특정이슈와 관련된 당사자 및 당사자의 주변인, 지인 등을 가장 또는 사칭하여 글을 게시하는 경우 10. 해당 기사나 게시글의 내용과 관련없는 특정 의견, 주장, 정보 등을 게시하는 경우 11. 동일한 제목, 내용의 글 또는 일부분만 변경해서 글을 반복 게재하는 경우 12. 기타 관계법령에 위배된다고 판단되는 경우 13. 수사기관 등의 공식적인 요청이 있는 경우 운영원칙 닫기 뉴스레터 구독 관련기사 관련기사 더보기 정책 NOW 실시간 인기뉴스 11.08. 09:32 기준 \"이걸 우리가 만들었어?\"…KF-21 첫 조종사들이 말하는 '보라매' 순위동일 내년 공무원 시험 바뀐다…'PSAT' 첫 시행, 2월·7월 실시 순위동일 한국산 단감 중국 첫 수출…한-중 정상외교 성과 결실 NEW 고혈압·당뇨병 등 '만성질환 통합관리센터' 전국 단계적 확대 NEW AI 시대 '스스로 선택할 힘' 키운다…'인문문화축제' 개막 NEW 내년 일자리 예산 25조 1484억 원…청년 첫 취업지원제 신설 NEW 인기뉴스 \"이걸 우리가 만들었어?\"…KF-21 첫 조종사들이 말하는 '보라매' 이 대통령 \"2027년 예산안은 성장확산 예산…'모두의 성장' 대전환\" 연체 걱정·월세 부담 없는 '전월세 안심신탁' 첫 임대인 모집 이 대통령 \"한·튀르키예 전략적 동반자 관계 심화…원전·방산 협력 확대\" 이 대통령 \"사이버보안, 사후 대응서 선제 예방으로…범정부 총괄기구 검토\" 최신뉴스 폐교의 새로운 시작, 지역의 가능성을 열다 [보도설명자료][11.7.토 중앙일보] 비대면진료 6년… 규제 근거·사후평가 부실 관련 수상의 영광을 시장의 기회로, K-Sool의 도약이 시작된다. 산업통상부 정례브리핑 (참고) 노동부 장관, 산업안전 대응 강화를 위한 긴급 기관장 회의 개최 오늘의 멀티미디어 니들이 피셋맛을 알어? 그래요 나 비염이에요 처음엔 분양가 25%로 입주, 내 집 지분은 차근차근! 한·동티모르 공동언론발표 정책포커스 하단 배너 영",
+          "truncated": true,
+          "snapshot_id": "07069c3f-e5bf-4065-b46c-8cd4597658fb",
+          "text_sha256": "90487a9eb11a70644b78af76b8697d59c7214528cf879679970fb64a894f8916"
+        }
+      ],
+      "accepted_results": [],
+      "evaluation_isolated": false
+    },
+    "sha256": "7c0992bad5ed56aed690d814655e7f5f25cc96dc9421112c8b2d7328c5864150"
+  },
+  "captured_at": "2026-11-08T00:38:44.038838+00:00"
+}

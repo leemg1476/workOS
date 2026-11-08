@@ -1,0 +1,41 @@
+{
+  "reviewed": true,
+  "artifact_sha256": "d241c4c987a3205adbd3494dde76f827f61705163b7da0ff064674c6e5d62f9a",
+  "changes": "通신비 설명에 9월·8월 공식 브리핑 직접 URL을 복원하고 한 달50% 감면을 명시. 산식·조건별 행동·이자 가정을 유지.",
+  "feedback_reflection": "직접 원문 연결은 반영됐으나 기존 동향 페이지도 그대로 남아 링크와 긴 통계 문단이 유지됐다.",
+  "regressions": "같은 내용을 더 많은 링크로 설명해 간결성 문제는 해결되지 않았다. CPI 차이의 기준금액은 식으로만 드러나 독자가 별도 계산해야 함.",
+  "judge_audit": "중대오류 없음. facts5→4는 반대되는 원문·오류 구절이 제시되지 않아 의미적 사실 퇴행으로 판정하지 않는다. CPI 기준액42000원 제안은 고정입력의 A·B 총지출200만원×2.1%를 Decimal로 확인했다.",
+  "new_source": "핵심 브리핑 직접 연결 복원이며 새 경제적 발견은 아니다.",
+  "knowledge_kind": "CALCULATION",
+  "lesson": "CPI 비교 차이의 기준값을 모델의 암산 대신 결정론적 계산표에 추가한다. 두 가구의 기준지출 합계는 각각200만원으로 같다. 42000원은 월 생활비 실제 측정값이 아니라 전체 CPI를 일괄 적용한 비교용 증가액이다.",
+  "calculation_payload": {
+    "expression": {
+      "op": "multiply",
+      "args": [
+        {
+          "op": "add",
+          "args": [
+            {
+              "path": "/hypothetical_households/A/living_food_won"
+            },
+            {
+              "path": "/hypothetical_households/A/living_nonfood_won"
+            }
+          ]
+        },
+        {
+          "path": "/observed_statistics/total_cpi/yoy_pct"
+        },
+        {
+          "value": "0.01"
+        }
+      ]
+    },
+    "unit": "원 · CPI 비교액(기준지출200만원)",
+    "decimal_places": 2
+  },
+  "applied_entry_ids": [
+    "4a9ba607-0500-49ac-a8ba-dc93e5ad632e"
+  ],
+  "authorization": "USER_EXPLICIT_EXPERIMENT_ONLY_APPROVAL; CODEX_REVIEW_NOT_HUMAN_EXPERT"
+}

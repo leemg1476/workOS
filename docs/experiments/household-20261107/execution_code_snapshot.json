@@ -1,0 +1,26 @@
+{
+  "captured_at": "2026-11-07T15:01:18.821708+00:00",
+  "note": "Snapshot during execution after reviewer output-budget repair; not a clean git commit or pre-study snapshot. Exact per-Run contract and memory are separately pinned in DB.",
+  "files": [
+    {
+      "path": "backend/app/workloads/text_workflow.py",
+      "sha256": "0f9e91a9e29f5aa4962f623e1b80f4b265fe760492e3acaa82ca39a912779b86"
+    },
+    {
+      "path": "backend/app/work/task_memory.py",
+      "sha256": "3c1ebbf72d86666e9ba9a3ac1a762aa4a3c5d539c1ecd25f5fef8830cdc38fe8"
+    },
+    {
+      "path": "backend/app/integrations/report_research.py",
+      "sha256": "d567c5086e7a4f36b74ae93461b2e3b26ebe5f604e774cb026044c3590c0a874"
+    },
+    {
+      "path": "backend/app/evaluation/report_feedback.py",
+      "sha256": "e73c0d5a770466f40f6ec2ffbf94343bcc5e6851d3660cc609f7e1e130b7e949"
+    },
+    {
+      "path": "backend/app/evaluation/longitudinal_report.py",
+      "sha256": "b6f97fcafc1bf2128540cca3653db27e47bdb77a11c46682684628758801a6b9"
+    }
+  ]
+}

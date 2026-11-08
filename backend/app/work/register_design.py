@@ -8,6 +8,7 @@ from sqlalchemy import text
 from app.work.designs import WorkPlan, validate_plan
 from app.work.market import digest
 from app.work.service import Kernel, Conflict, NotFound
+from app.integrations.report_research import ReportExecutionOptions
 
 
 class RegisterDesign(BaseModel):
@@ -15,6 +16,7 @@ class RegisterDesign(BaseModel):
     source_text: str = Field(min_length=1, max_length=8000)
     model_mode: Literal['MOCK','LIVE_LLM'] = 'LIVE_LLM'
     schedule: str = Field(default='', max_length=100)
+    execution_options: ReportExecutionOptions | None = None
 
 
 class ScheduleState(BaseModel):
@@ -43,6 +45,8 @@ def register(engine, design_id, request):
         contract = {'design_id':str(design_id),'design_revision':request.revision,'plan':plan,
                     'source_text':request.source_text,'model_mode':request.model_mode,
                     'execution_kind':'provided_text_workflow_v1'}
+        if request.execution_options is not None:
+            contract['execution_options']=request.execution_options.model_dump()
         existing = c.execute(text('''SELECT r.task_id,r.task_version,t.output_schema,j.task_version AS current_version,j.schedule FROM registered_work_designs r
             JOIN task_definitions t ON t.task_id=r.task_id AND t.version=r.task_version
             JOIN job_definitions j ON j.task_id=r.task_id

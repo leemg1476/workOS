@@ -24,10 +24,12 @@ def _text_task(c, task):
 
 
 def _cycle(c, source, target, exclude=None):
-    return source==target or bool(one(c,'''WITH RECURSIVE reachable(id) AS (
-        SELECT target_task_id FROM text_work_links WHERE source_task_id=:target AND enabled AND link_id IS DISTINCT FROM CAST(:exclude AS uuid)
-        UNION SELECT l.target_task_id FROM text_work_links l JOIN reachable r ON l.source_task_id=r.id
-        WHERE l.enabled AND l.link_id IS DISTINCT FROM CAST(:exclude AS uuid))
+    return source==target or bool(one(c,'''WITH RECURSIVE edges(source,target) AS (
+        SELECT source_task_id,target_task_id FROM text_work_links WHERE enabled AND link_id IS DISTINCT FROM CAST(:exclude AS uuid)
+        UNION SELECT s.source_task_id,j.target_task_id FROM text_work_join_sources s
+          JOIN text_work_joins j ON j.join_id=s.join_id WHERE j.enabled), reachable(id) AS (
+        SELECT target FROM edges WHERE source=:target
+        UNION SELECT e.target FROM edges e JOIN reachable r ON e.source=r.id)
         SELECT 1 FROM reachable WHERE id=:source''',{'source':source,'target':target,'exclude':exclude}))
 
 
@@ -107,19 +109,28 @@ def after_review(kernel,c,work,run_id):
         kernel._event(c,'text_link.delivered',delivery_id,{'link_id':str(link['link_id']),'link_version':link['version'],
             'source_work_id':str(work['work_id']),'source_artifact_id':str(accepted['accepted_artifact_id']),
             'source_artifact_sha256':accepted['sha256'],'target_work_id':target_id},cause=run_id)
+    from app.workloads.text_joins import collect
+    collect(kernel,c,work,run_id,accepted)
 
 
 def linked_source(c,work_id):
     row=one(c,'''SELECT l.source_work_id,l.source_artifact_id,l.source_artifact_sha256,l.link_id,l.link_version,
-        w.status,w.accepted_artifact_id,a.content,a.sha256,d.pinned_artifact_version
+        w.status,w.accepted_artifact_id,a.content,a.sha256,d.pinned_artifact_version,r.work_id AS artifact_work_id
         FROM text_work_link_deliveries l JOIN work_items w ON w.work_id=l.source_work_id
         JOIN artifacts a ON a.artifact_id=l.source_artifact_id
+        JOIN runs r ON r.run_id=a.run_id
         JOIN work_dependencies d ON d.predecessor_id=l.source_work_id AND d.successor_id=l.target_work_id
         WHERE l.target_work_id=:work''',{'work':work_id})
     if not row: return None
+    validate_source(c,row)
+    return {'link_id':str(row['link_id']),'link_version':row['link_version'],'work_id':str(row['source_work_id']),
+            'artifact_id':str(row['source_artifact_id']),'artifact_sha256':row['sha256'],'content':row['content']}
+
+
+def validate_source(c,row):
     if (row['status']!='COMMITTED' or row['accepted_artifact_id']!=row['source_artifact_id']
         or row['pinned_artifact_version']!=row['source_artifact_id'] or row['sha256']!=row['source_artifact_sha256']
-        or digest(row['content'])!=row['sha256']):
+        or row.get('artifact_work_id')!=row['source_work_id'] or digest(row['content'])!=row['sha256']):
         raise Conflict('linked source artifact is no longer current')
     if not one(c,'''SELECT 1 FROM evidence human JOIN evidence structural ON structural.artifact_id=human.artifact_id
         WHERE human.artifact_id=:artifact AND human.verification_type='human_work_review'
@@ -127,5 +138,3 @@ def linked_source(c,work_id):
           AND structural.verification_type='provided_text_structure' AND structural.result->>'passed'='true'
           AND structural.input_refs->>'artifact_sha256'=:sha''',{'artifact':row['source_artifact_id'],'sha':row['sha256']}):
         raise Conflict('linked source verification or human review is missing')
-    return {'link_id':str(row['link_id']),'link_version':row['link_version'],'work_id':str(row['source_work_id']),
-            'artifact_id':str(row['source_artifact_id']),'artifact_sha256':row['sha256'],'content':row['content']}

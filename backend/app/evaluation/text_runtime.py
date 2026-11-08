@@ -26,16 +26,27 @@ def effective_contract(c, work_id, task_id, task_version, base, *, allow_evaluat
         contract=deepcopy(base)
         contract['source_text']=pinned['source_text']
         from app.workloads.text_links import linked_source
+        from app.workloads.text_joins import joined_sources
         linked=linked_source(c,work_id)
+        joined=joined_sources(c,work_id)
         work=c.execute(text('SELECT input_snapshot FROM work_items WHERE work_id=:id'),{'id':work_id}).scalar_one()
         if work.get('source')=='accepted_work_link' and linked is None:
             raise Conflict('linked work source record is missing')
         if linked and work.get('source')!='accepted_work_link':
             raise Conflict('linked work source marker changed')
+        if work.get('source')=='accepted_work_join' and joined is None:
+            raise Conflict('joined work source record is missing')
+        if joined and (work.get('source')!='accepted_work_join' or linked or work.get('join_id')!=joined['join_id']
+            or work.get('firing_id')!=joined['firing_id'] or work.get('join_version')!=joined['join_version']
+            or work.get('input_count')!=len(joined['sources'])):
+            raise Conflict('joined work source marker changed')
         if linked:
             # Preserve the complete accepted artifact and its identity as untrusted source data.
             contract['linked_source']=linked
             contract['source_text']=pinned['source_text']+'\n\n[사람이 채택한 선행 업무 결과 · 출처와 내용]\n'+canonical(linked)
+        if joined:
+            contract['joined_sources']=joined
+            contract['source_text']=pinned['source_text']+'\n\n[사람이 채택한 여러 선행 업무 결과 · 출처와 내용]\n'+canonical(joined)
         return contract, None
     if (row['status'] not in (('RUNNING','EVALUATED') if allow_evaluated else ('RUNNING',)) or row['task_id']!=task_id or row['champion_version']!=task_version
         or digest(base)!=row['champion_contract_sha256'] or digest(row['candidate_plan'])!=row['candidate_plan_sha256']
