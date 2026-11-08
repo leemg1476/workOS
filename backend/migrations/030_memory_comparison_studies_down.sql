@@ -1,0 +1,1 @@
+DROP TABLE memory_study_work,memory_study_learning,memory_comparison_studies;

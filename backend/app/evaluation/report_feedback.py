@@ -38,6 +38,9 @@ def record(engine, work_id, body):
              'result':canonical(payload),'version':body.rubric_version})
         kernel._event(c,'work.agent_feedback',work_id,payload,actor='evaluation-agent',cause=body.artifact_id,key=key)
         if not one(c,'SELECT 1 FROM text_experiment_work WHERE work_id=:id',{'id':work_id}):
+            from app.work.experience import observe
+            feedback_event=one(c,'SELECT event_id FROM work_events WHERE idempotency_key=:key',{'key':key})
+            observe(kernel,c,work['task_id'],work['task_version'],body.artifact_id,feedback_event['event_id'],body.note)
             from app.work.knowledge import _insert,source_text
             context=one(c,'SELECT manifest FROM run_contexts WHERE run_id=:id',{'id':artifact['run_id']})
             source=context['manifest']['contract']['source_text'] if context and 'contract' in context['manifest'] else source_text(c,work['task_id'],work['task_version'])

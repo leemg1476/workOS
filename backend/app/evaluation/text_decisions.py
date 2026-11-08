@@ -22,6 +22,8 @@ def decide(db, experiment_id, body):
     request={'experiment_id':str(experiment_id),'decision':body.decision,'note':note}
     with db.begin() as c:
         kernel._lock(c)
+        if one(c,'SELECT 1 FROM text_experiment_knowledge WHERE experiment_id=:id',{'id':experiment_id}):
+            raise Conflict('knowledge comparisons must be applied through the candidate knowledge decision, not method promotion')
         previous=one(c,'SELECT payload FROM work_events WHERE idempotency_key=:key',{'key':key})
         if previous:
             if previous['payload'].get('request')!=request:
@@ -96,6 +98,8 @@ def decide(db, experiment_id, body):
                 raise Conflict('this applied method is no longer the current version')
             to_version=applied['from_version'];generation+=1
         if body.decision in ('APPLY','ROLLBACK'):
+            from app.work.procedural_knowledge import carry_forward_binding
+            carry_forward_binding(kernel,c,exp['task_id'],current['version'],to_version)
             c.execute(text('UPDATE task_definitions SET active=false WHERE task_id=:task AND active'),{'task':exp['task_id']})
             c.execute(text('UPDATE task_definitions SET active=true WHERE task_id=:task AND version=:version'),{'task':exp['task_id'],'version':to_version})
             c.execute(text('UPDATE job_definitions SET task_version=:version WHERE job_id=:job'),{'version':to_version,'job':current['job_id']})

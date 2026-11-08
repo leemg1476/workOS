@@ -2,7 +2,7 @@
 from sqlalchemy import text
 from app.domain.hashing import digest, canonical
 
-VERSION = 'task-memory-v3'
+VERSION = 'task-memory-v4'
 
 
 def prompt_view(manifest):
@@ -19,6 +19,9 @@ def build(c, task_id, task_version, *, exclude_run=None, evaluation=False):
     memory = {'version': VERSION, 'task_id': task_id, 'task_version': task_version,
               'scope': 'SAME_TASK_VERSION_HISTORY_NOT_CURRENT_SOURCE_FACTS',
               'evaluation_isolated': evaluation, 'accepted_results': [], 'draft_results': [], 'failures': [], 'reviews': []}
+    if task_id=='TASK-EXPERIENCE':
+        memory['scope']='DEDICATED_FROZEN_EXPERIENCE_INPUTS_NOT_SHARED_INTERNAL_TASK_HISTORY'
+        return memory
     if evaluation:
         return memory
     from app.work.knowledge import active_snapshot,source_text
@@ -39,6 +42,11 @@ def build(c, task_id, task_version, *, exclude_run=None, evaluation=False):
                 input_unavailable=True
     memory['knowledge']=active_snapshot(c,task_id,task_version,source) if not input_unavailable else {
         'version':'task-knowledge-v1','active':[],'excluded':[],'sha256':digest([]),'unavailable':'WORK_INPUT_NOT_VERIFIED'}
+    from app.work.procedural_knowledge import binding_for
+    binding=binding_for(c,task_id,task_version)
+    memory['procedure_binding']=dict(binding) if binding else None
+    if memory['procedure_binding']:
+        memory['procedure_binding'].pop('created_at',None)
     library=[] if input_unavailable else c.execute(text('''SELECT DISTINCT ON (s.url) s.snapshot_id,s.url,s.text_content,s.text_sha256,s.captured_at
         FROM report_source_snapshots s JOIN runs r USING(run_id) JOIN work_items w USING(work_id)
         JOIN run_contexts ctx ON ctx.run_id=r.run_id
@@ -77,6 +85,14 @@ def build(c, task_id, task_version, *, exclude_run=None, evaluation=False):
         ORDER BY r.started_at DESC,r.run_id DESC LIMIT 3'''),params).mappings()
     memory['failures'] = [{'run_id':str(r['run_id']), 'work_id':str(r['work_id']),
                            'status':r['status'], 'reason':(r['error'] or '')[:1200]} for r in failures]
+    if exclude_run:
+        prior=c.execute(text('''SELECT r.status,r.error,r.run_id FROM runs r JOIN runs current ON current.work_id=r.work_id
+            WHERE current.run_id=:id AND r.attempt_no<current.attempt_no AND r.status IN ('FAILED','VERIFICATION_FAILED')
+            ORDER BY r.attempt_no DESC LIMIT 1'''),{'id':exclude_run}).mappings().first()
+        import os
+        failure_type=(prior['error'].rsplit(':',1)[-1].strip() if prior and prior['status']=='FAILED' and prior['error'] and ':' in prior['error'] else prior['status'] if prior else None)
+        memory['execution_context']={'environment':os.getenv('WORKOS_EXECUTION_ENV','LOCAL')[:100],
+            'failure_type':failure_type[:100] if failure_type else None,'prior_failed_run_id':str(prior['run_id']) if prior else None}
     drafts=c.execute(text('''SELECT w.work_id,a.artifact_id,a.run_id,a.content,a.sha256 FROM artifacts a
         JOIN runs r ON r.run_id=a.run_id JOIN work_items w ON w.work_id=r.work_id
         WHERE w.task_id=:task AND w.task_version=:version AND w.status='WAITING_APPROVAL' AND r.status='SUCCEEDED'
@@ -104,6 +120,12 @@ def pin(kernel, c, run_id, work):
     evaluation = c.execute(text('SELECT 1 FROM text_experiment_work WHERE work_id=:id'),
                            {'id':work['work_id']}).first() is not None
     manifest = build(c, work['task_id'], work['task_version'], exclude_run=run_id, evaluation=evaluation)
+    if evaluation:
+        from app.evaluation.knowledge_experiments import pin_memory
+        manifest=pin_memory(c,work,manifest)
+    else:
+        from app.evaluation.memory_study import pin as pin_study
+        manifest=pin_study(c,work,manifest)
     sha = digest(manifest)
     c.execute(text('INSERT INTO run_task_memories(run_id,manifest,sha256) VALUES (:id,CAST(:manifest AS jsonb),:sha)'),
               {'id':run_id, 'manifest':canonical(manifest), 'sha':sha})

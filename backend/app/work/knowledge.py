@@ -11,7 +11,7 @@ from app.work.service import Kernel, Conflict, NotFound, one, uid
 
 class KnowledgeProposal(BaseModel):
     model_config=ConfigDict(extra='forbid')
-    kind: Literal['LESSON','SOURCE_EXCERPT','CALCULATION','CHECKLIST']
+    kind: Literal['LESSON','SOURCE_EXCERPT','CALCULATION','CHECKLIST','RULE']
     title: str=Field(min_length=1,max_length=150)
     payload: dict
     origin_artifact_id: UUID | None=None
@@ -19,10 +19,12 @@ class KnowledgeProposal(BaseModel):
 
 
 class KnowledgeDecision(BaseModel):
-    decision: Literal['APPLY','REJECT','RETIRE']
+    decision: Literal['APPLY','REJECT','RETIRE','ROLLBACK']
     expected_sha256: str=Field(min_length=64,max_length=64)
     note: str=Field(min_length=1,max_length=2000)
     idempotency_key: str=Field(min_length=1,max_length=150)
+    evaluation_id: UUID | None=None
+    replace_entries: dict[str,str] | None=None
 
 
 def source_text(c, task_id, version):
@@ -66,6 +68,11 @@ def calculate(expression, source, depth=0, budget=None):
 
 
 def validate_payload(kind,payload):
+    if kind=='RULE':
+        from app.domain.experience import ProceduralRule
+        if len(canonical(payload))>12000:raise ValueError('rule payload exceeds budget')
+        ProceduralRule.model_validate(payload)
+        return payload
     if len(canonical(payload))>6000:raise ValueError('knowledge payload exceeds budget')
     fields={'LESSON':{'text'},'CHECKLIST':{'instruction','heading'},'SOURCE_EXCERPT':{'snapshot_id','quote'},
             'CALCULATION':{'expression','unit','decimal_places'}}[kind]
@@ -105,6 +112,9 @@ def propose(engine,task_id,body):
         task=one(c,'SELECT version FROM task_definitions WHERE task_id=:id AND active',{'id':task_id})
         if not task:raise NotFound('active task not found')
         scope=digest(source_text(c,task_id,task['version']))
+        if body.kind=='RULE':
+            from app.work.procedural_knowledge import validate_rule
+            validate_rule(c,task_id,task['version'],body.payload,source_text(c,task_id,task['version']))
         if body.origin_artifact_id:
             if not one(c,'''SELECT 1 FROM artifacts a JOIN runs r USING(run_id) JOIN work_items w USING(work_id)
                 WHERE a.artifact_id=:id AND w.task_id=:task AND w.task_version=:v''',
@@ -128,7 +138,10 @@ def _resolve(c,entry,source):
     if digest({'kind':kind,'title':entry['title'],'payload':payload,'source_scope_sha256':entry['source_scope_sha256']})!=entry['sha256']:
         raise ValueError('knowledge hash changed')
     result={k:str(entry[k]) for k in ('entry_id','sha256','kind','title')}
-    if kind=='CALCULATION':
+    if kind=='RULE':
+        from app.domain.experience import ProceduralRule
+        result.update(payload=ProceduralRule.model_validate(payload).model_dump(),scope='NORMALIZED_PROCEDURE_NOT_FACT_MEMORY')
+    elif kind=='CALCULATION':
         number=calculate(payload['expression'],json.loads(source))
         value=number.quantize(Decimal(1).scaleb(-payload['decimal_places']))
         result.update(value=str(value),unit=payload['unit'],scope='DETERMINISTIC_DECIMAL_RESULT',expression=payload['expression'])
@@ -152,7 +165,7 @@ def _resolve(c,entry,source):
 
 def decide(engine,entry_id,body):
     kernel=Kernel(engine);key='knowledge.decision:'+body.idempotency_key
-    request={'entry_id':str(entry_id),**body.model_dump()}
+    request={'entry_id':str(entry_id),**body.model_dump(mode='json',exclude_none=True)}
     with engine.begin() as c:
         kernel._lock(c)
         old=one(c,'SELECT payload FROM work_events WHERE idempotency_key=:key',{'key':key})
@@ -164,28 +177,59 @@ def decide(engine,entry_id,body):
         if entry['sha256']!=body.expected_sha256 or not body.note.strip():raise Conflict('knowledge changed or decision reason missing')
         previous=one(c,'SELECT decision FROM task_knowledge_decisions WHERE entry_id=:id ORDER BY created_at DESC,decision_id DESC LIMIT 1',{'id':entry_id})
         state=previous['decision'] if previous else 'PROPOSED'
-        allowed={'PROPOSED':{'APPLY','REJECT'},'APPLY':{'RETIRE'},'RETIRE':{'APPLY'},'REJECT':set()}
+        allowed={'PROPOSED':{'APPLY','REJECT'},'APPLY':{'RETIRE'},'RETIRE':{'APPLY','ROLLBACK'},'REJECT':set()}
         if body.decision not in allowed[state]:raise Conflict('invalid knowledge decision')
         source=source_text(c,entry['task_id'],entry['task_version'])
-        if body.decision=='APPLY':
-            if not one(c,'SELECT 1 FROM task_definitions WHERE task_id=:id AND version=:v AND active',{'id':entry['task_id'],'v':entry['task_version']}):raise Conflict('task version changed')
-            if digest(source)!=entry['source_scope_sha256']:raise Conflict('task input changed; propose scoped knowledge again')
+        if body.decision in ('APPLY','ROLLBACK'):
+            if body.decision=='ROLLBACK' and (entry['kind']!='RULE' or not body.replace_entries or not
+                one(c,"SELECT 1 FROM task_knowledge_decisions WHERE entry_id=:id AND decision='APPLY'",{'id':entry_id})):
+                raise Conflict('rollback requires a previously applied rule and an explicit current replacement')
+            current=one(c,'SELECT version FROM task_definitions WHERE task_id=:id AND active',{'id':entry['task_id']})
+            if entry['kind']=='RULE':
+                from app.work.procedural_knowledge import applicable
+                if not current or not applicable(c,entry,entry['task_id'],current['version'],source)[0]:raise Conflict('procedural rule contract changed')
+            else:
+                if not current or current['version']!=entry['task_version']:raise Conflict('task version changed')
+                if digest(source)!=entry['source_scope_sha256']:raise Conflict('task input changed; propose scoped knowledge again')
             try:_resolve(c,entry,source)
             except (ValueError,KeyError,IndexError,TypeError,ArithmeticError) as exc:raise Conflict('knowledge proof or calculation is invalid') from exc
-            active=[r for r in entries(c,entry['task_id']) if r['decision']=='APPLY' and r['task_version']==entry['task_version'] and r['source_scope_sha256']==entry['source_scope_sha256']]
+            from app.work.procedural_knowledge import candidates,applicable,activation_conflicts
+            active=[r for r in candidates(c,entry['task_id']) if r['decision']=='APPLY' and
+                (applicable(c,r,entry['task_id'],current['version'],source)[0] if r['kind']=='RULE' else
+                 r['task_version']==current['version'] and r['source_scope_sha256']==digest(source))]
+            replacements=body.replace_entries or {}
+            for old_id,sha in replacements.items():
+                old=next((r for r in active if str(r['entry_id'])==old_id and r['task_id']==entry['task_id']),None)
+                if not old or old['sha256']!=sha or old_id==str(entry_id):raise Conflict('replacement is no longer the expected active entry')
+                link=one(c,"SELECT 1 FROM knowledge_relations WHERE ((entry_id=:id AND target_entry_id=CAST(:old AS uuid)) OR (target_entry_id=:id AND entry_id=CAST(:old AS uuid))) AND kind='SUPERSEDES'",{'id':entry_id,'old':old_id})
+                if not link:raise Conflict('explicit supersedes relation required for replacement')
+                if body.decision=='ROLLBACK' and not one(c,"SELECT 1 FROM knowledge_relations WHERE entry_id=CAST(:old AS uuid) AND target_entry_id=:id AND kind='SUPERSEDES'",{'old':old_id,'id':entry_id}):raise Conflict('rollback must restore the superseded predecessor')
+            activation_conflicts(c,entry,active,replacements)
+            active=[r for r in active if str(r['entry_id']) not in replacements]
             if len(active)>=20:raise Conflict('active knowledge budget reached; retire obsolete entries first')
             if sum(len(canonical(r['payload'])) for r in active)+len(canonical(entry['payload']))>24000:raise Conflict('active knowledge text budget reached')
+            if entry['kind']=='RULE':
+                from app.evaluation.knowledge_experiments import require_evaluation
+                require_evaluation(c,entry,body.evaluation_id,replacements,rollback=body.decision=='ROLLBACK')
+            for old_id in replacements:
+                c.execute(text("INSERT INTO task_knowledge_decisions(decision_id,entry_id,decision,note,actor) VALUES (:id,CAST(:old AS uuid),'RETIRE',:note,'user')"),{'id':uid(),'old':old_id,'note':'Explicit replacement: '+body.note})
+                kernel._event(c,'knowledge.replaced',old_id,{'replacement_entry_id':str(entry_id),'note':body.note},actor='user')
         c.execute(text('INSERT INTO task_knowledge_decisions(decision_id,entry_id,decision,note,actor) VALUES (:id,:entry,:decision,:note,\'user\')'),
-            {'id':uid(),'entry':entry_id,'decision':body.decision,'note':body.note})
+            {'id':uid(),'entry':entry_id,'decision':'APPLY' if body.decision=='ROLLBACK' else body.decision,'note':('ROLLBACK; latest suite not revalidated: ' if body.decision=='ROLLBACK' else '')+body.note})
         kernel._event(c,'knowledge.decision',entry['task_id'],request,actor='user',key=key)
         return True
 
 
 def active_snapshot(c,task_id,version,source):
     active=[];excluded=[]
-    for entry in entries(c,task_id):
+    from app.work.procedural_knowledge import candidates,applicable
+    for entry in candidates(c,task_id):
         if entry['decision']!='APPLY':continue
-        if entry['task_version']!=version or entry['source_scope_sha256']!=digest(source):
+        if entry['kind']=='RULE':
+            matches,reason=applicable(c,entry,task_id,version,source)
+            if not matches:
+                excluded.append({'entry_id':str(entry['entry_id']),'reason':reason});continue
+        elif entry['task_version']!=version or entry['source_scope_sha256']!=digest(source):
             excluded.append({'entry_id':str(entry['entry_id']),'reason':'TASK_VERSION_OR_INPUT_CHANGED'});continue
         try:active.append(_resolve(c,entry,source))
         except (ValueError,KeyError,IndexError,TypeError,ArithmeticError):

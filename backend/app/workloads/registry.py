@@ -92,7 +92,7 @@ def register_kind_executor(kind, execute):
 
 def load_builtins():
     """Load the deployment's built-in workload registrations before extensions."""
-    for name in ('text_workflow','text_sources','market_verifier','policy_verifiers','voc_verifier','policy_lifecycle','demo_execution'):
+    for name in ('text_workflow','text_sources','market_verifier','policy_verifiers','voc_verifier','policy_lifecycle','demo_execution','experience_compiler'):
         importlib.import_module('app.workloads.' + name)
 
 

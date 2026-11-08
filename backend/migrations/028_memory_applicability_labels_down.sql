@@ -1,0 +1,1 @@
+DROP TABLE memory_applicability_labels;

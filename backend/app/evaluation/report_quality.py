@@ -9,16 +9,28 @@ class Section(BaseModel):
     model_config=ConfigDict(extra='forbid')
     rule_id:str
     text:str=Field(min_length=1,max_length=10000)
+    components:dict=Field(default_factory=dict)
+
+
+class ReportClaim(BaseModel):
+    model_config=ConfigDict(extra='forbid')
+    text:str=Field(min_length=1,max_length=1000)
+    source_path:str=Field(min_length=1,max_length=250)
+    value:str | int | float
+    direction:str | None=None
+    period_path:str | None=None
+    period_value:str | None=None
 
 
 class StructuredReport(BaseModel):
     model_config=ConfigDict(extra='forbid')
     introduction:str=Field(min_length=1,max_length=10000)
     sections:list[Section]=Field(max_length=20)
+    claims:list[ReportClaim]=Field(default_factory=list,max_length=50)
 
 
 def is_structured(knowledge):
-    return any(e['kind'] in ('CHECKLIST','CALCULATION') for e in knowledge['active'])
+    return any(e['kind'] in ('CHECKLIST','CALCULATION','CLAIM_CHECK') for e in knowledge['active'])
 
 
 def render(raw,knowledge):
@@ -29,6 +41,16 @@ def render(raw,knowledge):
     parts=[draft.introduction]
     for section in draft.sections:
         parts.append('## '+rules[section.rule_id]['payload']['heading']+'\n\n'+section.text)
+        spec=rules[section.rule_id].get('component_spec',{})
+        if spec and section.components:
+            shown=[]
+            if 'formula' in spec and digest(section.components.get('formula'))==digest(spec['formula']):
+                shown.append('산식: '+spec['display_formula'])
+            if 'input_values' in spec and section.components.get('input_values')==spec['input_values']:
+                shown.append('입력값: '+' · '.join(spec['labels'].get(p,p)+': '+str(v) for p,v in spec['input_values'].items()))
+            if 'interpretation' in spec and section.components.get('interpretation')==spec['interpretation']:
+                shown.append('해석: '+('품목 구성·수량을 고정하고 가격 변동률을 적용한 가상 예시이며 실제 가계의 지출 관측이 아닙니다.' if spec['interpretation']=='FIXED_BASKET_ESTIMATE' else '지정한 입력값을 적용한 계산 결과입니다. 입력의 범위와 가정을 함께 확인하세요.'))
+            if shown:parts.append('\n\n'.join(shown))
     calculations=[e for e in knowledge['active'] if e['kind']=='CALCULATION']
     if calculations:
         parts+=['## 계산 근거 · Python Decimal\n\n|항목|계산 결과|\n|---|---:|\n'+'\n'.join(

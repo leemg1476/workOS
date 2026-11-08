@@ -18,6 +18,11 @@ from app.evaluation.text_contract_changes import ContractChangeRequest, Contract
 from app.domain.hashing import digest
 from app.evaluation.report_feedback import AgentFeedback, record as record_agent_feedback
 from app.work.knowledge import KnowledgeProposal,KnowledgeDecision,propose as propose_knowledge,decide as decide_knowledge,entries as knowledge_entries
+from app.domain.experience import BindingRequest,KnowledgeRelation
+from app.work.experience import NormalizeRequest
+from app.work.knowledge_metrics import ApplicabilityLabel
+from app.evaluation.knowledge_semantics import SemanticReview
+from app.workloads.experience_compiler import CompileRequest
 from app.integrations.search import readiness, SearchUnavailable
 from app.work.designs import CreateDesign, EditDesign, DesignFeedback, generate, create as create_design, revise as revise_design, apply_feedback
 from app.work.register_design import RegisterDesign, ScheduleState, register as register_design, set_schedule
@@ -192,12 +197,33 @@ def task_knowledge(task_id: str):
     with engine.connect() as c:
         if not c.execute(text('SELECT 1 FROM task_definitions WHERE task_id=:id'),{'id':task_id}).first():raise NotFound('task not found')
         from app.work.knowledge import _resolve,source_text
-        rows=knowledge_entries(c,task_id)
+        from app.work.procedural_knowledge import candidates
+        rows=[r for r in candidates(c,task_id) if r['task_id']==task_id or r['decision']=='APPLY']
         active_version=c.execute(text('SELECT version FROM task_definitions WHERE task_id=:id AND active'),{'id':task_id}).scalar_one_or_none()
         sources={v:source_text(c,task_id,v) for v in {r['task_version'] for r in rows}}
+        current_source=source_text(c,task_id,active_version) if active_version else ''
         for row in rows:
-            row['scope_matches']=digest(sources[row['task_version']])==row['source_scope_sha256']
+            row['borrowed_read_only']=row['task_id']!=task_id
+            if row['kind']=='RULE':
+                from app.work.procedural_knowledge import applicable
+                row['scope_matches'],row['scope_exclusion_reason']=applicable(c,row,task_id,active_version,current_source)
+            else:row['scope_matches']=digest(sources[row['task_version']])==row['source_scope_sha256']
             row['task_version_active']=row['task_version']==active_version
+            if row['kind']=='RULE':row['task_version_active']=row['scope_matches']
+            row['relations']=[dict(r) for r in c.execute(text('SELECT kind,entry_id,target_entry_id,note FROM knowledge_relations WHERE entry_id=:id OR target_entry_id=:id'),{'id':row['entry_id']}).mappings()]
+            if row['kind']=='RULE':
+                row['evaluations']=[]
+                from app.evaluation.knowledge_experiments import require_evaluation
+                for comparison in c.execute(text('''SELECT x.experiment_id,x.status,r.verdict,r.result FROM text_experiment_knowledge k
+                    JOIN text_experiments x USING(experiment_id) LEFT JOIN text_experiment_results r USING(experiment_id)
+                    WHERE k.candidate_entry_id=:id ORDER BY x.created_at DESC'''),{'id':row['entry_id']}).mappings():
+                    evaluation=dict(comparison);evaluation['eligible']=False;evaluation['reason']='비교 실행 중'
+                    if evaluation['status']=='EVALUATED':
+                        try:require_evaluation(c,row,evaluation['experiment_id']);evaluation['eligible']=True;evaluation['reason']=None
+                        except Conflict as exc:evaluation['reason']=str(exc)
+                    row['evaluations'].append(evaluation)
+                last= c.execute(text('SELECT note FROM task_knowledge_decisions WHERE entry_id=:id ORDER BY created_at DESC,decision_id DESC LIMIT 1'),{'id':row['entry_id']}).scalar_one_or_none()
+                row['restored_without_latest_suite_revalidation']=bool(last and last.startswith('ROLLBACK;'))
             try:row['preview']=_resolve(c,row,sources[row['task_version']])
             except (ValueError,TypeError,KeyError,ArithmeticError,IndexError):row['preview']={'invalid':True,'reason':'근거 또는 계산식 재검토 필요'}
         return rows
@@ -218,6 +244,92 @@ def import_task_feedback(task_id: str):
 @app.post('/api/knowledge/{entry_id}/decision')
 def task_knowledge_decision(entry_id: UUID,body: KnowledgeDecision):
     return {'recorded':decide_knowledge(engine,str(entry_id),body)}
+
+
+@app.post('/api/tasks/{task_id}/procedure-binding')
+def procedure_binding(task_id:str,body:BindingRequest):
+    from app.work.procedural_knowledge import bind
+    try:return bind(engine,task_id,body)
+    except (ValueError,KeyError,IndexError,TypeError) as exc:raise HTTPException(422,str(exc)) from exc
+
+
+@app.get('/api/tasks/{task_id}/procedure-binding')
+def get_procedure_binding(task_id:str):
+    from app.work.procedural_knowledge import binding_for
+    with engine.connect() as c:
+        version=c.execute(text('SELECT version FROM task_definitions WHERE task_id=:id AND active'),{'id':task_id}).scalar_one_or_none()
+        if version is None:raise NotFound('active task not found')
+        return binding_for(c,task_id,version)
+
+
+@app.post('/api/knowledge/{entry_id}/normalize')
+def normalize_knowledge(entry_id:UUID,body:NormalizeRequest):
+    from app.work.experience import normalize
+    try:return {'entry_id':normalize(engine,str(entry_id),body),'status':'PROPOSED_NOT_APPLIED'}
+    except (ValueError,KeyError,TypeError) as exc:raise HTTPException(422,str(exc)) from exc
+
+
+@app.post('/api/knowledge/{entry_id}/relations')
+def relate_knowledge(entry_id:UUID,body:KnowledgeRelation):
+    from app.work.procedural_knowledge import relation
+    return {'recorded':relation(engine,str(entry_id),body)}
+
+
+@app.get('/api/tasks/{task_id}/experience-observations')
+def experience_observations(task_id:str):
+    with engine.connect() as c:
+        rows=[dict(r) for r in c.execute(text('SELECT * FROM experience_observations WHERE task_id=:id ORDER BY created_at DESC LIMIT 100'),{'id':task_id}).mappings()]
+        for row in rows:
+            row['compilations']=[dict(r) for r in c.execute(text('''SELECT i.work_id,i.snapshot->>'mode' AS model_mode,w.status,r.run_id,r.status AS run_status,r.error
+                FROM experience_compile_inputs i JOIN work_items w USING(work_id)
+                LEFT JOIN LATERAL (SELECT * FROM runs WHERE work_id=i.work_id ORDER BY attempt_no DESC LIMIT 1) r ON true
+                WHERE i.observation_id=:id ORDER BY i.created_at DESC'''),{'id':row['observation_id']}).mappings()]
+        return rows
+
+
+@app.post('/api/experience-observations/{observation_id}/compile')
+def compile_experience(observation_id:UUID,body:CompileRequest):
+    from app.workloads.experience_compiler import request
+    work_id,created=request(engine,str(observation_id),body)
+    return {'work_id':work_id,'created':created,'scope':'RULE_PROPOSAL_ONLY_NO_ACTIVATION'}
+
+
+@app.get('/api/runs/{run_id}/memory-application')
+def memory_application(run_id:UUID):
+    with engine.connect() as c:
+        rows=[dict(r) for r in c.execute(text('SELECT * FROM memory_application_traces WHERE run_id=:id ORDER BY created_at,step_id,phase'),{'id':run_id}).mappings()]
+        if any(digest(r['snapshot'])!=r['snapshot_sha256'] for r in rows):raise Conflict('application trace hash mismatch')
+        comparison=c.execute(text('''SELECT e.result,e.result_sha256 FROM runs r JOIN text_experiment_work m USING(work_id)
+            JOIN text_experiment_results e ON e.experiment_id=m.experiment_id WHERE r.run_id=:id'''),{'id':run_id}).mappings().first()
+        if comparison and digest(comparison['result'])!=comparison['result_sha256']:raise Conflict('paired result hash mismatch')
+        for row in rows:row['paired_quality_delta']=comparison['result'].get('quality_delta') if comparison else None
+        return rows
+
+
+@app.get('/api/tasks/{task_id}/knowledge-metrics')
+def task_knowledge_metrics(task_id:str):
+    from app.work.knowledge_metrics import overview
+    with engine.connect() as c:return overview(c,task_id)
+
+
+@app.post('/api/runs/{run_id}/applicability-label')
+def label_rule_applicability(run_id:UUID,body:ApplicabilityLabel):
+    from app.work.knowledge_metrics import label,ApplicabilityLabel
+    try:return {'label_id':label(engine,str(run_id),body)}
+    except (ValueError,TypeError) as exc:raise HTTPException(422,str(exc)) from exc
+
+
+@app.get('/api/text-experiments/{experiment_id}/semantic-review')
+def knowledge_semantic_review_packet(experiment_id:UUID):
+    from app.evaluation.knowledge_semantics import packet
+    with engine.connect() as c:return packet(c,str(experiment_id))
+
+
+@app.post('/api/text-experiments/{experiment_id}/semantic-review')
+def submit_knowledge_semantic_review(experiment_id:UUID,body:SemanticReview):
+    from app.evaluation.knowledge_semantics import record,SemanticReview
+    try:return {'review_id':record(engine,str(experiment_id),body)}
+    except (ValueError,TypeError) as exc:raise HTTPException(422,str(exc)) from exc
 
 
 @app.get('/api/runs/{run_id}/review-context')
@@ -270,8 +382,9 @@ def create_text_regression_suite(task_id: str, body: SuiteRequest):
 def text_experiments(task_id: str):
     with engine.connect() as c:
         experiments=[dict(row) for row in c.execute(text('''SELECT x.experiment_id,x.task_id,x.champion_version,x.design_id,
-            x.candidate_revision,x.suite_id,x.suite_sha256,x.status,x.created_at,r.result,r.result_sha256,r.verdict
+            x.candidate_revision,x.suite_id,x.suite_sha256,x.status,x.created_at,r.result,r.result_sha256,r.verdict,k.candidate_entry_id AS knowledge_candidate_id
             FROM text_experiments x LEFT JOIN text_experiment_results r ON r.experiment_id=x.experiment_id
+            LEFT JOIN text_experiment_knowledge k ON k.experiment_id=x.experiment_id
             WHERE x.task_id=:task ORDER BY x.created_at DESC'''),{'task':task_id}).mappings()]
         for exp in experiments:
             exp['decisions']=[dict(row) for row in c.execute(text('''SELECT decision,note,from_version,to_version,generation,created_at

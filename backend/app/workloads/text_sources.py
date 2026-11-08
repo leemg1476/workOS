@@ -76,6 +76,8 @@ def pin_source(kernel,c,job,work_id):
         VALUES (:work,:task,:version)'''),{'work':work_id,'task':job['task_id'],'version':current['version']})
     kernel._event(c,'text_source.pinned',work_id,{'task_id':job['task_id'],'version':current['version'],
         'source_sha256':current['source_sha256']})
+    from app.evaluation.memory_study import freeze_work
+    freeze_work(kernel,c,job,work_id)
 
 
 register_trigger_hook('provided_text_workflow_v1',pin_source)

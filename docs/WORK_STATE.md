@@ -1,5 +1,29 @@
 # Work OS 작업 상태
 
+## 2026-11-08 — 사용자 요청 Git 게시 체크포인트
+
+사용자 요청에 따라 현재 Experience Compiler 구현을 커밋·푸시한다. 아래 초기 진행 기록보다 이 체크포인트가 최신 상태이며, 전체 개선 목표는 아직 미완료다.
+
+- 정규화 절차·단계별 컴파일/불변 추적·고정 비교/적용 차단·명시적 롤백·사람 검토 입력·지표와 UI를 구현했다. 관련 경로는 `backend/app/domain/experience.py`, `work/{procedural_knowledge,memory_compiler,experience,knowledge_metrics}.py`, `evaluation/{knowledge_experiments,knowledge_semantics,rule_regression}.py`, `workloads/experience_compiler.py`, 마이그레이션025–030 및 새 Vue 패널이다.
+- 직전 전체 검증은 **127 passed, 6 skipped**, 기존 세 데모 E2E 통과, 025–029 격리 마이그레이션 왕복 성공이었다. 이번 게시 전 `npm --prefix frontend run build`와 `git diff --check`는 성공했다. 별도 폐기용 DB `workos_memory_check`에서 `PYTHONPATH=backend`, `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1`, `WORKOS_TEST_DATABASE_URL=postgresql+psycopg://workos:workos@127.0.0.1:5547/workos_memory_check`로 `python -m pytest -x -q --tb=short tests/test_experience_compiler.py` **12 passed, 1 warning**, `tests/test_graph_runtime.py` **2 passed**를 확인했다.
+- 게시 전 전체 `python -m pytest -q --tb=short tests`도 시도했으나 느린 진행 중 실패1건을 관측해 중단했다. 중단 시 실패 상세가 출력되지 않아 원인은 확정하지 못했다. 후속 전용 테스트 통과는 전체 회귀 통과의 대체 증거가 아니며, 전체 회귀 재실행과 해당 실패 확인이 남아 있다.
+- 3그룹 비교용 저장/투영 기반만 추가한 상태다. 실제 비교 실행기와 최종 보류 입력 실험, 실제 사람 유용성 평가는 미완료이며 품질 향상을 입증했다고 주장하지 않는다. 최신 UI의 브라우저 검증과030 down/up 전용 검증도 남아 있다. 기존42회/10회 실험은 재개하지 않고 운영 지식을 자동 Apply하지 않았다.
+
+다음 세 단계: ① synthetic fixture와3그룹 격리 경로의 전용 테스트·030 왕복·UI 검증을 완성한다. ② 동일 모델/입력/도구 예산의3그룹 실험과 보류 가구·기간·문서 평가를 실행한다. ③ 실제 사람 검토를 받고 요구사항별 완료 감사를 수행한다.
+
+## 2026-11-08 — Experience Compiler 개선 진행 중(목표 미완료)
+
+사용자 새 첨부 `goal-objective.md`의 네 구현 단위·다섯 인수 기준·3그룹/보류 입력 검증을 전체 목표로 유지한다. 범위와 증거 표는 `docs/EXPERIENCE_COMPILER_PLAN.md`. 기존 실험은 재개하지 않았고 실제 Task의 새 절차를 자동 활성화하지 않았다.
+
+- `domain/experience.py`, `work/procedural_knowledge.py`, `work/experience.py`, 마이그레이션025: 정규화 RULE(조건·원인·대상·행동·검사·제외 조건), 계약/필드 의미·단위 binding, 사실과 절차의 범위 분리, 파생·중복·충돌·대체 관계를 구현했다. 자유 교훈은 원본을 유지하고 별도 정규화 후보로 생성한다. AI 피드백 분류는 UNVERIFIED_ROUTING_HINT 관찰이며 사실 오류 확정이 아니다.
+- `work/memory_compiler.py`, `task_memory.py` v4, `text_workflow.py`: 단계별 선택·제외 이유와 CHECKLIST/Decimal/선행조건/주장 검사 컴파일, 불변 SELECT/VERIFY 추적을 공통 실행기에 연결했다. 산식·입력·해석의 구조화된 도메인 표현을 현재 입력과 독립 대조한다. 임의 문장만 채운 섹션은 실패한다. 자유 문장 전체의 의미를 이해했다고 주장하지 않는다. prompt step v4/research v3, 일반 검증v6·연결/결합v4로 구분한다.
+- 마이그레이션026, `evaluation/knowledge_experiments.py`, `rule_regression.py`와 기존 text_experiments/text_regression: 양쪽의 기초 기억을 고정하고 Challenger만 후보 규칙을 추가한다. 고정 oracle와 보류 입력, 같은 LIVE 모델·퇴행0·실제 gain·도메인 검사 통과를 적용 게이트에 연결했다. 운영 이력/평가 정답은 작성자에게 주입하지 않는다. 오래된 suite나 실패 비교는 Apply를 거부한다. 지식 비교를 방법 승격 API로 우회하는 것도 거부한다.
+- 호환되는 방법 버전 전환에 binding 승계 경로를 추가했다. 기존 API/모델 경로의 회귀를 확인하는 중이며 새 UI·유지보수·의미 검토 완결과 3그룹 실험은 아직 완료하지 않았다.
+
+실제 검증: 별도 `workos_memory_check`, `PYTHONPATH=backend`, `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1`, `WORKOS_TEST_DATABASE_URL`에서 기억/지식 기존11 passed, 기존 텍스트 비교+지식24 passed, 새 `tests/test_experience_compiler.py` **7 passed**. 모두 격리 모델 stub/fixture 검사이며 실제 모델 품질 향상 실험이 아니다. 초기 테스트 실패(섹션 실패 검사 alias, 새 테스트의 잘못된 source URL)를 수정한 뒤 해당 검사를 재실행했다. 전체 회귀·UI·마이그레이션 down/up 검증은 아직 수행 전이다.
+
+다음 세 단계: ① 명시적 지식 롤백·사람 의미 검토·유지보수와 지표/UI를 완성한다. ② 누락된 버전 승계/도메인 반례/동시성 검사를 보강하고 전체 회귀·3개 기존 데모·025/026 왕복을 확인한다. ③ 동일 모델/예산의3그룹·새 가구/기간/문서 보류 검증과 실제 사람 검토 입력을 연결하고 요구사항별 완료 감사를 수행한다. 이 목표를 첫 두 구현 단위로 축소하지 않는다.
+
 ## 2026-11-08 — 사용자 승인하에 새10회 실험 완료·정지
 
 상태: **보고서10개·회차별 평가/검토·최종 비교 보고서 완료. 추가 실행 정지.** 사용자는 새 실험에서 준비한 계산/필수항목/인용과 근거를 확인한 후속 피드백을 적용하도록 명시적으로 승인했다. 기존42회 연구를 재개하거나 원래 Task에 지식을 적용하지 않았다.

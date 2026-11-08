@@ -32,7 +32,7 @@ def execute(kernel, claim, contract):
     options=ReportExecutionOptions.model_validate(contract.get('execution_options',{}))
     if options.web_search and evaluation:
         raise ValueError('fixed replay cannot use mutable live web sources')
-    prompt_version='provided-text-research-v2' if options.web_search else 'provided-text-step-v3'
+    prompt_version='provided-text-research-v3' if options.web_search else 'provided-text-step-v4'
     mode=contract['model_mode']
     key=os.getenv('openai_api_key') or os.getenv('OPENAI_API_KEY')
     model=os.getenv('openai_model') or os.getenv('OPENAI_MODEL')
@@ -53,6 +53,17 @@ def execute(kernel, claim, contract):
     from app.work.task_memory import prompt_view
     prompt_memory=prompt_view(task_memory['manifest'])
     manifest['prompt_memory']={'manifest':prompt_memory,'sha256':digest(prompt_memory)}
+    compiled_steps={}
+    if task_memory['manifest'].get('version')=='task-memory-v4':
+        from app.work.memory_compiler import compile_step
+        bound=(task_memory['manifest'].get('procedure_binding') or {}).get('binding')
+        prefix=[]
+        for target in order_steps(contract['plan']):
+            selected,trace=compile_step(task_memory['manifest'],contract,target,bound,completed_steps=prefix)
+            compiled_steps[target]={'manifest':selected,'sha256':digest(selected),'selection':trace}
+            prefix.append(target)
+        manifest['step_memories']=compiled_steps
+        manifest['prompt_memory']={k:compiled_steps[prefix[-1]][k] for k in ('manifest','sha256')}
     from app.evaluation.report_quality import is_structured,render
     knowledge=task_memory['manifest'].get('knowledge',{'active':[],'excluded':[]})
     structured=is_structured(knowledge)
@@ -73,19 +84,31 @@ def execute(kernel, claim, contract):
     outputs={}
     for step_id in order_steps(contract['plan']):
         step=steps[step_id]
-        structured_step=structured and step_id==order_steps(contract['plan'])[-1]
+        if compiled_steps:
+            prompt_memory=compiled_steps[step_id]['manifest']
+            knowledge=prompt_memory.get('knowledge',{'active':[]})
+            structured=is_structured(knowledge)
+        structured_step=structured and (step_id==order_steps(contract['plan'])[-1] or bool(compiled_steps))
         with kernel.engine.begin() as c:
             alive=c.execute(text("UPDATE work_queue SET lease_until=now()+(:seconds * interval '1 second') WHERE run_id=:run AND status='CLAIMED' AND lease_until>now() RETURNING work_id"),{'run':run_id,'seconds':options.timeout_seconds+30}).first()
             if not alive: raise ValueError('run lease expired')
             c.execute(text("INSERT INTO run_steps(run_id,graph_version,node_name,status) VALUES (:run,:graph,:node,'STARTED')"),{'run':run_id,'graph':KIND,'node':step_id})
         try:
+            if compiled_steps:
+                from app.work.memory_compiler import persist_trace,verify_output
+                selection=compiled_steps[step_id]['selection']
+                with kernel.engine.begin() as c:persist_trace(kernel,c,run_id,step_id,'SELECT',selection)
+                if not all(x['passed'] for x in selection['preconditions']):
+                    with kernel.engine.begin() as c:persist_trace(kernel,c,run_id,step_id,'VERIFY',{'preconditions':selection['preconditions'],'results':[],'passed':False})
+                    raise ValueError('compiled procedure precondition not satisfied')
             started=time.monotonic()
             research=None
             raw_report=None
             if mode=='MOCK':
                 value='MOCK: 모델 실행 없이 생성된 예시입니다. 실제 업무 결과가 아닙니다.'
                 if structured_step:
-                    raw_report=json.dumps({'introduction':value,'sections':[{'rule_id':e['entry_id'],'text':value} for e in knowledge['active'] if e['kind']=='CHECKLIST']},ensure_ascii=False)
+                    raw_report=json.dumps({'introduction':value,'sections':[{'rule_id':e['entry_id'],'text':value,
+                        'components':{k:v for k,v in e.get('component_spec',{}).items() if k in ('formula','input_values','interpretation')}} for e in knowledge['active'] if e['kind']=='CHECKLIST']},ensure_ascii=False)
                     value=render(raw_report,knowledge)
                 model_id='MOCK'; response_id=None; input_tokens=0; output_tokens=0
             else:
@@ -95,6 +118,8 @@ def execute(kernel, claim, contract):
                 system+=' 적용된 knowledge는 최근 의견 수와 무관하게 계속 사용하는 절차입니다. 계산값은 Python Decimal 결과이며 재계산하지 마세요. 출처의 직접 인용·제공 자료와 의견이 충돌하면 직접 근거를 우선하세요. AI 검토 의견은 검증되지 않은 제안이며 새로운 사실의 근거가 아닙니다.'
                 if structured_step:
                     system+=' 반드시 JSON 객체만 반환하세요: {"introduction":"서론·분석", "sections":[{"rule_id":"적용 CHECKLIST entry_id", "text":"해당 instruction을 수행한 본문"}]}. 모든 적용 CHECKLIST에 정확히 한 sections 항목이 필요하며 추가·중복은 금지입니다. CALCULATION 계산표는 서버가 자동으로 덧붙이므로 본문에서 그 숫자를 다시 만들지 말고 계산표를 참조하세요. 체크리스트가 없으면 sections는 빈 배열입니다.'
+                    if compiled_steps:
+                        system+=' CHECKLIST에 component_spec이 있으면 해당 sections 항목에 components 객체를 넣고 formula(연산 AST), input_values(입력 경로와 실제 값), interpretation(지정된 코드) 중 요구된 항목을 정확히 채우세요. display_formula와 labels는 독자용 렌더링 정보이며 복사하지 마세요. CLAIM_CHECK가 있으면 최상위 claims 배열에 text(본문의 실제 문장), source_path, value, direction(UP/DOWN/FLAT 또는 null), period_path, period_value를 적고 요구된 모든 경로를 다루세요. 원천에 반하는 주장을 만들지 마세요.'
                 response=OpenAI(api_key=key,timeout=options.timeout_seconds,max_retries=0).responses.create(
                     model=model,store=False,**request_options(options),
                     input=[{'role':'system','content':system},
@@ -128,6 +153,12 @@ def execute(kernel, claim, contract):
                 outputs[step_id]['research']=research
             if raw_report is not None:
                 outputs[step_id]['structured_report']=raw_report
+            if compiled_steps:
+                findings=verify_output(raw_report,knowledge,contract['source_text']) if structured_step else []
+                verification={'preconditions':selection['preconditions'],'results':findings,
+                    'passed':all(r['passed'] or not r.get('blocking',True) for r in findings),
+                    'output_sha256':digest(value),'semantic_scope':'CONFIGURED_DOMAIN_ASSERTIONS_NOT_FULL_PROSE_ENTAILMENT'}
+                with kernel.engine.begin() as c:persist_trace(kernel,c,run_id,step_id,'VERIFY',verification)
             with kernel.engine.begin() as c:
                 c.execute(text("INSERT INTO run_steps(run_id,graph_version,node_name,status) VALUES (:run,:graph,:node,'SUCCEEDED')"),{'run':run_id,'graph':KIND,'node':step_id})
         except Exception as exc:
@@ -165,15 +196,40 @@ def verify(c,run,work,task,content,artifact_hash):
     if memory_required:
         memory=load_memory(c,run['run_id'])
         checks['task_memory'] = bool(context) and context['manifest'].get('task_memory')==memory
-    if context and context['manifest'].get('task_memory',{}).get('manifest',{}).get('version')=='task-memory-v3':
+    if context and context['manifest'].get('task_memory',{}).get('manifest',{}).get('version') in ('task-memory-v3','task-memory-v4'):
         from app.work.task_memory import prompt_view
+        from app.evaluation.report_quality import is_structured,render
         expected_memory=prompt_view(context['manifest']['task_memory']['manifest'])
-        checks['prompt_memory_policy']=context['manifest'].get('prompt_memory')=={'manifest':expected_memory,'sha256':digest(expected_memory)}
+        if memory['manifest']['version']=='task-memory-v3':
+            checks['prompt_memory_policy']=context['manifest'].get('prompt_memory')=={'manifest':expected_memory,'sha256':digest(expected_memory)}
+        else:
+            from app.work.memory_compiler import compile_step,verify_output
+            bound=(memory['manifest'].get('procedure_binding') or {}).get('binding');prefix=[];expected_steps={};trace_ok=True;rules_ok=True;quality=True
+            for step_id in expected:
+                selected,selection=compile_step(memory['manifest'],contract,step_id,bound,completed_steps=prefix);prefix.append(step_id)
+                expected_steps[step_id]={'manifest':selected,'sha256':digest(selected),'selection':selection}
+                part=next((s for s in steps if s['step_id']==step_id),{})
+                findings=verify_output(part.get('structured_report'),selected['knowledge'],contract['source_text']) if is_structured(selected['knowledge']) else []
+                passed=all(r['passed'] or not r.get('blocking',True) for r in findings)
+                verification={'preconditions':selection['preconditions'],'results':findings,'passed':passed,
+                    'output_sha256':digest(part.get('text')),'semantic_scope':'CONFIGURED_DOMAIN_ASSERTIONS_NOT_FULL_PROSE_ENTAILMENT'}
+                for phase,snapshot in (('SELECT',selection),('VERIFY',verification)):
+                    row=c.execute(text('SELECT snapshot,snapshot_sha256 FROM memory_application_traces WHERE run_id=:run AND step_id=:step AND phase=:phase'),{'run':run['run_id'],'step':step_id,'phase':phase}).mappings().first()
+                    trace_ok &= bool(row) and row['snapshot']==snapshot and digest(row['snapshot'])==row['snapshot_sha256']
+                rules_ok &= passed and all(x['passed'] for x in selection['preconditions'])
+                if is_structured(selected['knowledge']):
+                    try:quality &= render(part.get('structured_report',''),selected['knowledge'])==part.get('text')
+                    except (ValueError,TypeError):quality=False
+            checks['step_memory_selection']=context['manifest'].get('step_memories')==expected_steps
+            checks['prompt_memory_policy']=context['manifest'].get('prompt_memory')=={k:expected_steps[expected[-1]][k] for k in ('manifest','sha256')}
+            checks['memory_application_traces']=trace_ok
+            checks['compiled_rule_compliance']=rules_ok
+            checks['compiled_output_rendering']=quality
         from app.evaluation.report_quality import is_structured,render
         knowledge=context['manifest']['task_memory']['manifest'].get('knowledge',{'active':[]})
         checks['knowledge_policy_hash']=knowledge.get('sha256',digest([]))==digest(knowledge['active'])
-        quality=True
-        if is_structured(knowledge):
+        quality=checks.get('compiled_output_rendering',True)
+        if memory['manifest']['version']=='task-memory-v3' and is_structured(knowledge):
             try:
                 quality=bool(steps) and render(steps[-1].get('structured_report',''),knowledge)==steps[-1].get('text')
             except (ValueError,TypeError):quality=False
@@ -196,11 +252,11 @@ def verify(c,run,work,task,content,artifact_hash):
     return {'passed':all(checks.values()),'checks':checks,'semantic_review':'NOT_PERFORMED','requires_human_review':True}, {'task_id':work['task_id'],'task_version':work['task_version'],'artifact_sha256':artifact_hash,'contract_sha256':digest(contract),'source_sha256':digest(contract['source_text'])}
 
 
-register_verifier(KIND,Verifier('provided_text_report','1','provided-text-structure-v5','provided_text_structure','provided-text-suite-v5',verify))
+register_verifier(KIND,Verifier('provided_text_report','1','provided-text-structure-v6','provided_text_structure','provided-text-suite-v6',verify))
 LINKED_KIND='provided_text_linked_workflow_v1'
 JOINED_KIND='provided_text_joined_workflow_v1'
-register_verifier(LINKED_KIND,Verifier('provided_text_report','1','provided-text-linked-structure-v3','provided_text_structure','provided-text-linked-suite-v3',verify))
-register_verifier(JOINED_KIND,Verifier('provided_text_report','1','provided-text-joined-structure-v3','provided_text_structure','provided-text-joined-suite-v3',verify))
+register_verifier(LINKED_KIND,Verifier('provided_text_report','1','provided-text-linked-structure-v4','provided_text_structure','provided-text-linked-suite-v4',verify))
+register_verifier(JOINED_KIND,Verifier('provided_text_report','1','provided-text-joined-structure-v4','provided_text_structure','provided-text-joined-suite-v4',verify))
 register_verifier_kind_resolver(KIND,lambda work: {'accepted_work_link':LINKED_KIND,'accepted_work_join':JOINED_KIND}.get(work['input_snapshot'].get('source'),KIND))
 register_kind_executor(KIND,execute)
 

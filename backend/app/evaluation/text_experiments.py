@@ -16,6 +16,7 @@ class ExperimentRequest(BaseModel):
     champion_targets: dict[str,str] = Field(default_factory=dict,max_length=50)
     candidate_targets: dict[str,str] = Field(default_factory=dict,max_length=50)
     idempotency_key: str = Field(min_length=1,max_length=150)
+    knowledge_candidate_id: UUID | None=None
 
 
 class FinalizeRequest(BaseModel):
@@ -118,6 +119,7 @@ def evaluation_pass(result):
 def start(db,task_id,body):
     kernel=Kernel(db);key='text-experiment.start:'+body.idempotency_key
     request={'task_id':task_id,'suite_id':str(body.suite_id),'candidate_revision':body.candidate_revision}
+    if body.knowledge_candidate_id:request['knowledge_candidate_id']=str(body.knowledge_candidate_id)
     if body.champion_targets:
         request['champion_targets']=body.champion_targets
     if body.candidate_targets:
@@ -134,7 +136,8 @@ def start(db,task_id,body):
         candidate=one(c,'''SELECT revision,plan FROM work_design_revisions WHERE design_id=:design AND revision=:revision''',
                       {'design':champion['design_id'],'revision':body.candidate_revision})
         latest=one(c,'SELECT MAX(revision) AS revision FROM work_design_revisions WHERE design_id=:design',{'design':champion['design_id']})['revision']
-        if not candidate or candidate['revision']<=champion['registered_revision'] or candidate['revision']!=latest:
+        valid_revision=(candidate and candidate['revision']==champion['registered_revision']==latest) if body.knowledge_candidate_id else (candidate and candidate['revision']>champion['registered_revision'] and candidate['revision']==latest)
+        if not valid_revision:
             raise Conflict('select the latest newer design revision')
         plan=validate_plan(WorkPlan.model_validate(candidate['plan'])).model_dump()
         old=champion['output_schema']['plan']
@@ -149,7 +152,9 @@ def start(db,task_id,body):
         steps_changed=plan['steps']!=old['steps']
         if sum((bool(added),expected_changed,steps_changed))>1:
             raise Conflict('change only one of workflow steps, expected result or evaluation criteria in one comparison')
-        if not any((added,expected_changed,steps_changed)):
+        if body.knowledge_candidate_id and any((added,expected_changed,steps_changed)):
+            raise Conflict('a knowledge comparison must keep the workflow contract unchanged')
+        if not body.knowledge_candidate_id and not any((added,expected_changed,steps_changed)):
             raise Conflict('candidate workflow and criteria did not change')
         case_expectations={entry['case']['expected_behavior'] for entry in snapshot['cases']}
         if any(criterion not in case_expectations for criterion in added):
@@ -183,6 +188,9 @@ def start(db,task_id,body):
              'plan':canonical(plan),'plan_hash':digest(plan)})
         c.execute(text('''INSERT INTO text_experiment_targets(experiment_id,targets,targets_sha256)
             VALUES (:id,CAST(:targets AS jsonb),:sha)'''),{'id':exp_id,'targets':canonical(targets),'sha':digest(targets)})
+        if body.knowledge_candidate_id:
+            from app.evaluation.knowledge_experiments import freeze
+            freeze(c,exp_id,champion,body.knowledge_candidate_id)
         c.execute(text('INSERT INTO text_task_method_state(task_id) VALUES (:task) ON CONFLICT DO NOTHING'),{'task':task_id})
         c.execute(text('''INSERT INTO text_experiment_generation(experiment_id,generation)
             SELECT :id,generation FROM text_task_method_state WHERE task_id=:task'''),{'id':exp_id,'task':task_id})
@@ -268,6 +276,11 @@ def _side_result(c,experiment,entry,side,base_contract,targets=None):
                   elapsed_ms=total('elapsed_ms'),input_tokens=total('input_tokens'),output_tokens=total('output_tokens'),
                   missing_required=missing,found_forbidden=found,target_excerpt=target['text'][:1000],
                   target_excerpt_truncated=len(target['text'])>1000,target_output_sha256=digest(target['text']))
+    if entry['case'].get('domain_assertions'):
+        from app.evaluation.rule_regression import evaluate_assertions
+        domain=evaluate_assertions(target,entry['case']['input_text'],entry['case']['domain_assertions'])
+        result['domain_assertions']=domain
+        result['checks_passed'] &= all(x['passed'] for x in domain)
     return result
 
 
@@ -332,7 +345,25 @@ def finish(db,experiment_id,body):
                 'change_kind':change_kind,'added_criteria':added,'criterion_case_ids':criteria_cases,
                 'expected_result_change':{'from':old_expected,'to':new_expected,'case_ids':expected_cases} if expected_changed else None,
                 'semantic_quality':'NOT_EVALUATED','cost':'NOT_CALCULATED'}
-        verdict='PASS' if evaluation_pass(result) else 'FAIL'
+        from app.evaluation.knowledge_experiments import frozen
+        knowledge=frozen(c,experiment_id)
+        if knowledge:
+            suite_key=knowledge['candidate']['payload']['verification']['suite_key']
+            domain_complete=all(x['challenger'].get('domain_assertions') and
+                all(v['passed'] for v in x['challenger']['domain_assertions']) and
+                any(v['suite_key']==suite_key for v in x['challenger']['domain_assertions']) for x in cases)
+            result['gates']['knowledge_domain_checks']=domain_complete
+            result['gates']['knowledge_heldout_coverage']=any(e['case'].get('split')=='HELDOUT' for e in snapshot['cases']) and any(e['case'].get('split','REGRESSION')=='REGRESSION' for e in snapshot['cases'])
+            result.update(change_kind='KNOWLEDGE',scope='FROZEN_BASE_WITH_ONE_KNOWLEDGE_CHANGE',
+                semantic_quality='CONFIGURED_DOMAIN_ASSERTIONS_NOT_FULL_PROSE_ENTAILMENT',
+                knowledge_snapshot_sha256=digest(knowledge),candidate_entry_id=knowledge['candidate']['entry_id'],
+                quality_delta={'paired_case_gains':len(gains),'paired_case_regressions':len(regressions),
+                    'paired_pass_rate_delta':(sum(x['challenger']['checks_passed'] for x in cases)-sum(x['champion']['checks_passed'] for x in cases))/len(cases),
+                    'scope':'SAME_FROZEN_SUITE_SINGLE_REPLAY_NOT_STATISTICAL_CAUSAL_ESTIMATE'})
+            if any(e['case'].get('authoring_scope')=='SYNTHETIC_FIXTURE_ORACLE_NOT_HUMAN_QUALITY_LABEL' for e in snapshot['cases']):
+                result['activation_scope']='SYNTHETIC_EXPERIMENT_ONLY'
+        verdict='PASS' if ((evaluation_pass(result) if not knowledge else
+            all(result['gates'][k] for k in ('all_executions_valid','same_live_model','zero_regressions','at_least_one_gain','all_cases_pass','knowledge_domain_checks','knowledge_heldout_coverage')))) else 'FAIL'
         c.execute(text('''INSERT INTO text_experiment_results(experiment_id,result,result_sha256,verdict)
             VALUES (:id,CAST(:result AS jsonb),:sha,:verdict)'''),{'id':experiment_id,'result':canonical(result),'sha':digest(result),'verdict':verdict})
         c.execute(text("UPDATE text_experiments SET status='EVALUATED' WHERE experiment_id=:id"),{'id':experiment_id})

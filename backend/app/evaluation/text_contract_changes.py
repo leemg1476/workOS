@@ -104,6 +104,8 @@ def rollback(db, change_id, body):
 
 def _record(c,kernel,key,request,current,to_version,decision,note,plan_sha,targets,reversed_id):
     task=current['task_id']
+    from app.work.procedural_knowledge import carry_forward_binding
+    carry_forward_binding(kernel,c,task,current['version'],to_version)
     c.execute(text('INSERT INTO text_task_method_state(task_id) VALUES (:task) ON CONFLICT DO NOTHING'),{'task':task})
     generation=one(c,'UPDATE text_task_method_state SET generation=generation+1 WHERE task_id=:task RETURNING generation',{'task':task})['generation']
     c.execute(text('UPDATE task_definitions SET active=false WHERE task_id=:task AND active'),{'task':task})

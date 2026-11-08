@@ -41,7 +41,7 @@ def test_join_waits_for_all_and_uses_latest_new_result_once(kernel):
         assert {x['artifact_id'] for x in bundle['sources']}=={new_art,art_b}
         assert old_art not in {x['artifact_id'] for x in bundle['sources']}
         evidence=client.get('/api/runs/'+claim['run_id']+'/artifacts').json()[0]['evidence']
-        assert any(x['verifier_version']=='provided-text-joined-structure-v3' for x in evidence)
+        assert any(x['verifier_version']=='provided-text-joined-structure-v4' for x in evidence)
         assert accept(client,claim['work_id'],out['artifact_id'],'joined-accept').status_code==200
         reviewed(client,kernel,b,'b2')
         assert group(client,join)['firing_count']==1
